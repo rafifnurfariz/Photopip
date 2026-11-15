@@ -75,6 +75,11 @@ export function useEditorCanvas(
     const canvas = new Canvas(elementRef.current, {
       preserveObjectStacking: true,
       selection: false,
+      // On touch screens the stacked editor shows a tall strip in a short
+      // viewport; dragging empty canvas must scroll it, not be swallowed.
+      allowTouchScrolling:
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(pointer: coarse)").matches,
       enableRetinaScaling: false,
       enablePointerEvents: true,
       hoverCursor: "move",

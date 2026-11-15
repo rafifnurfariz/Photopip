@@ -315,8 +315,14 @@ export default function Editor({
     <>
       <header className="edit-topline">
         <div className="edit-heading">
-          <button type="button" className="ghost-button" onClick={onBack}>
-            <span aria-hidden="true">←</span> {t.editor.back}
+          <button
+            type="button"
+            className="ghost-button back-button"
+            aria-label={t.editor.back}
+            onClick={onBack}
+          >
+            <span aria-hidden="true">←</span>{" "}
+            <span className="back-label">{t.editor.back}</span>
           </button>
           <div className="edit-title-block">
             <h1 className="edit-title">{t.editor.title}</h1>
@@ -345,8 +351,16 @@ export default function Editor({
             >
               <span aria-hidden="true">↷</span>
             </button>
-            <button type="button" className="ghost-button" onClick={onReset}>
-              {t.capture.reset}
+            <button
+              type="button"
+              className="ghost-button reset-button"
+              aria-label={t.capture.reset}
+              onClick={onReset}
+            >
+              <span className="reset-label">{t.capture.reset}</span>
+              <span className="reset-glyph" aria-hidden="true">
+                ↺
+              </span>
             </button>
           </div>
           <div className="zoom-group" role="group" aria-label={t.editor.fit}>

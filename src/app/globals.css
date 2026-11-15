@@ -2659,3 +2659,322 @@ option {
 .confirm-actions .primary {
   flex: none;
 }
+/* ============================================================
+   MOBILE LAYOUT — stacked capture dock + compact editor
+   Everything here is scoped to <=899px; desktop is untouched.
+   Kept at the end of the file so it wins over earlier rules.
+   ============================================================ */
+.reset-glyph {
+  display: none;
+}
+@media (max-width: 899px) {
+  :root {
+    /* Deterministic compact header, used by the viewport-height maths. */
+    --mobile-header: 58px;
+    --mobile-gap: 8px;
+  }
+  /* ---------- app bar ---------- */
+  .site-header {
+    padding: 6px 8px;
+  }
+  .header-inner {
+    min-height: 46px;
+    padding: 4px 4px 4px 8px;
+    gap: 6px;
+  }
+  .brand {
+    min-height: 34px;
+    gap: 7px;
+  }
+  .brand img {
+    width: 30px;
+    height: 30px;
+  }
+  .brand-name {
+    font-size: 0.9375rem;
+  }
+  .brand-caption {
+    font-size: 0.5625rem;
+  }
+  .language-control select {
+    width: 98px;
+    min-height: 36px;
+    padding: 0 24px 0 8px;
+    font-size: 0.75rem;
+    background-position:
+      calc(100% - 13px) 15px,
+      calc(100% - 8px) 15px;
+  }
+  .theme-control {
+    width: 36px;
+    min-height: 36px;
+    font-size: 1rem;
+  }
+  .studio-shell {
+    padding-bottom: var(--mobile-gap);
+  }
+  /* ---------- capture: big viewfinder, compact dock ---------- */
+  .booth {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: var(--mobile-gap);
+    height: calc(100dvh - var(--mobile-header) - var(--mobile-gap));
+    min-height: 0;
+  }
+  .booth-stage,
+  .booth-panel {
+    border-radius: 0;
+  }
+  .booth-panel {
+    max-height: none;
+    padding: 10px 12px;
+    gap: 8px;
+    overflow: visible;
+  }
+  .status-chip,
+  .count-chip {
+    min-height: 30px;
+    padding: 0 9px;
+    font-size: 0.6875rem;
+  }
+  .panel-section {
+    gap: 0;
+  }
+  /* The layout chip and the photos themselves already label these sections. */
+  .panel-label,
+  .panel-label-row {
+    display: none;
+  }
+  /* Empty viewfinder: the headline must never bleed past the stage. */
+  .camera-empty {
+    padding: 14px;
+  }
+  .camera-empty h2 {
+    font-size: clamp(1.25rem, 5.4vw, 1.55rem);
+  }
+  .camera-mark {
+    width: 68px;
+    height: 68px;
+  }
+  .layout-trigger {
+    min-height: 48px;
+    padding: 6px 10px;
+  }
+  .film-grid {
+    display: flex;
+    justify-content: safe center;
+    gap: 6px;
+    padding: 2px 2px 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+  }
+  .film-grid::-webkit-scrollbar {
+    display: none;
+  }
+  .photo-slot {
+    flex: 0 0 44px;
+    width: 44px;
+  }
+  .icon-option {
+    width: 44px;
+    min-height: 44px;
+  }
+  .panel-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+    gap: 6px;
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .panel-actions > * {
+    min-width: 0;
+  }
+  .panel-actions > .option-row,
+  .panel-actions > .panel-finish,
+  .panel-actions > :only-child {
+    grid-column: 1 / -1;
+  }
+  .panel-primary,
+  .shutter-button {
+    min-height: 48px;
+  }
+  /* ---------- editor: one-row toolbar, canvas-first stage ---------- */
+  .edit-shell {
+    --mobile-tools: clamp(200px, 36dvh, 320px);
+    position: relative;
+    height: calc(100dvh - var(--mobile-header) - var(--mobile-gap));
+    min-height: 0;
+    gap: var(--mobile-gap);
+  }
+  .edit-topline {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+    min-height: 52px;
+  }
+  .edit-heading {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    gap: 6px;
+  }
+  .edit-title-block {
+    min-width: 0;
+  }
+  .edit-title {
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .edit-subtitle {
+    display: none;
+  }
+  .edit-actions {
+    flex: none;
+    width: auto;
+    flex-wrap: nowrap;
+    gap: 4px;
+  }
+  .edit-action-group {
+    padding: 2px;
+    gap: 0;
+  }
+  .edit-action-group .icon-button {
+    width: 36px;
+    min-height: 36px;
+  }
+  .edit-action-group .ghost-button {
+    min-height: 36px;
+    padding: 0 8px;
+    font-size: 0.6875rem;
+  }
+  .edit-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) var(--mobile-tools);
+    grid-template-areas: "stage" "tools";
+    border-radius: 0;
+  }
+  .composition-stage {
+    padding: 6px;
+    gap: 0;
+  }
+  .canvas-wrap {
+    overscroll-behavior: contain;
+  }
+  /* The zoom pill sits over the stage; the meta row would eat canvas height. */
+  .stage-meta {
+    display: none;
+  }
+  .editor-tools {
+    border-left: 0;
+    border-top: 1px solid var(--panel-border);
+  }
+  .editor-tabs {
+    padding: 6px;
+  }
+  .editor-tab {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 46px;
+    padding: 4px 2px;
+    font-size: 0.6875rem;
+  }
+  .tab-icon {
+    font-size: 1rem;
+  }
+  .editor-panel {
+    padding: 12px;
+  }
+  .editor-panel .tool-section {
+    margin-bottom: 14px;
+  }
+  .export-bar {
+    width: 100%;
+    gap: 6px;
+    padding: 4px 6px;
+  }
+  /* Size the two selects to their text so the caret never sits on the label. */
+  .export-bar .format-control {
+    flex: 0 1 auto;
+    gap: 4px;
+  }
+  .export-bar .format-control select {
+    min-height: 36px;
+    padding: 0 20px 0 2px;
+    font-size: 0.75rem;
+    background-position:
+      calc(100% - 9px) 15px,
+      calc(100% - 4px) 15px;
+  }
+  .export-bar .primary {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 12px;
+    font-size: 0.8125rem;
+  }
+}
+@media (max-width: 640px) {
+  /* Icon-only back/reset keep the editor toolbar on one row. */
+  .back-label,
+  .reset-label {
+    display: none;
+  }
+  .reset-glyph {
+    display: inline;
+  }
+  .back-button,
+  .reset-button {
+    min-width: 38px;
+    padding: 0 8px;
+  }
+  /* Zoom moves out of the toolbar and floats over the stage. */
+  .zoom-group {
+    position: absolute;
+    z-index: 6;
+    top: calc(52px + var(--mobile-gap) + 6px);
+    right: 8px;
+    box-shadow: 2px 2px 0 var(--shadow-color);
+  }
+  .editor-tab {
+    font-size: 0.625rem;
+    min-height: 44px;
+  }
+}
+@media (max-width: 899px) and (max-height: 700px) {
+  /* Short phones: empty placeholder slots cost the viewfinder 60px. */
+  .film-grid:not(:has(img)) {
+    display: none;
+  }
+  .empty-steps {
+    display: none;
+  }
+}
+@media (min-width: 700px) and (max-width: 899px) and (max-height: 560px) {
+  /* Phone landscape: side-by-side again, with the compact header budget. */
+  .booth {
+    grid-template-columns: minmax(0, 1fr) 290px;
+    grid-template-rows: minmax(0, 1fr);
+    height: calc(100dvh - var(--mobile-header) - var(--mobile-gap));
+    min-height: 0;
+  }
+  .booth-panel {
+    max-height: none;
+    overflow-y: auto;
+  }
+  .empty-steps {
+    display: none;
+  }
+  /* Stacking stage above tools would leave the stage 12px tall. */
+  .edit-workspace {
+    grid-template-columns: minmax(0, 1fr) 290px;
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: "stage tools";
+  }
+  .editor-tools {
+    border-top: 0;
+    border-left: 1px solid var(--panel-border);
+  }
+}
