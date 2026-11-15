@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Next.js build and dev output
+.next/
+out/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# TypeScript incremental build info
+tsconfig.tsbuildinfo
+
+# Generated standalone deployment output
+.next/standalone/
+
+# OS files
+Thumbs.db
+Desktop.ini

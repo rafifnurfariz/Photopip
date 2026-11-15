@@ -1,0 +1,61 @@
+"use client";
+
+import type { CSSProperties } from "react";
+import { useLanguage } from "@/translations/use-language";
+
+interface FilmStripProps {
+  photos: string[];
+  photoCount: number;
+  retakeIndex: number | null;
+  busy: boolean;
+  onRetake: (index: number) => void;
+}
+
+export function FilmStrip({
+  photos,
+  photoCount,
+  retakeIndex,
+  busy,
+  onRetake,
+}: FilmStripProps) {
+  const { t } = useLanguage();
+  return (
+    <div
+      className="film-grid"
+      style={
+        {
+          "--film-columns": photoCount > 4 ? 3 : photoCount,
+        } as CSSProperties
+      }
+      aria-label={t.capture.previewTitle}
+    >
+      {Array.from({ length: photoCount }, (_, index) => (
+        <div
+          key={index}
+          className={`photo-slot ${retakeIndex === index ? "retaking" : ""}`}
+        >
+          {photos[index] ? (
+            <>
+              <img
+                src={photos[index]}
+                alt={`${t.capture.progress} ${index + 1}`}
+              />
+              <button
+                type="button"
+                className="slot-retake"
+                disabled={busy}
+                onClick={() => onRetake(index)}
+                aria-label={`${t.capture.retake} ${index + 1}`}
+                title={`${t.capture.retake} ${index + 1}`}
+              >
+                <span aria-hidden="true">↻</span>
+              </button>
+            </>
+          ) : (
+            <span>{String(index + 1).padStart(2, "0")}</span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
