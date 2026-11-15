@@ -2730,8 +2730,8 @@ option {
   }
   .panel-actions {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
-    gap: 4px 8px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
     margin-top: auto;
     padding-top: 0;
   }
@@ -2752,18 +2752,14 @@ option {
   .shutter-button {
     min-height: 52px;
   }
-  .panel-actions > .shutter-button {
-    grid-column: 1;
-  }
-  .panel-actions:not(:has(.shutter-button)) > .quiet-button,
-  .panel-actions:not(:has(.quiet-button)) > .shutter-button {
+  .panel-actions > .shutter-button,
+  .panel-actions > .quiet-button {
     grid-column: 1 / -1;
+    justify-self: stretch;
   }
   .panel-actions > .quiet-button {
-    grid-column: 2;
-    grid-row: 1;
-    align-self: stretch;
-    justify-self: stretch;
+    min-height: 44px;
+    padding: 4px 12px;
   }
   .panel-finish .panel-primary {
     font-size: 0.9375rem;
