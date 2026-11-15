@@ -18,15 +18,15 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
   title: {
-    default: "PhotoPip | Studio foto kecil",
+    default: "PhotoPip",
     template: "%s | PhotoPip",
   },
   description:
-    "Ambil foto, susun strip foto, tambahkan stiker, latar, dan bingkai, lalu unduh komposisi Anda.",
+    "Ambil foto, susun jadi strip, tambah stiker dan bingkai, lalu unduh siap cetak.",
   metadataBase: new URL(siteUrl),
   openGraph: {
-    title: "PhotoPip | Studio foto kecil",
-    description: "Ambil foto dan buat strip foto versi Anda sendiri.",
+    title: "PhotoPip",
+    description: "Ambil foto dan bikin strip versimu sendiri.",
     url: siteUrl,
     siteName: "PhotoPip",
     type: "website",

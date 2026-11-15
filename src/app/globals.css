@@ -318,12 +318,6 @@ label {
   font-weight: 700;
   letter-spacing: -0.04em;
 }
-.brand-caption {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: var(--on-surface-variant);
-  letter-spacing: 0.01em;
-}
 .header-controls {
   display: flex;
   align-items: center;
@@ -1674,9 +1668,6 @@ option {
   .brand-name {
     font-size: 1rem;
   }
-  .brand-caption {
-    font-size: 0.625rem;
-  }
   .language-control select {
     width: 112px;
     min-height: 40px;
@@ -1764,9 +1755,6 @@ option {
   }
 }
 @media (max-width: 359px) {
-  .brand-caption {
-    display: none;
-  }
   .brand img {
     width: 30px;
     height: 30px;
@@ -2692,9 +2680,6 @@ option {
   }
   .brand-name {
     font-size: 0.9375rem;
-  }
-  .brand-caption {
-    font-size: 0.5625rem;
   }
   .language-control select {
     width: 98px;

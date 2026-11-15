@@ -27,7 +27,6 @@ export default function Header() {
           <img src="/assets/brand/logo.png" alt="" />
           <span className="brand-text">
             <span className="brand-name">PhotoPip</span>
-            <span className="brand-caption">{t.app.studio}</span>
           </span>
         </Link>
         <div className="header-controls">

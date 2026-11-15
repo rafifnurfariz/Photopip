@@ -1,7 +1,7 @@
 {
   "name": "PhotoPip",
   "short_name": "PhotoPip",
-  "description": "Take photos, edit a photo strip, and download your composition.",
+  "description": "Take photos, make them into a strip, add stickers, and download it ready to print.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f5f3ec",
