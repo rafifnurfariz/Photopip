@@ -2582,7 +2582,6 @@ option {
 }
 @media (max-width: 899px) {
   :root {
-    /* Deterministic compact header, used by the viewport-height maths. */
     --mobile-header: 58px;
     --mobile-gap: 8px;
   }
@@ -2626,7 +2625,7 @@ option {
   /* ---------- capture: big viewfinder, compact dock ---------- */
   .booth {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(180px, 1fr) auto;
     gap: var(--mobile-gap);
     height: calc(100dvh - var(--mobile-header) - var(--mobile-gap));
     min-height: 0;
@@ -2637,8 +2636,8 @@ option {
   }
   .booth-panel {
     max-height: none;
-    padding: 10px 12px;
-    gap: 8px;
+    padding: 8px 12px max(8px, env(safe-area-inset-bottom));
+    gap: 6px;
     overflow: visible;
   }
   .status-chip,
@@ -2711,7 +2710,7 @@ option {
   }
   /* ---------- editor: one-row toolbar, canvas-first stage ---------- */
   .edit-shell {
-    --mobile-tools: clamp(200px, 36dvh, 320px);
+    --mobile-tools: clamp(190px, 34dvh, 280px);
     position: relative;
     height: calc(100dvh - var(--mobile-header) - var(--mobile-gap));
     min-height: 0;
