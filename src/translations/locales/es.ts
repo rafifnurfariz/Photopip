@@ -10,6 +10,7 @@ export const es: Messages = {
     processing: "Procesando…",
     photoComplete: "¡Foto lista!",
     downloadStarted: "Descarga iniciada.",
+    dismiss: "Cerrar",
   },
   camera: {
     label: "Cámara",
@@ -66,7 +67,6 @@ export const es: Messages = {
     },
     themePresets: "Estilos de tema",
     themeHint: "Con un toque cambian el fondo y el marco a la vez.",
-    customTheme: "A tu gusto",
     surprise: "Al azar",
     filters: "Filtro de foto",
     photoLabel: "Foto",
@@ -105,6 +105,8 @@ export const es: Messages = {
     stickers: "Pegatinas",
     clearStickers: "Quitar pegatinas",
     search: "Buscar pegatinas",
+    searchEmpty: "Ninguna pegatina coincide con esa búsqueda.",
+    clearSearch: "Borrar búsqueda",
     horizontal: "Horizontal",
     vertical: "Vertical",
     size: "Tamaño",
@@ -129,10 +131,6 @@ export const es: Messages = {
   export: {
     format: "Formato de archivo",
     download: "Descargar tira",
-    scale: "Resolución",
-    scale1: "1× · impresión",
-    scale2: "2× · nítida",
-    scale3: "3× · máxima",
   },
   errors: {
     camera: {

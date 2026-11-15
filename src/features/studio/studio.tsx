@@ -61,8 +61,6 @@ export default function Studio() {
   const {
     format,
     setFormat,
-    scale,
-    setScale,
     exporting,
     exportPhoto,
     cancel: cancelExport,
@@ -164,7 +162,8 @@ export default function Studio() {
 
   return (
     <div className={`studio-shell phase-${stage.mode}`}>
-      <Feedback message={message} />
+      <Feedback message={message} onDismiss={() => setMessage(null)} />
+      {stage.mode === "capture" && <h1 className="sr-only">{t.app.studio}</h1>}
       <dialog
         ref={confirmRef}
         className="confirm-dialog"
@@ -202,6 +201,7 @@ export default function Studio() {
             complete={complete}
             photos={session.photos}
             template={template}
+            onCameraToggle={toggleCamera}
           />
           <aside className="booth-panel" aria-label={t.app.studio}>
             <header className="panel-head">
@@ -269,7 +269,6 @@ export default function Studio() {
                 setMessage(null);
                 uploadInput.current?.click();
               }}
-              onCameraToggle={toggleCamera}
               uploadInput={uploadInput}
               onFiles={(files) => void uploadPhotos(files)}
             />
@@ -288,10 +287,8 @@ export default function Studio() {
           />
           <ExportBar
             format={format}
-            scale={scale}
             exporting={exporting}
             onFormatChange={setFormat}
-            onScaleChange={setScale}
             onExport={() =>
               void exportPhoto(
                 stage.draft,

@@ -62,7 +62,6 @@ export function useCaptureSession({
   const resetSession = useCallback(
     (templateId?: TemplateId) => {
       cancelCapture();
-      cameraRef.current.stopCamera();
       dispatch({ type: "reset", templateId });
     },
     [cancelCapture],

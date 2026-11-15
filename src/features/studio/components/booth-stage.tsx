@@ -14,6 +14,7 @@ interface BoothStageProps {
   complete: boolean;
   photos: string[];
   template: Template;
+  onCameraToggle: () => void;
 }
 
 export function BoothStage({
@@ -25,6 +26,7 @@ export function BoothStage({
   complete,
   photos,
   template,
+  onCameraToggle,
 }: BoothStageProps) {
   const { t } = useLanguage();
   return (
@@ -82,6 +84,21 @@ export function BoothStage({
                   ? t.errors.camera[camera.error]
                   : t.capture.cameraOffNote}
               </p>
+              <button
+                type="button"
+                className={
+                  camera.status === "requesting"
+                    ? "secondary stage-action"
+                    : "primary stage-action"
+                }
+                onClick={onCameraToggle}
+              >
+                {camera.status === "requesting"
+                  ? t.camera.cancel
+                  : camera.error
+                    ? t.camera.retry
+                    : t.camera.enable}
+              </button>
               {camera.status !== "requesting" && (
                 <ol className="empty-steps" aria-label={t.capture.stepsTitle}>
                   {t.capture.steps.map((step, index) => (

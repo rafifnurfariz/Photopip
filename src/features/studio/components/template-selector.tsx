@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { CheckIcon, ChevronIcon } from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";
 import {
   findTemplate,
@@ -146,7 +147,7 @@ export function TemplateSelector({
           </small>
         </span>
         <span className="layout-caret" aria-hidden="true">
-          ▾
+          <ChevronIcon />
         </span>
       </button>
       {open &&
@@ -187,7 +188,7 @@ export function TemplateSelector({
                   </span>
                   {selectedTemplate === template.id && (
                     <span className="selected-mark" aria-hidden="true">
-                      ✓
+                      <CheckIcon />
                     </span>
                   )}
                 </button>

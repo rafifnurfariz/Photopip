@@ -26,6 +26,7 @@ export interface Messages {
     processing: string;
     photoComplete: string;
     downloadStarted: string;
+    dismiss: string;
   };
   camera: {
     label: string;
@@ -81,7 +82,6 @@ export interface Messages {
     };
     themePresets: string;
     themeHint: string;
-    customTheme: string;
     surprise: string;
     filters: string;
     photoLabel: string;
@@ -119,6 +119,8 @@ export interface Messages {
     stickers: string;
     clearStickers: string;
     search: string;
+    searchEmpty: string;
+    clearSearch: string;
     horizontal: string;
     vertical: string;
     size: string;
@@ -136,10 +138,6 @@ export interface Messages {
   export: {
     format: string;
     download: string;
-    scale: string;
-    scale1: string;
-    scale2: string;
-    scale3: string;
   };
   errors: {
     camera: Record<CameraFailure, string>;

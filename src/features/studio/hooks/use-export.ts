@@ -2,16 +2,12 @@
 
 import { useCallback, useRef, useState } from "react";
 import type { ThemePreset } from "@/shared-tools/catalog/themes";
-import type {
-  ExportFormat,
-  ExportScale,
-} from "@/shared-tools/composition/export";
+import type { ExportFormat } from "@/shared-tools/composition/export";
 import type { Composition } from "@/shared-tools/composition/types";
 import type { StudioMessage } from "../types";
 
 export function useExport(onMessage: (message: StudioMessage | null) => void) {
   const [format, setFormat] = useState<ExportFormat>("png");
-  const [scale, setScale] = useState<ExportScale>(1);
   const [exporting, setExporting] = useState(false);
   const work = useRef<AbortController | null>(null);
 
@@ -32,7 +28,6 @@ export function useExport(onMessage: (message: StudioMessage | null) => void) {
           theme,
           format,
           controller.signal,
-          scale,
         );
         if (controller.signal.aborted) return;
         downloadImage(
@@ -49,7 +44,7 @@ export function useExport(onMessage: (message: StudioMessage | null) => void) {
         }
       }
     },
-    [format, onMessage, scale],
+    [format, onMessage],
   );
 
   const cancel = useCallback(() => {
@@ -61,8 +56,6 @@ export function useExport(onMessage: (message: StudioMessage | null) => void) {
   return {
     format,
     setFormat,
-    scale,
-    setScale,
     exporting,
     exportPhoto,
     cancel,

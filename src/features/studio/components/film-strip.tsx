@@ -1,6 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import { RetakeIcon } from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";
 
 interface FilmStripProps {
@@ -37,6 +38,7 @@ export function FilmStrip({
           {photos[index] ? (
             <>
               <img
+                key={photos[index]}
                 src={photos[index]}
                 alt={`${t.capture.progress} ${index + 1}`}
               />
@@ -48,7 +50,9 @@ export function FilmStrip({
                 aria-label={`${t.capture.retake} ${index + 1}`}
                 title={`${t.capture.retake} ${index + 1}`}
               >
-                <span aria-hidden="true">↻</span>
+                <span aria-hidden="true">
+                  <RetakeIcon />
+                </span>
               </button>
             </>
           ) : (

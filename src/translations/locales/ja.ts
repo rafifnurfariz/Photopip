@@ -10,6 +10,7 @@ export const ja: Messages = {
     processing: "処理中…",
     photoComplete: "撮れました！",
     downloadStarted: "ダウンロードを開始しました。",
+    dismiss: "閉じる",
   },
   camera: {
     label: "カメラ",
@@ -66,7 +67,6 @@ export const ja: Messages = {
     },
     themePresets: "テーマのスタイル",
     themeHint: "タップひとつで背景とフレームが一緒に変わります。",
-    customTheme: "自分で作る",
     surprise: "ランダム",
     filters: "写真フィルター",
     photoLabel: "写真",
@@ -105,6 +105,8 @@ export const ja: Messages = {
     stickers: "ステッカー",
     clearStickers: "ステッカーを消す",
     search: "ステッカーを検索",
+    searchEmpty: "この検索に合うステッカーはありません。",
+    clearSearch: "検索をクリア",
     horizontal: "横位置",
     vertical: "縦位置",
     size: "サイズ",
@@ -129,10 +131,6 @@ export const ja: Messages = {
   export: {
     format: "ファイル形式",
     download: "ストリップをダウンロード",
-    scale: "解像度",
-    scale1: "1× · 印刷",
-    scale2: "2× · くっきり",
-    scale3: "3× · 最大",
   },
   errors: {
     camera: {

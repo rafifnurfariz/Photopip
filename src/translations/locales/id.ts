@@ -10,6 +10,7 @@ export const id: Messages = {
     processing: "Memproses…",
     photoComplete: "Foto siap!",
     downloadStarted: "Unduhan dimulai.",
+    dismiss: "Tutup",
   },
   camera: {
     label: "Kamera",
@@ -66,7 +67,6 @@ export const id: Messages = {
     },
     themePresets: "Pilihan tema",
     themeHint: "Sekali ketuk, latar dan bingkai langsung berganti.",
-    customTheme: "Atur sendiri",
     surprise: "Acak saja",
     filters: "Filter foto",
     photoLabel: "Foto",
@@ -105,6 +105,8 @@ export const id: Messages = {
     stickers: "Stiker",
     clearStickers: "Hapus stiker",
     search: "Cari stiker",
+    searchEmpty: "Tidak ada stiker yang cocok.",
+    clearSearch: "Hapus pencarian",
     horizontal: "Horizontal",
     vertical: "Vertikal",
     size: "Ukuran",
@@ -129,10 +131,6 @@ export const id: Messages = {
   export: {
     format: "Format file",
     download: "Unduh strip",
-    scale: "Resolusi",
-    scale1: "1× · cetak",
-    scale2: "2× · tajam",
-    scale3: "3× · maksimal",
   },
   errors: {
     camera: {

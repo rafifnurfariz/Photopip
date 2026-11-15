@@ -10,6 +10,7 @@ export const fr: Messages = {
     processing: "Traitement…",
     photoComplete: "Photo prise !",
     downloadStarted: "Téléchargement lancé.",
+    dismiss: "Fermer",
   },
   camera: {
     label: "Caméra",
@@ -70,7 +71,6 @@ export const fr: Messages = {
     },
     themePresets: "Styles de thème",
     themeHint: "Un appui change le fond et le cadre d’un coup.",
-    customTheme: "À ta façon",
     surprise: "Au hasard",
     filters: "Filtre photo",
     photoLabel: "Photo",
@@ -110,6 +110,8 @@ export const fr: Messages = {
     stickers: "Autocollants",
     clearStickers: "Retirer les autocollants",
     search: "Chercher des autocollants",
+    searchEmpty: "Aucun autocollant ne correspond à cette recherche.",
+    clearSearch: "Effacer la recherche",
     horizontal: "Horizontal",
     vertical: "Vertical",
     size: "Taille",
@@ -134,10 +136,6 @@ export const fr: Messages = {
   export: {
     format: "Format du fichier",
     download: "Télécharger la bande",
-    scale: "Résolution",
-    scale1: "1× · impression",
-    scale2: "2× · nette",
-    scale3: "3× · maximale",
   },
   errors: {
     camera: {

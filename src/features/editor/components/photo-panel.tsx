@@ -57,11 +57,25 @@ export function PhotoPanel({
           <button
             key={filter.id}
             type="button"
-            className={`filter-chip filter-${filter.id}`}
+            className="filter-chip"
             aria-pressed={current === filter.id}
             onClick={() => applyFilter(filter.id)}
           >
-            <span className="filter-preview" aria-hidden="true" />
+            <span className="filter-preview" aria-hidden="true">
+              {composition.photos[index] && (
+                <img
+                  src={composition.photos[index]}
+                  alt=""
+                  style={{ filter: filter.preview.filter }}
+                />
+              )}
+              {filter.preview.tint && (
+                <span
+                  className="filter-tint"
+                  style={{ background: filter.preview.tint }}
+                />
+              )}
+            </span>
             <span>{t.editor.filterNames[filter.id]}</span>
           </button>
         ))}

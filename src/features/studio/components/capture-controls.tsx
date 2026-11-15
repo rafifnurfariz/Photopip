@@ -1,6 +1,7 @@
 "use client";
 
 import type { RefObject } from "react";
+import { AutoIcon, MirrorIcon, ResetIcon, TimerIcon } from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";
 import type { CameraController } from "../camera/use-camera";
 
@@ -21,7 +22,6 @@ interface CaptureControlsProps {
   onReview: () => void;
   onReset: () => void;
   onUpload: () => void;
-  onCameraToggle: () => void;
   uploadInput: RefObject<HTMLInputElement | null>;
   onFiles: (files: File[]) => void;
 }
@@ -43,7 +43,6 @@ export function CaptureControls({
   onReview,
   onReset,
   onUpload,
-  onCameraToggle,
   uploadInput,
   onFiles,
 }: CaptureControlsProps) {
@@ -66,7 +65,7 @@ export function CaptureControls({
             title={t.capture.reset}
             onClick={onReset}
           >
-            <span aria-hidden="true">↺</span>
+            <ResetIcon />
           </button>
         </div>
       ) : busy ? (
@@ -75,74 +74,70 @@ export function CaptureControls({
         </button>
       ) : (
         <>
-          <div
-            className="option-row"
-            role="group"
-            aria-label={t.capture.optionsLabel}
-          >
-            <label className="icon-option timer-option" title={t.camera.timer}>
-              <span className="option-glyph" aria-hidden="true">
-                ⏱
-              </span>
-              <select
-                aria-label={t.camera.timer}
-                value={timer}
-                onChange={(event) => onTimerChange(Number(event.target.value))}
-              >
-                <option value={0}>{t.camera.noDelay}</option>
-                <option value={3}>3 s</option>
-                <option value={5}>5 s</option>
-              </select>
-            </label>
-            <label
-              className="icon-option toggle-option"
-              title={t.camera.mirror}
+          {camera.status === "ready" && (
+            <div
+              className="option-row"
+              role="group"
+              aria-label={t.capture.optionsLabel}
             >
-              <input
-                type="checkbox"
-                checked={mirror}
-                onChange={(event) => onMirrorChange(event.target.checked)}
-              />
-              <span className="option-glyph" aria-hidden="true">
-                ⇆
-              </span>
-              <span className="sr-only">{t.camera.mirror}</span>
-            </label>
-            {photoCount > 1 && retakeIndex === null && (
-              <button
-                type="button"
-                className="icon-option"
-                aria-label={t.camera.auto}
-                title={t.camera.auto}
-                disabled={camera.status !== "ready"}
-                onClick={() => onCapture(true)}
+              <label
+                className="icon-option timer-option"
+                title={t.camera.timer}
               >
                 <span className="option-glyph" aria-hidden="true">
-                  ▶▶
+                  <TimerIcon />
                 </span>
-              </button>
-            )}
-            {hasPhotos && (
-              <button
-                type="button"
-                className="icon-option"
-                aria-label={t.capture.reset}
-                title={t.capture.reset}
-                onClick={onReset}
+                <select
+                  aria-label={t.camera.timer}
+                  value={timer}
+                  onChange={(event) =>
+                    onTimerChange(Number(event.target.value))
+                  }
+                >
+                  <option value={0}>{t.camera.noDelay}</option>
+                  <option value={3}>3 s</option>
+                  <option value={5}>5 s</option>
+                </select>
+              </label>
+              <label
+                className="icon-option toggle-option"
+                title={t.camera.mirror}
               >
-                <span aria-hidden="true">↺</span>
-              </button>
-            )}
-          </div>
-          <button
-            type="button"
-            className="secondary panel-primary"
-            disabled={uploading}
-            onClick={onUpload}
-          >
-            {uploading ? t.capture.uploading : t.capture.upload}
-          </button>
-          {camera.status === "ready" ? (
+                <input
+                  type="checkbox"
+                  checked={mirror}
+                  onChange={(event) => onMirrorChange(event.target.checked)}
+                />
+                <span className="option-glyph" aria-hidden="true">
+                  <MirrorIcon />
+                </span>
+                <span className="sr-only">{t.camera.mirror}</span>
+              </label>
+              {photoCount > 1 && retakeIndex === null && (
+                <button
+                  type="button"
+                  className="icon-option"
+                  aria-label={t.camera.auto}
+                  title={t.camera.auto}
+                  onClick={() => onCapture(true)}
+                >
+                  <AutoIcon />
+                </button>
+              )}
+              {hasPhotos && (
+                <button
+                  type="button"
+                  className="icon-option"
+                  aria-label={t.capture.reset}
+                  title={t.capture.reset}
+                  onClick={onReset}
+                >
+                  <ResetIcon />
+                </button>
+              )}
+            </div>
+          )}
+          {camera.status === "ready" && (
             <button
               type="button"
               className="shutter-button"
@@ -151,20 +146,15 @@ export function CaptureControls({
               <span className="shutter-dot" aria-hidden="true" />
               {retakeIndex !== null ? t.capture.retake : t.capture.takePhoto}
             </button>
-          ) : (
-            <button
-              type="button"
-              className="primary panel-primary"
-              disabled={uploading}
-              onClick={onCameraToggle}
-            >
-              {camera.status === "requesting"
-                ? t.camera.cancel
-                : camera.error
-                  ? t.camera.retry
-                  : t.camera.enable}
-            </button>
           )}
+          <button
+            type="button"
+            className="quiet-button"
+            disabled={uploading}
+            onClick={onUpload}
+          >
+            {uploading ? t.capture.uploading : t.capture.upload}
+          </button>
         </>
       )}
       <input

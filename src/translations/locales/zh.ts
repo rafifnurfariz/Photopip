@@ -10,6 +10,7 @@ export const zh: Messages = {
     processing: "处理中…",
     photoComplete: "拍好啦！",
     downloadStarted: "开始下载。",
+    dismiss: "关闭",
   },
   camera: {
     label: "相机",
@@ -65,7 +66,6 @@ export const zh: Messages = {
     },
     themePresets: "主题样式",
     themeHint: "点一下，背景和边框一起换。",
-    customTheme: "自己搭",
     surprise: "随便来一个",
     filters: "照片滤镜",
     photoLabel: "照片",
@@ -103,6 +103,8 @@ export const zh: Messages = {
     stickers: "贴纸",
     clearStickers: "清空贴纸",
     search: "搜索贴纸",
+    searchEmpty: "没有符合该搜索的贴纸。",
+    clearSearch: "清除搜索",
     horizontal: "水平位置",
     vertical: "垂直位置",
     size: "大小",
@@ -127,10 +129,6 @@ export const zh: Messages = {
   export: {
     format: "文件格式",
     download: "下载照片条",
-    scale: "分辨率",
-    scale1: "1× · 打印",
-    scale2: "2× · 清晰",
-    scale3: "3× · 最高",
   },
   errors: {
     camera: {

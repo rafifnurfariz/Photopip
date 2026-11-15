@@ -22,7 +22,6 @@ export function ThemePanel({
 }: ThemePanelProps) {
   const { t } = useLanguage();
   const active = activeTheme(composition, themes);
-  const labelFor = (theme: ThemePreset) => theme.name;
   return (
     <section className="tool-section" aria-labelledby="tool-theme">
       <div className="section-head">
@@ -44,14 +43,11 @@ export function ThemePanel({
               onClick={() => onChange(applyTheme(composition, theme))}
             >
               <ThemePreview template={composition.template} theme={theme} />
-              <span className="theme-name">{labelFor(theme)}</span>
+              <span className="theme-name">{theme.name}</span>
             </button>
           );
         })}
       </div>
-      <p className="theme-status" aria-live="polite">
-        {active ? labelFor(active) : t.editor.customTheme}
-      </p>
     </section>
   );
 }

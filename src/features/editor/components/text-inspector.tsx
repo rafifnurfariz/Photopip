@@ -1,6 +1,11 @@
 "use client";
 
 import { useLanguage } from "@/translations/use-language";
+import {
+  AlignCenterIcon,
+  AlignLeftIcon,
+  AlignRightIcon,
+} from "@/components/icons";
 import { textFonts } from "@/shared-tools/catalog/fonts";
 import {
   MAX_TEXT_LENGTH,
@@ -135,9 +140,9 @@ export function TextInspector({
       <div className="property-actions">
         {(
           [
-            ["left", "⇤", t.editor.alignLeft],
-            ["center", "↔", t.editor.alignCenter],
-            ["right", "⇥", t.editor.alignRight],
+            ["left", <AlignLeftIcon key="left" />, t.editor.alignLeft],
+            ["center", <AlignCenterIcon key="center" />, t.editor.alignCenter],
+            ["right", <AlignRightIcon key="right" />, t.editor.alignRight],
           ] as const
         ).map(([align, icon, label]) => (
           <button

@@ -90,9 +90,19 @@ export function StickerPanel({
         ))}
       </div>
       {visibleStickers.length === 0 && (
-        <p role="status" className="tool-help">
-          {t.editor.search}: 0
-        </p>
+        <div className="empty-note" role="status">
+          <p>{t.editor.searchEmpty}</p>
+          <button
+            type="button"
+            className="chip-button"
+            onClick={() => {
+              setSearch("");
+              setCategory("all");
+            }}
+          >
+            {t.editor.clearSearch}
+          </button>
+        </div>
       )}
       {composition.stickers.length > 0 && (
         <div className="sticker-controls">

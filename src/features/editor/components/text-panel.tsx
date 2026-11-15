@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/translations/use-language";
+import { CloseIcon } from "@/components/icons";
 import type { Composition } from "@/shared-tools/composition/types";
 import type { CanvasSelection } from "../hooks/use-editor-canvas";
 
@@ -53,7 +54,9 @@ export function TextPanel({
               title={t.editor.remove}
               onClick={() => onRemove(text.id)}
             >
-              <span aria-hidden="true">✕</span>
+              <span aria-hidden="true">
+                <CloseIcon />
+              </span>
             </button>
           </div>
         ))}

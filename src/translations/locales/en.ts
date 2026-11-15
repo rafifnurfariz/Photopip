@@ -10,6 +10,7 @@ export const en: Messages = {
     processing: "Processing…",
     photoComplete: "Nice shot!",
     downloadStarted: "Download started.",
+    dismiss: "Dismiss",
   },
   camera: {
     label: "Camera",
@@ -70,7 +71,6 @@ export const en: Messages = {
     },
     themePresets: "Theme styles",
     themeHint: "One tap swaps the background and frame together.",
-    customTheme: "Build your own",
     surprise: "Surprise me",
     filters: "Photo filter",
     photoLabel: "Photo",
@@ -109,6 +109,8 @@ export const en: Messages = {
     stickers: "Stickers",
     clearStickers: "Clear stickers",
     search: "Search stickers",
+    searchEmpty: "No sticker matches that search.",
+    clearSearch: "Clear search",
     horizontal: "Horizontal",
     vertical: "Vertical",
     size: "Size",
@@ -133,10 +135,6 @@ export const en: Messages = {
   export: {
     format: "File format",
     download: "Download strip",
-    scale: "Resolution",
-    scale1: "1× · print",
-    scale2: "2× · sharp",
-    scale3: "3× · max",
   },
   errors: {
     camera: {

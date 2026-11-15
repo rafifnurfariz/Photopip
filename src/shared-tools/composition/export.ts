@@ -4,14 +4,12 @@ import { renderComposition } from "./render";
 import type { Composition } from "./types";
 
 export type ExportFormat = "png" | "jpeg";
-export type ExportScale = 1 | 2 | 3;
 
 export async function exportComposition(
   composition: Composition,
   theme: ThemePreset,
   format: ExportFormat,
   signal?: AbortSignal,
-  scale: ExportScale = 1,
 ) {
   const element = document.createElement("canvas");
   const canvas = new StaticCanvas(element, { enableRetinaScaling: false });
@@ -21,7 +19,7 @@ export async function exportComposition(
     const data = canvas.toDataURL({
       format,
       quality: 0.95,
-      multiplier: scale,
+      multiplier: 1,
     });
     if (!data.startsWith(`data:image/${format}`))
       throw new Error("Export unavailable");

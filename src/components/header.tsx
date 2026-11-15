@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import { MoonIcon, SunIcon } from "@/components/icons";
 import { isLanguage, languageNames, languages } from "@/translations";
 import { useLanguage } from "@/translations/use-language";
 
@@ -24,7 +25,7 @@ export default function Header() {
       </a>
       <div className="header-inner">
         <Link className="brand" href="/">
-          <img src="/assets/brand/logo.png" alt="" />
+          <img src="/assets/brand/logo.png" alt="" width="38" height="38" />
           <span className="brand-text">
             <span className="brand-name">PhotoPip</span>
           </span>
@@ -38,7 +39,6 @@ export default function Header() {
                 const next = event.target.value;
                 if (isLanguage(next)) setLanguage(next);
               }}
-              aria-label={t.app.language}
             >
               {languages.map((code) => (
                 <option key={code} value={code}>
@@ -53,7 +53,7 @@ export default function Header() {
             onClick={() => setTheme(isDark ? "light" : "dark")}
             aria-label={isDark ? t.app.light : t.app.dark}
           >
-            <span aria-hidden="true">{isDark ? "☀" : "◐"}</span>
+            {isDark ? <SunIcon /> : <MoonIcon />}
           </button>
         </div>
       </div>

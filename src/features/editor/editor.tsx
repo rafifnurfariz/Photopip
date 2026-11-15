@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
+import { BackIcon, RedoIcon, ResetIcon, UndoIcon } from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";
 import type { Sticker } from "@/shared-tools/catalog/stickers";
 import {
@@ -321,7 +322,7 @@ export default function Editor({
             aria-label={t.editor.back}
             onClick={onBack}
           >
-            <span aria-hidden="true">←</span>{" "}
+            <BackIcon />
             <span className="back-label">{t.editor.back}</span>
           </button>
           <div className="edit-title-block">
@@ -339,7 +340,9 @@ export default function Editor({
               disabled={history.past.length === 0}
               onClick={undo}
             >
-              <span aria-hidden="true">↶</span>
+              <span aria-hidden="true">
+                <UndoIcon />
+              </span>
             </button>
             <button
               type="button"
@@ -349,7 +352,9 @@ export default function Editor({
               disabled={history.future.length === 0}
               onClick={redo}
             >
-              <span aria-hidden="true">↷</span>
+              <span aria-hidden="true">
+                <RedoIcon />
+              </span>
             </button>
             <button
               type="button"
@@ -359,7 +364,7 @@ export default function Editor({
             >
               <span className="reset-label">{t.capture.reset}</span>
               <span className="reset-glyph" aria-hidden="true">
-                ↺
+                <ResetIcon />
               </span>
             </button>
           </div>
@@ -425,15 +430,13 @@ export default function Editor({
           </div>
         </div>
         <aside className="editor-tools" aria-label={t.editor.title}>
-          <ToolRail
-            tab={tab}
-            hasSelection={selection !== null}
-            onChange={setTab}
-          />
+          <ToolRail tab={tab} onChange={setTab} />
           <div
             className="editor-panel"
+            key={tab}
             id="editor-panel"
             role="tabpanel"
+            tabIndex={0}
             aria-label={t.editor.tabs[tab]}
           >
             {tab === "theme" && (

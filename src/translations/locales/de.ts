@@ -10,6 +10,7 @@ export const de: Messages = {
     processing: "Wird verarbeitet…",
     photoComplete: "Foto im Kasten!",
     downloadStarted: "Download läuft.",
+    dismiss: "Schließen",
   },
   camera: {
     label: "Kamera",
@@ -70,7 +71,6 @@ export const de: Messages = {
     },
     themePresets: "Design-Stile",
     themeHint: "Ein Tippen tauscht Hintergrund und Rahmen zusammen.",
-    customTheme: "Eigenes Design",
     surprise: "Zufällig",
     filters: "Fotofilter",
     photoLabel: "Foto",
@@ -110,6 +110,8 @@ export const de: Messages = {
     stickers: "Aufkleber",
     clearStickers: "Aufkleber entfernen",
     search: "Sticker suchen",
+    searchEmpty: "Kein Sticker passt zu dieser Suche.",
+    clearSearch: "Suche löschen",
     horizontal: "Horizontal",
     vertical: "Vertikal",
     size: "Größe",
@@ -134,10 +136,6 @@ export const de: Messages = {
   export: {
     format: "Dateiformat",
     download: "Herunterladen",
-    scale: "Auflösung",
-    scale1: "1× · Druck",
-    scale2: "2× · scharf",
-    scale3: "3× · maximal",
   },
   errors: {
     camera: {

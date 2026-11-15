@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/translations/use-language";
+import { TextIcon } from "@/components/icons";
 import type { Composition } from "@/shared-tools/composition/types";
 import type { CanvasSelection } from "../hooks/use-editor-canvas";
 
@@ -39,7 +40,7 @@ export function LayerList({
               onClick={() => onSelect({ type: "text", id: text.id })}
             >
               <span className="layer-icon" aria-hidden="true">
-                T
+                <TextIcon />
               </span>
               <span className="layer-name">
                 {text.text || t.editor.textContent}
@@ -58,8 +59,8 @@ export function LayerList({
               }
               onClick={() => onSelect({ type: "sticker", id: sticker.id })}
             >
-              <span className="layer-icon" aria-hidden="true">
-                ✦
+              <span className="layer-icon layer-thumb" aria-hidden="true">
+                <img src={sticker.src} alt="" />
               </span>
               <span className="layer-name">{sticker.name}</span>
             </button>
