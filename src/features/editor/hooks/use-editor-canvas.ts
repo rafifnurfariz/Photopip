@@ -75,11 +75,6 @@ export function useEditorCanvas(
     const canvas = new Canvas(elementRef.current, {
       preserveObjectStacking: true,
       selection: false,
-      // On touch screens the stacked editor shows a tall strip in a short
-      // viewport; dragging empty canvas must scroll it, not be swallowed.
-      allowTouchScrolling:
-        typeof window.matchMedia === "function" &&
-        window.matchMedia("(pointer: coarse)").matches,
       enableRetinaScaling: false,
       enablePointerEvents: true,
       hoverCursor: "move",
@@ -171,6 +166,29 @@ export function useEditorCanvas(
     canvas.on("selection:created", readSelection);
     canvas.on("selection:updated", readSelection);
     canvas.on("selection:cleared", readSelection);
+    // Touch screens: the stacked editor shows a strip taller than the stage.
+    // The canvas owns the gesture (touch-action: none), so panning is manual:
+    // a drag that starts on empty canvas scrolls the wrap, a drag that starts
+    // on an object stays a Fabric object drag.
+    let panId: number | null = null;
+    let panY = 0;
+    const movePan = (event: PointerEvent) => {
+      if (event.pointerId !== panId) return;
+      container.scrollTop -= event.clientY - panY;
+      panY = event.clientY;
+    };
+    const endPan = (event: PointerEvent) => {
+      if (event.pointerId === panId) panId = null;
+    };
+    canvas.on("mouse:down", (options) => {
+      const event = options.e as PointerEvent;
+      if (options.target || event.pointerType !== "touch") return;
+      panId = event.pointerId;
+      panY = event.clientY;
+    });
+    window.addEventListener("pointermove", movePan, { passive: true });
+    window.addEventListener("pointerup", endPan);
+    window.addEventListener("pointercancel", endPan);
     const scrolled = () => canvas.calcOffset();
     container.addEventListener("scroll", scrolled, {
       passive: true,
@@ -182,6 +200,9 @@ export function useEditorCanvas(
     return () => {
       observer.disconnect();
       container.removeEventListener("scroll", scrolled);
+      window.removeEventListener("pointermove", movePan);
+      window.removeEventListener("pointerup", endPan);
+      window.removeEventListener("pointercancel", endPan);
       resizeRef.current = () => {};
       canvas.off();
       canvasRef.current = null;
