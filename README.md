@@ -186,7 +186,7 @@ PhotoPip sengaja dirancang tanpa server foto:
 
 - **Foto tidak pernah keluar dari browser kamu.** Semua pemrosesan terjadi di dalam tab browser — tidak ada upload ke server.
 - **Tidak ada database foto**, tidak ada akun, tidak ada login.
-- Server hanya punya satu endpoint: `GET /api/themes` — fungsinya hanya membaca daftar folder paket tema lokal.
+- Server hanya punya dua endpoint read-only: `GET /api/themes` (membaca folder paket tema lokal) dan `GET /api/stickers` (membaca folder stiker lokal) — tidak menerima data atau unggahan foto apapun.
 - Yang disimpan di browser hanya pilihan **bahasa** dan **mode gelap/terang** (lewat `localStorage`).
 - Tutup atau refresh halaman → semua foto dan komposisi hilang. Memang by design.
 
@@ -352,11 +352,12 @@ page.tsx
         ├── useExport()           ← handle download
         └── Editor (lazy load, SSR disabled)
               ├── useEditorCanvas()   ← Fabric canvas, resize
+              ├── useStickerCatalog() ← fetch /api/stickers dinamis
               ├── history.ts          ← undo/redo stack
               └── Panels: Theme, Photo, Sticker, Text, Property
 ```
 
-### Bagaimana tema paket dimuat
+### Bagaimana tema paket dan stiker dimuat
 
 ```
 GET /api/themes
@@ -365,11 +366,21 @@ GET /api/themes
         ├── baca theme.json (opsional)
         ├── validasi 5 PNG (ukuran piksel harus tepat)
         └── kembalikan data ke browser
-
 Browser
   └── useThemeCatalog()
         ├── fetch /api/themes
         └── mergeThemePacks() → daftar tema di panel editor
+
+GET /api/stickers
+  └── scanStickersDirectory()
+        ├── pindai folder public/assets/stickers/
+        ├── buat kategori dinamis dari subfolder
+        ├── beri cache-busting (?v=mtime-size)
+        └── kembalikan daftar stiker & kategori ke browser
+Browser
+  └── useStickerCatalog()
+        ├── fetch /api/stickers
+        └── tampilkan kategori & item di panel stiker
 ```
 
 ---
@@ -431,11 +442,12 @@ PhotoPip/
 │   │       ├── editor.tsx      ← Komponen utama editor
 │   │       ├── history.ts      ← Undo/redo stack (max 40 entry)
 │   │       ├── hooks/
-│   │       │   └── use-editor-canvas.ts  ← Inisialisasi Fabric, resize, event
+│   │       │   ├── use-editor-canvas.ts  ← Inisialisasi Fabric, resize, event
+│   │       │   └── use-sticker-catalog.ts ← Fetch katalog stiker dinamis (/api/stickers)
 │   │       └── components/
 │   │           ├── theme-panel.tsx      ← Grid kartu tema
 │   │           ├── photo-panel.tsx      ← Filter per foto, retake
-│   │           ├── sticker-panel.tsx    ← Cari dan tambah stiker
+│   │           ├── sticker-panel.tsx    ← Cari dan tambah stiker (kategori dinamis)
 │   │           ├── text-panel.tsx       ← Tambah dan kelola teks
 │   │           ├── property-panel.tsx   ← Properti objek terpilih
 │   │           ├── sticker-inspector.tsx ← Kontrol stiker: posisi, ukuran, rotasi
@@ -448,7 +460,7 @@ PhotoPip/
 │   │   │   ├── themes.ts       ← ThemePreset, themeById(), applyTheme()
 │   │   │   ├── theme-pack.ts   ← Kontrak folder tema: parsing, validasi PNG
 │   │   │   ├── theme-packs.ts  ← packToThemePreset(), mergeThemePacks()
-│   │   │   ├── stickers.ts     ← 15 stiker SVG inline
+│   │   │   ├── stickers.ts     ← Tipe data Sticker & array stiker bawaan
 │   │   │   ├── photo-filters.ts ← Definisi 6 filter
 │   │   │   └── fonts.ts        ← 5 font stack + resolveTextFont()
 │   │   ├── composition/
@@ -491,6 +503,7 @@ PhotoPip/
 │   ├── capture-session.test.tsx
 │   ├── composition.test.ts
 │   ├── editor-tabs.test.ts
+│   ├── sticker-catalog.test.ts
 │   ├── theme-catalog.test.ts
 │   ├── theme-pack.test.ts
 │   └── theme-preview.test.tsx
@@ -676,6 +689,7 @@ Tes ada di folder `tests/`, menggunakan Vitest + Testing Library + jsdom.
 | `capture-session.test.tsx` | `sessionReducer`: capture, retake, reset, batas slot       |
 | `composition.test.ts`      | Geometri slot, cover-crop, clamp posisi stiker dan teks    |
 | `editor-tabs.test.ts`      | Navigasi keyboard Arrow/Home/End di tablist editor         |
+| `sticker-catalog.test.ts`  | Pemindaian folder stiker: format nama, id, kategori, tag   |
 | `theme-catalog.test.ts`    | `mergeThemePacks`, hook `useThemeCatalog`                  |
 | `theme-pack.test.ts`       | Validasi folder tema: ukuran PNG, format JSON, nama folder |
 | `theme-preview.test.tsx`   | Render komponen `ThemePreview`                             |
