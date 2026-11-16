@@ -7,16 +7,12 @@ export interface TextFont {
 export const textFonts: TextFont[] = [
   { id: "app", name: "Studio", stack: "" },
   { id: "serif", name: "Serif", stack: "Georgia, 'Times New Roman', serif" },
-  {
-    id: "sans",
-    name: "Sans",
-    stack: "Arial, Helvetica, 'PhotoPip Sans', sans-serif",
-  },
+  { id: "sans", name: "Sans", stack: "Arial, Helvetica, sans-serif" },
   { id: "mono", name: "Mono", stack: "'Courier New', Courier, monospace" },
   {
     id: "display",
     name: "Display",
-    stack: "Impact, 'Arial Black', 'PhotoPip Display', sans-serif",
+    stack: "Impact, 'Arial Black', sans-serif",
   },
 ];
 

@@ -131,22 +131,6 @@ function applyPhotoFilter(image: FabricImage, id: PhotoFilterId) {
   image.applyFilters();
 }
 
-/**
- * Canvas text never requests a webfont on its own, so the first draw would use a
- * fallback face. Ask for the stacks in use first; the export path shares this.
- */
-async function loadCaptionFonts(texts: Composition["texts"]) {
-  if (typeof document === "undefined" || !document.fonts) return;
-  const sample = texts.map((text) => text.text).join("") || "A";
-  const families = new Set(texts.map((text) => resolveTextFont(text.fontId)));
-  await Promise.all(
-    [...families].map((family) =>
-      document.fonts.load(`400 32px ${family}`, sample),
-    ),
-  );
-  await document.fonts.ready;
-}
-
 export async function renderComposition(
   canvas: Canvas | StaticCanvas,
   composition: Composition,
@@ -167,8 +151,10 @@ export async function renderComposition(
     loadImage("/assets/brand/logo.png", signal),
   ]);
   if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
-  await loadCaptionFonts(composition.texts ?? []);
-  if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
+  if (typeof document !== "undefined" && document.fonts) {
+    await document.fonts.ready;
+    if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
+  }
   canvas.clear();
   canvas.setDimensions({ width: geometry.width, height: geometry.height });
   canvas.backgroundImage = undefined;
