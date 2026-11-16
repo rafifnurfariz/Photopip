@@ -478,6 +478,21 @@ option {
   box-shadow: var(--shadow-2);
   isolation: isolate;
 }
+/* The viewfinder is a window with the print slot's aspect ratio, so the preview
+   crops the frame exactly the way the renderer crops the saved photo. */
+.booth-viewport {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  container-type: size;
+}
+.booth-frame {
+  position: relative;
+  width: min(100cqw, calc(100cqh * var(--shot-ratio)));
+  aspect-ratio: var(--shot-ratio);
+  overflow: hidden;
+}
 /* Dotted halftone band: the comic frame around the viewfinder. */
 .booth-stage::before {
   content: "";

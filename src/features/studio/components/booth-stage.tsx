@@ -1,8 +1,9 @@
 "use client";
 
-import type { RefObject } from "react";
+import type { CSSProperties, RefObject } from "react";
 import { useLanguage } from "@/translations/use-language";
 import type { Template } from "@/shared-tools/catalog/templates";
+import { templateGeometry } from "@/shared-tools/composition/geometry";
 import type { CameraController } from "../camera/use-camera";
 
 interface BoothStageProps {
@@ -29,20 +30,29 @@ export function BoothStage({
   onCameraToggle,
 }: BoothStageProps) {
   const { t } = useLanguage();
+  const slot = templateGeometry(template).slots[0];
   return (
-    <div className={`booth-stage ${flash ? "shutter-flash" : ""}`}>
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        playsInline
-        className="booth-video"
-        style={{
-          transform: mirror ? "scaleX(-1)" : undefined,
-          visibility: camera.status === "ready" ? "visible" : "hidden",
-        }}
-      />
-      <div className="booth-wash" aria-hidden="true" />
+    <div
+      className={`booth-stage ${flash ? "shutter-flash" : ""}`}
+      style={{ "--shot-ratio": slot.width / slot.height } as CSSProperties}
+    >
+      {/* Window shaped like the print slot: the renderer crops photos the same way. */}
+      <div className="booth-viewport">
+        <div className="booth-frame">
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            playsInline
+            className="booth-video"
+            style={{
+              transform: mirror ? "scaleX(-1)" : undefined,
+              visibility: camera.status === "ready" ? "visible" : "hidden",
+            }}
+          />
+          <div className="booth-wash" aria-hidden="true" />
+        </div>
+      </div>
       {camera.status !== "ready" && (
         <div className={`camera-empty${complete ? " is-complete" : ""}`}>
           {complete ? (
