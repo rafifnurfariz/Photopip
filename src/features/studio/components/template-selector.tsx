@@ -61,7 +61,7 @@ export function TemplateSelector({
     const trigger = triggerRef.current;
     if (!trigger) return;
     // Phones: a bottom sheet keeps the list in the thumb zone and off the app bar.
-    if (window.matchMedia("(max-width: 640px)").matches) {
+    if (window.matchMedia("(max-width: 640px) and (min-height: 480px)").matches) {
       setPosition({ sheet: true });
       return;
     }

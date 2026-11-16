@@ -3038,7 +3038,8 @@ option {
   left: 0;
   right: 0;
   bottom: 0;
-  max-height: min(80dvh, 560px);
+  max-height: min(70dvh, 400px);
+  overflow-y: auto;
   padding-bottom: calc(8px + env(safe-area-inset-bottom));
   border-width: 2px 0 0;
   box-shadow: 0 -4px 0 var(--shadow-color);
