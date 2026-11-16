@@ -16,8 +16,10 @@ PhotoPip adalah aplikasi **photo booth di browser**. Kamu bisa ambil foto pakai 
 - [Privasi dan penyimpanan data](#privasi-dan-penyimpanan-data)
 - [Semua fitur yang ada](#semua-fitur-yang-ada)
 - [Bagaimana kode ini bekerja](#bagaimana-kode-ini-bekerja)
+- [Tech stack](#tech-stack)
 - [Peta folder dan file](#peta-folder-dan-file)
 - [Cara membuat paket tema sendiri](#cara-membuat-paket-tema-sendiri)
+- [Cara menambah stiker sendiri](#cara-menambah-stiker-sendiri)
 - [Cara menambah atau mengubah bagian kode](#cara-menambah-atau-mengubah-bagian-kode)
 - [Testing — cara menguji kode](#testing--cara-menguji-kode)
 - [Pemecahan masalah umum](#pemecahan-masalah-umum)
@@ -626,6 +628,34 @@ Buka `http://localhost:3000/api/themes` di browser. Response berisi dua bagian:
 
 ---
 
+## Cara menambah stiker sendiri
+
+Menambah stiker di PhotoPip sangat praktis — **tidak perlu menyentuh kode sama sekali dan tidak butuh file JSON**:
+
+### 1. Siapkan file gambar
+
+- Format: **PNG transparan** (direkomendasikan), bisa juga WebP, SVG, atau JPG.
+- Bentuk persegi (rasio 1:1) dengan resolusi sekitar 256×256 px hingga 512×512 px.
+- Disarankan ukuran file di bawah 500 KB agar kanvas editor tetap ringan dan cepat.
+
+### 2. Taruh ke folder kategori
+
+- Masukkan file gambar ke dalam subfolder kategori di:
+  `public/assets/stickers/<nama-kategori>/`
+  _(contoh: `public/assets/stickers/cute/kucing-lucu.png`)_
+- Jika ingin stiker langsung muncul tanpa kategori khusus, taruh langsung di `public/assets/stickers/`.
+
+### 3. Kategori dan nama otomatis
+
+- **Nama tab kategori** otomatis diambil dari nama folder dan dikapitalisasi secara dinamis (contoh: folder `y2k` → tab **Y2K**, folder `retro-vibes` → tab **Retro Vibes**).
+- **Nama stiker & tag pencarian** otomatis diambil dari nama file (contoh: `kucing-lucu.png` → nama **Kucing Lucu** dengan tag pencarian `kucing`, `lucu`).
+
+### 4. Muat ulang halaman
+
+Muat ulang browser di `http://localhost:3000`. Endpoint `/api/stickers` otomatis membaca file baru dengan cache-busting sehingga stiker langsung bisa digunakan.
+
+---
+
 ## Cara menambah atau mengubah bagian kode
 
 ### Menambah tata letak baru
@@ -634,17 +664,6 @@ Buka `http://localhost:3000/api/themes` di browser. Response berisi dua bagian:
 2. Tambah `layoutNames` ke semua 7 locale di `src/translations/locales/`
 3. Semua paket tema yang sudah ada harus ditambahkan file PNG untuk template baru
 4. Update tabel di README ini
-
-### Menambah stiker baru
-
-Sangat mudah — **tidak perlu menyentuh kode sama sekali dan tidak butuh file JSON**:
-
-1. Siapkan file gambar stiker berformat **PNG transparan** (bisa juga WebP atau SVG).
-2. Taruh file tersebut ke folder `public/assets/stickers/<nama-kategori>/` (misalnya `public/assets/stickers/cute/kucing-lucu.png`).
-3. Kalau mau tanpa kategori khusus, taruh langsung di `public/assets/stickers/`.
-4. Muat ulang halaman — stiker baru otomatis muncul di panel editor!
-
-> Nama file otomatis diubah menjadi judul rapi (contoh: `kucing-lucu.png` → "Kucing Lucu"), dan nama folder otomatis menjadi nama tab kategori.
 
 ### Menambah filter baru
 
