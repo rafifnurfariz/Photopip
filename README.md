@@ -347,6 +347,7 @@ src/
 public/
   assets/app-icons/            Ikon aplikasi
   assets/brand/                Logo
+  assets/fonts/                Font caption cadangan (Sans, Display) + lisensi OFL
   assets/theme-packs/          Paket tema
   manifest.json                Metadata aplikasi web
 scripts/                       Pemeriksaan dan pengemasan server
