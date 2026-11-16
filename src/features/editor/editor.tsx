@@ -481,7 +481,7 @@ export default function Editor({
             )}
             {tab === "sticker" && (
               <StickerPanel
-                composition={composition}
+                stickerCount={composition.stickers.length}
                 onAdd={addSticker}
                 onClear={() => {
                   commit({ ...composition, stickers: [] });

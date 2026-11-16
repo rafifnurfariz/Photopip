@@ -248,7 +248,7 @@ export async function renderComposition(
       left: sticker.x,
       top: sticker.y,
       scaleX: sticker.size / image.width,
-      scaleY: sticker.size / image.width,
+      scaleY: sticker.size / image.width, // shortcut: assumes square sticker src, fix if non-square stickers added
       angle: sticker.rotation,
       opacity: placement.opacity ?? 1,
       flipX: placement.flipX ?? false,

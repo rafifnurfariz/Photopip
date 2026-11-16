@@ -23,6 +23,8 @@ export interface ThemePreset {
   fontId: string;
 }
 
+// Built-in presets stay first in the catalog; image packs from /api/themes follow.
+// Currently empty — all themes come from theme-pack folders under public/assets/theme-packs/.
 export const themePresets: ThemePreset[] = [];
 
 // Stable identity: the editor re-renders on `theme` identity, so a fresh

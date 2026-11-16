@@ -75,77 +75,77 @@ export function CaptureControls({
       ) : (
         <>
           {camera.status === "ready" && (
-            <div
-              className="option-row"
-              role="group"
-              aria-label={t.capture.optionsLabel}
-            >
-              <label
-                className="icon-option timer-option"
-                title={t.camera.timer}
+            <>
+              <div
+                className="option-row"
+                role="group"
+                aria-label={t.capture.optionsLabel}
               >
-                <span className="option-glyph" aria-hidden="true">
-                  <TimerIcon />
-                </span>
-                <select
-                  aria-label={t.camera.timer}
-                  value={timer}
-                  onChange={(event) =>
-                    onTimerChange(Number(event.target.value))
-                  }
+                <label
+                  className="icon-option timer-option"
+                  title={t.camera.timer}
                 >
-                  <option value={0}>{t.camera.noDelay}</option>
-                  <option value={3}>3 s</option>
-                  <option value={5}>5 s</option>
-                </select>
-              </label>
-              <label
-                className="icon-option toggle-option"
-                title={t.camera.mirror}
+                  <span className="option-glyph" aria-hidden="true">
+                    <TimerIcon />
+                  </span>
+                  <select
+                    aria-label={t.camera.timer}
+                    value={timer}
+                    onChange={(event) =>
+                      onTimerChange(Number(event.target.value))
+                    }
+                  >
+                    <option value={0}>{t.camera.noDelay}</option>
+                    <option value={3}>3 s</option>
+                    <option value={5}>5 s</option>
+                  </select>
+                </label>
+                <label
+                  className="icon-option toggle-option"
+                  title={t.camera.mirror}
+                >
+                  <input
+                    type="checkbox"
+                    checked={mirror}
+                    onChange={(event) => onMirrorChange(event.target.checked)}
+                  />
+                  <span className="option-glyph" aria-hidden="true">
+                    <MirrorIcon />
+                  </span>
+                  <span className="sr-only">{t.camera.mirror}</span>
+                </label>
+                {photoCount > 1 && retakeIndex === null && (
+                  <button
+                    type="button"
+                    className="icon-option"
+                    aria-label={t.camera.auto}
+                    title={t.camera.auto}
+                    onClick={() => onCapture(true)}
+                  >
+                    <AutoIcon />
+                  </button>
+                )}
+                {hasPhotos && (
+                  <button
+                    type="button"
+                    className="icon-option"
+                    aria-label={t.capture.reset}
+                    title={t.capture.reset}
+                    onClick={onReset}
+                  >
+                    <ResetIcon />
+                  </button>
+                )}
+              </div>
+              <button
+                type="button"
+                className="shutter-button"
+                onClick={() => onCapture(false)}
               >
-                <input
-                  type="checkbox"
-                  checked={mirror}
-                  onChange={(event) => onMirrorChange(event.target.checked)}
-                />
-                <span className="option-glyph" aria-hidden="true">
-                  <MirrorIcon />
-                </span>
-                <span className="sr-only">{t.camera.mirror}</span>
-              </label>
-              {photoCount > 1 && retakeIndex === null && (
-                <button
-                  type="button"
-                  className="icon-option"
-                  aria-label={t.camera.auto}
-                  title={t.camera.auto}
-                  onClick={() => onCapture(true)}
-                >
-                  <AutoIcon />
-                </button>
-              )}
-              {hasPhotos && (
-                <button
-                  type="button"
-                  className="icon-option"
-                  aria-label={t.capture.reset}
-                  title={t.capture.reset}
-                  onClick={onReset}
-                >
-                  <ResetIcon />
-                </button>
-              )}
-            </div>
-          )}
-          {camera.status === "ready" && (
-            <button
-              type="button"
-              className="shutter-button"
-              onClick={() => onCapture(false)}
-            >
-              <span className="shutter-dot" aria-hidden="true" />
-              {retakeIndex !== null ? t.capture.retake : t.capture.takePhoto}
-            </button>
+                <span className="shutter-dot" aria-hidden="true" />
+                {retakeIndex !== null ? t.capture.retake : t.capture.takePhoto}
+              </button>
+            </>
           )}
           <button
             type="button"

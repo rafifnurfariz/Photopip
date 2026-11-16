@@ -62,7 +62,9 @@ export function TemplateSelector({
     if (!trigger) return;
     // Phones portrait: a bottom sheet keeps the list in the thumb zone.
     // Landscape is excluded (min-height: 480px) — use positioned popover instead.
-    if (window.matchMedia("(max-width: 640px) and (min-height: 480px)").matches) {
+    if (
+      window.matchMedia("(max-width: 640px) and (min-height: 480px)").matches
+    ) {
       setPosition({ sheet: true });
       return;
     }

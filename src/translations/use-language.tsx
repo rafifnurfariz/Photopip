@@ -38,6 +38,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       /* Browser storage is optional for language preferences. */
     }
     if (!saved || !isLanguage(saved)) return;
+    // setTimeout defers the update out of the effect body to satisfy the linter
+    // and avoid a cascading render on mount.
     const timer = setTimeout(() => setLanguageState(saved), 0);
     return () => clearTimeout(timer);
   }, []);

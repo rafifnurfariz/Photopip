@@ -21,5 +21,5 @@ export function resolveTextFont(id: string) {
   if (id === "app" && typeof document !== "undefined") {
     return getComputedStyle(document.body).fontFamily || "sans-serif";
   }
-  return textFonts.find((font) => font.id === id)?.stack || textFonts[1].stack;
+  return textFonts.find((font) => font.id === id)?.stack || "sans-serif";
 }

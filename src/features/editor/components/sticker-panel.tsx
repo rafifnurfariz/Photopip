@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { useLanguage } from "@/translations/use-language";
 import { stickers, type Sticker } from "@/shared-tools/catalog/stickers";
-import type { Composition } from "@/shared-tools/composition/types";
 
 type Category = "all" | "fun" | "love" | "cool" | "fancy";
 
@@ -24,13 +23,13 @@ const categoryTags: Record<Exclude<Category, "all">, string[]> = {
 };
 
 interface StickerPanelProps {
-  composition: Composition;
+  stickerCount: number;
   onAdd: (sticker: Sticker) => void;
   onClear: () => void;
 }
 
 export function StickerPanel({
-  composition,
+  stickerCount,
   onAdd,
   onClear,
 }: StickerPanelProps) {
@@ -107,10 +106,10 @@ export function StickerPanel({
           </button>
         </div>
       )}
-      {composition.stickers.length > 0 && (
+      {stickerCount > 0 && (
         <div className="sticker-controls">
           <span className="panel-progress">
-            {composition.stickers.length} {t.editor.stickers}
+            {stickerCount} {t.editor.stickers}
           </span>
           <button type="button" onClick={onClear}>
             {t.editor.clearStickers}
