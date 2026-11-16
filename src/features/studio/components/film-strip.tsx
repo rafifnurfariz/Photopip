@@ -50,7 +50,7 @@ export function FilmStrip({
                 aria-label={`${t.capture.retake} ${index + 1}`}
                 title={`${t.capture.retake} ${index + 1}`}
               >
-                <span aria-hidden="true">
+                <span className="retake-badge" aria-hidden="true">
                   <RetakeIcon />
                 </span>
               </button>

@@ -1159,6 +1159,9 @@ option {
   position: absolute;
   inset: -9px;
 }
+.retake-badge {
+  display: contents;
+}
 /* ---------- panel options ---------- */
 .panel-actions {
   display: flex;
@@ -2929,7 +2932,7 @@ option {
     display: none;
   }
 }
-@media (min-width: 700px) and (max-width: 899px) and (max-height: 560px) {
+@media (min-width: 560px) and (max-width: 899px) and (max-height: 560px) {
   /* Phone landscape: side-by-side again, with the compact header budget. */
   .booth {
     grid-template-columns: minmax(0, 1fr) 290px;
@@ -2995,5 +2998,218 @@ option {
   .text-list-item .icon-button {
     min-height: 44px;
     min-width: 44px;
+  }
+}
+/* ============================================================
+   MOBILE COMFORT PASS — thumbs, safe areas, whole-strip review
+   Scoped to <=899px; the desktop layout above stays untouched.
+   ============================================================ */
+/* Whole-strip review is a phone affordance; desktop keeps its zoom. */
+.fit-button {
+  display: none;
+}
+.fit-button[aria-pressed="true"] {
+  background: var(--secondary);
+  color: var(--on-secondary);
+}
+.layout-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 129;
+  background: var(--scrim);
+  animation: scrim-in var(--dur-fast) var(--ease-standard) both;
+}
+.layout-popover.is-sheet {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: min(80dvh, 560px);
+  padding-bottom: calc(8px + env(safe-area-inset-bottom));
+  border-width: 2px 0 0;
+  box-shadow: 0 -4px 0 var(--shadow-color);
+  animation: sheet-up var(--dur) var(--ease-snap) both;
+}
+@keyframes scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sheet-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes toast-up {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+@media (max-width: 899px) {
+  :root {
+    --mobile-header: calc(58px + env(safe-area-inset-top));
+  }
+  .site-header {
+    padding: calc(4px + env(safe-area-inset-top)) 8px 4px;
+  }
+  .header-inner {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+  .studio-shell {
+    padding-bottom: calc(var(--mobile-gap) + env(safe-area-inset-bottom));
+  }
+  /* The viewfinder takes every pixel the dock leaves. */
+  .booth {
+    grid-template-rows: minmax(160px, 1fr) auto;
+    align-content: stretch;
+  }
+  .booth-panel {
+    padding-bottom: 8px;
+  }
+  /* 44px targets for the controls that stayed desktop-sized. */
+  .language-control select,
+  .theme-control {
+    min-height: 44px;
+  }
+  .theme-control {
+    width: 44px;
+  }
+  .language-control select {
+    background-position:
+      calc(100% - 13px) 20px,
+      calc(100% - 8px) 20px;
+  }
+  .edit-action-group .icon-button,
+  .zoom-group .icon-button {
+    width: 44px;
+    min-height: 44px;
+  }
+  .edit-action-group .ghost-button,
+  .back-button,
+  .reset-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .zoom-value {
+    min-height: 44px;
+  }
+  .fit-button {
+    display: inline-grid;
+  }
+  .export-bar .format-control,
+  .export-bar .format-control select {
+    min-height: 44px;
+  }
+  .export-bar .format-control select {
+    background-position:
+      calc(100% - 9px) 19px,
+      calc(100% - 4px) 19px;
+  }
+  /* Retake: the whole thumbnail is the hit area, the badge stays 26px. */
+  .photo-slot {
+    flex: 0 0 44px;
+    width: 44px;
+  }
+  .slot-retake {
+    /* -2px reaches past the slot border so the hit area is the full 44px. */
+    inset: -2px;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    transform: none;
+  }
+  .slot-retake:hover:not(:disabled) {
+    background: transparent;
+    transform: none;
+  }
+  .slot-retake::after {
+    content: none;
+  }
+  .retake-badge {
+    position: absolute;
+    right: 3px;
+    bottom: 3px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 2px solid #fff;
+    background: rgba(11, 11, 10, 0.82);
+    color: #fafaf7;
+    font-size: 0.6875rem;
+    line-height: 1;
+  }
+  /* Editor: safe-area aware height and a panel that shows its content. */
+  .edit-shell {
+    --mobile-tools: clamp(200px, 35dvh, 300px);
+    height: calc(
+      100dvh - var(--mobile-header) - var(--mobile-gap) -
+        env(safe-area-inset-bottom)
+    );
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .editor-tab {
+    font-size: 0.75rem;
+  }
+  .tool-section--stickers > h2 {
+    display: none;
+  }
+  .tool-section--stickers .search-label {
+    margin-bottom: 8px;
+  }
+  .tool-section--stickers .category-row {
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin-bottom: 8px;
+    padding-bottom: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tool-section--stickers .category-row::-webkit-scrollbar {
+    display: none;
+  }
+  .tool-section--stickers .category-row .chip-button {
+    flex: none;
+  }
+  .tool-section--stickers .sticker-options button {
+    min-height: 56px;
+    padding: 4px 2px;
+  }
+  .tool-section--stickers .sticker-options img {
+    width: 34px;
+    height: 34px;
+  }
+  /* The toast stops covering the editor toolbar. */
+  .phase-edit .feedback {
+    top: auto;
+    bottom: calc(64px + env(safe-area-inset-bottom));
+    max-width: calc(100vw - 16px);
+    animation-name: toast-up;
+  }
+}
+@media (max-width: 640px) {
+  /* Zoom sits over the artwork band, not the first photo or the download bar.
+     53px export bar + 8px shell gap + 8px inset = 69px. */
+  .zoom-group {
+    top: auto;
+    right: auto;
+    bottom: calc(var(--mobile-tools) + 69px);
+    left: 8px;
   }
 }

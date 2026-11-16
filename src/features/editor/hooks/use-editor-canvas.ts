@@ -51,6 +51,7 @@ export function useEditorCanvas(
   selection: CanvasSelection | null,
   onSelect: (selection: CanvasSelection | null) => void,
   zoom: number,
+  fitWhole: boolean,
 ) {
   const elementRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -59,14 +60,28 @@ export function useEditorCanvas(
   const renderedRef = useRef(false);
   const renderId = useRef(0);
   const resizeRef = useRef<() => void>(() => {});
-  const latest = useRef({ composition, onCommit, onSelect, zoom, selection });
+  const latest = useRef({
+    composition,
+    onCommit,
+    onSelect,
+    zoom,
+    selection,
+    fitWhole,
+  });
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
     "loading",
   );
   const [revision, setRevision] = useState(0);
 
   useEffect(() => {
-    latest.current = { composition, onCommit, onSelect, zoom, selection };
+    latest.current = {
+      composition,
+      onCommit,
+      onSelect,
+      zoom,
+      selection,
+      fitWhole,
+    };
   });
 
   useEffect(() => {
@@ -88,10 +103,13 @@ export function useEditorCanvas(
       // stacked (mobile/tablet) editor fits the width and scrolls vertically.
       const tall = geometry.height > geometry.width * 1.5;
       const stacked = window.innerWidth <= 899;
+      // "Fit whole strip" is a mobile review mode: both axes, no scrolling.
       const fit =
-        tall && stacked
-          ? { width, height: (width * geometry.height) / geometry.width }
-          : fitCanvas(geometry, width, height);
+        stacked && latest.current.fitWhole
+          ? fitCanvas(geometry, width, height)
+          : tall && stacked
+            ? { width, height: (width * geometry.height) / geometry.width }
+            : fitCanvas(geometry, width, height);
       if (fit.width <= 0 || fit.height <= 0) return;
       const scale = Math.max(0.25, latest.current.zoom);
       canvas.setDimensions(
@@ -247,7 +265,7 @@ export function useEditorCanvas(
 
   useEffect(() => {
     resizeRef.current();
-  }, [zoom]);
+  }, [zoom, fitWhole]);
 
   useEffect(() => {
     if (status !== "ready" || !canvasRef.current) return;

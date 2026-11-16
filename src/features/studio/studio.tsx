@@ -44,6 +44,7 @@ export default function Studio() {
   } | null>(null);
   const confirmRef = useRef<HTMLDialogElement>(null);
   const uploadInput = useRef<HTMLInputElement>(null);
+  const historyEntry = useRef(false);
   const {
     session,
     template,
@@ -74,12 +75,33 @@ export default function Studio() {
     return () => clearTimeout(id);
   }, [message]);
 
+  // A phone back gesture must return to the camera, not drop the session.
+  useEffect(() => {
+    const onPopState = () => {
+      if (!historyEntry.current) return;
+      historyEntry.current = false;
+      setStage((previous) =>
+        previous.mode === "edit"
+          ? { mode: "capture", draft: previous.draft }
+          : previous,
+      );
+      setMessage(null);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
   const performReset = useCallback(
     (templateId?: TemplateId) => {
       resetSession(templateId);
       cancelExport();
       setStage({ mode: "capture", draft: null });
       setMessage(null);
+      // Consume the editor history entry so Back does not reopen a dead draft.
+      if (historyEntry.current) {
+        historyEntry.current = false;
+        window.history.back();
+      }
     },
     [cancelExport, resetSession],
   );
@@ -130,17 +152,30 @@ export default function Studio() {
           },
     }));
     setMessage(null);
+    if (
+      !historyEntry.current &&
+      window.matchMedia("(max-width: 899px)").matches
+    ) {
+      window.history.pushState(
+        { ...(window.history.state ?? {}), photopipEditor: true },
+        "",
+      );
+      historyEntry.current = true;
+    }
   };
 
-  const back = () => {
-    setStage((previous) => ({ mode: "capture", draft: previous.draft }));
+  const leaveEdit = () => {
     setMessage(null);
+    if (historyEntry.current) {
+      window.history.back();
+      return;
+    }
+    setStage((previous) => ({ mode: "capture", draft: previous.draft }));
   };
 
   const retakePhoto = (index: number) => {
     retake(index);
-    setStage((previous) => ({ mode: "capture", draft: previous.draft }));
-    setMessage(null);
+    leaveEdit();
   };
 
   const toggleCamera = () => {
@@ -281,7 +316,7 @@ export default function Studio() {
             composition={stage.draft}
             themes={themes}
             onChange={(draft) => setStage({ mode: "edit", draft })}
-            onBack={back}
+            onBack={leaveEdit}
             onReset={() => requestReset()}
             onRetakePhoto={retakePhoto}
           />

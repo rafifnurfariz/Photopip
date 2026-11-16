@@ -212,3 +212,11 @@ export function AlignRightIcon() {
     </Icon>
   );
 }
+
+export function FitIcon() {
+  return (
+    <Icon>
+      <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" />
+    </Icon>
+  );
+}

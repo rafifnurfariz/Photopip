@@ -1,7 +1,13 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import { BackIcon, RedoIcon, ResetIcon, UndoIcon } from "@/components/icons";
+import {
+  BackIcon,
+  FitIcon,
+  RedoIcon,
+  ResetIcon,
+  UndoIcon,
+} from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";
 import type { Sticker } from "@/shared-tools/catalog/stickers";
 import {
@@ -66,6 +72,7 @@ export default function Editor({
   const [tab, setTab] = useState<ToolTab>("theme");
   const [selection, setSelection] = useState<CanvasSelection | null>(null);
   const [zoom, setZoom] = useState(1);
+  const [fitWhole, setFitWhole] = useState(false);
   const [history, setHistory] = useState<HistoryState>(initialHistory);
   const gesture = useRef<Composition | null>(null);
   const geometry = useMemo(
@@ -115,6 +122,7 @@ export default function Editor({
     selection,
     handleSelect,
     zoom,
+    fitWhole,
   );
 
   const undo = () => {
@@ -306,6 +314,7 @@ export default function Editor({
   };
 
   const changeZoom = (direction: 1 | -1) => {
+    setFitWhole(false);
     setZoom((value) => {
       const next = Number((value + direction * 0.25).toFixed(2));
       return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, next));
@@ -383,9 +392,25 @@ export default function Editor({
               className="zoom-value"
               aria-label={t.editor.fit}
               title={t.editor.fit}
-              onClick={() => setZoom(1)}
+              onClick={() => {
+                setFitWhole(false);
+                setZoom(1);
+              }}
             >
               {Math.round(zoom * 100)}%
+            </button>
+            <button
+              type="button"
+              className="icon-button fit-button"
+              aria-label={t.editor.fit}
+              title={t.editor.fit}
+              aria-pressed={fitWhole}
+              onClick={() => {
+                setZoom(1);
+                setFitWhole((value) => !value);
+              }}
+            >
+              <FitIcon />
             </button>
             <button
               type="button"

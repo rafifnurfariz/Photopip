@@ -51,7 +51,10 @@ export function StickerPanel({
   }, [category, search]);
 
   return (
-    <section className="tool-section" aria-labelledby="tool-sticker">
+    <section
+      className="tool-section tool-section--stickers"
+      aria-labelledby="tool-sticker"
+    >
       <h2 id="tool-sticker">{t.editor.stickers}</h2>
       <label className="search-label">
         <span className="sr-only">{t.editor.search}</span>

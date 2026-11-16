@@ -11,7 +11,9 @@ import {
   type TemplateId,
 } from "@/shared-tools/catalog/templates";
 
-type MenuPosition = { top: number; left: number; width: number };
+type MenuPosition =
+  | { sheet: true }
+  | { sheet: false; top: number; left: number; width: number };
 
 const MENU_WIDTH = 300;
 const MENU_ESTIMATE = 380;
@@ -58,6 +60,11 @@ export function TemplateSelector({
   const place = useCallback(() => {
     const trigger = triggerRef.current;
     if (!trigger) return;
+    // Phones: a bottom sheet keeps the list in the thumb zone and off the app bar.
+    if (window.matchMedia("(max-width: 640px)").matches) {
+      setPosition({ sheet: true });
+      return;
+    }
     const rect = trigger.getBoundingClientRect();
     const width = Math.max(240, Math.min(MENU_WIDTH, window.innerWidth - 16));
     const room = Math.min(window.innerHeight - 24, MENU_ESTIMATE);
@@ -71,12 +78,11 @@ export function TemplateSelector({
       8,
       Math.min(rect.right - width, window.innerWidth - width - 8),
     );
-    setPosition({ top, left, width });
+    setPosition({ sheet: false, top, left, width });
   }, []);
 
   useEffect(() => {
     if (!open) return;
-    place();
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.stopPropagation();
@@ -135,7 +141,10 @@ export function TemplateSelector({
         aria-expanded={open}
         aria-controls={open ? popoverId : undefined}
         disabled={disabled}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => {
+          if (!open) place();
+          setOpen((value) => !value);
+        }}
       >
         <LayoutMiniature template={selected} />
         <span className="layout-trigger-copy">
@@ -153,48 +162,58 @@ export function TemplateSelector({
       {open &&
         position &&
         createPortal(
-          <div
-            ref={popoverRef}
-            id={popoverId}
-            className="layout-popover"
-            role="dialog"
-            aria-label={t.capture.chooseLayout}
-            style={{
-              top: position.top,
-              left: position.left,
-              width: position.width,
-            }}
-          >
-            <p className="layout-popover-title">{t.capture.chooseLayout}</p>
-            <div className="layout-menu-list">
-              {templates.map((template) => (
-                <button
-                  key={template.id}
-                  type="button"
-                  className="layout-menu-option"
-                  aria-pressed={selectedTemplate === template.id}
-                  onClick={() => choose(template.id)}
-                >
-                  <LayoutMiniature template={template} />
-                  <span className="layout-menu-copy">
-                    <strong>{t.layoutNames[template.id]}</strong>
-                    <small>
-                      {template.photoCount}{" "}
-                      {template.photoCount === 1
-                        ? t.capture.photo
-                        : t.capture.photos}{" "}
-                      · {template.size}
-                    </small>
-                  </span>
-                  {selectedTemplate === template.id && (
-                    <span className="selected-mark" aria-hidden="true">
-                      <CheckIcon />
+          <>
+            {position.sheet && (
+              <div className="layout-scrim" aria-hidden="true" />
+            )}
+            <div
+              ref={popoverRef}
+              id={popoverId}
+              className={`layout-popover${position.sheet ? " is-sheet" : ""}`}
+              role="dialog"
+              aria-modal={position.sheet ? true : undefined}
+              aria-label={t.capture.chooseLayout}
+              style={
+                position.sheet
+                  ? undefined
+                  : {
+                      top: position.top,
+                      left: position.left,
+                      width: position.width,
+                    }
+              }
+            >
+              <p className="layout-popover-title">{t.capture.chooseLayout}</p>
+              <div className="layout-menu-list">
+                {templates.map((template) => (
+                  <button
+                    key={template.id}
+                    type="button"
+                    className="layout-menu-option"
+                    aria-pressed={selectedTemplate === template.id}
+                    onClick={() => choose(template.id)}
+                  >
+                    <LayoutMiniature template={template} />
+                    <span className="layout-menu-copy">
+                      <strong>{t.layoutNames[template.id]}</strong>
+                      <small>
+                        {template.photoCount}{" "}
+                        {template.photoCount === 1
+                          ? t.capture.photo
+                          : t.capture.photos}{" "}
+                        · {template.size}
+                      </small>
                     </span>
-                  )}
-                </button>
-              ))}
+                    {selectedTemplate === template.id && (
+                      <span className="selected-mark" aria-hidden="true">
+                        <CheckIcon />
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>,
+          </>,
           document.body,
         )}
     </div>
