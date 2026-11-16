@@ -3204,12 +3204,20 @@ option {
   }
 }
 @media (max-width: 640px) {
-  /* Zoom sits over the artwork band, not the first photo or the download bar.
-     53px export bar + 8px shell gap + 8px inset = 69px. */
+  /* Compact zoom pill in the stage's top-right corner. */
   .zoom-group {
-    top: auto;
-    right: auto;
-    bottom: calc(var(--mobile-tools) + 69px);
-    left: 8px;
+    top: calc(52px + var(--mobile-gap) + 4px);
+    right: 6px;
+    padding: 2px;
+  }
+  .zoom-group .icon-button {
+    width: 36px;
+    min-height: 36px;
+    font-size: 0.95rem;
+  }
+  .zoom-value {
+    min-height: 36px;
+    padding: 0 4px;
+    font-size: 0.6875rem;
   }
 }
