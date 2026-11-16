@@ -86,13 +86,7 @@ export interface Messages {
     filters: string;
     photoLabel: string;
     retakePhoto: string;
-    categories: {
-      all: string;
-      fun: string;
-      love: string;
-      cool: string;
-      fancy: string;
-    };
+    allCategories: string;
     duplicate: string;
     bringFront: string;
     sendBack: string;

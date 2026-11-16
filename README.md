@@ -242,9 +242,9 @@ PhotoPip sengaja dirancang tanpa server foto:
 
 ### Stiker
 
-Ada 15 stiker bawaan: `sunglasses`, `mustache`, `crown`, `heart`, `star`, `bowtie`, `speechBubble`, `hat`, `glasses`, `wink`, `rainbow`, `peace`, `lightning`, `diamond`, `unicorn`.
+Stiker dibaca otomatis dari folder `public/assets/stickers/`. Sudah tersedia 33 stiker 3D bergaya viral (Cute, Y2K, Mood, Food, Nature) berbasis Microsoft Fluent Emoji (lisensi MIT).
 
-Stiker bisa dicari dengan teks atau difilter per kategori (Fun, Love, Cool, Fancy). Setelah ditambahkan, bisa digeser, diubah ukuran, diputar, dibalik, dan diatur opacity-nya langsung di kanvas.
+Stiker bisa dicari lewat kolom pencarian atau difilter per tab kategori. Setelah ditambahkan ke foto, stiker bisa digeser, diubah ukuran, diputar, dibalik horizontal/vertikal, dan diatur opacity-nya langsung di kanvas.
 
 ### Teks
 
@@ -401,9 +401,9 @@ PhotoPip/
 │   │   ├── layout.tsx          ← Kerangka HTML: metadata, font, ThemeProvider, LanguageProvider, Header
 │   │   ├── page.tsx            ← Halaman "/" — hanya render <Studio />
 │   │   ├── globals.css         ← Satu-satunya file CSS: semua variabel warna, komponen, layout, responsif
-│   │   └── api/themes/
-│   │       ├── route.ts        ← Endpoint GET /api/themes
-│   │       └── scan.ts         ← Membaca dan memvalidasi folder theme-packs
+│   │   └── api/
+│   │       ├── themes/         ← Endpoint GET /api/themes (baca folder theme-packs)
+│   │       └── stickers/       ← Endpoint GET /api/stickers (baca folder stiker PNG)
 │   │
 │   ├── components/
 │   │   ├── header.tsx          ← App bar: logo, pilih bahasa, toggle gelap/terang
@@ -481,6 +481,7 @@ PhotoPip/
 │   ├── assets/
 │   │   ├── app-icons/      ← Favicon, Apple touch icon
 │   │   ├── brand/logo.png  ← Logo di footer strip hasil cetakan
+│   │   ├── stickers/       ← Folder stiker PNG (kategori sebagai subfolder)
 │   │   └── theme-packs/    ← Taruh folder tema kamu di sini
 │   │       └── _starter/   ← Contoh panduan (folder _ diabaikan scanner)
 │   └── manifest.json       ← Web App Manifest
@@ -623,9 +624,14 @@ Buka `http://localhost:3000/api/themes` di browser. Response berisi dua bagian:
 
 ### Menambah stiker baru
 
-1. Buat SVG inline dengan `viewBox="0 0 100 100"` — ukuran intrinsik wajib ada agar canvas bisa render
-2. Tambah ke `stickerSvgs` di `src/shared-tools/catalog/stickers.ts` via `svgDataUrl()`
-3. Tambah entry ke array `stickers` dengan `id`, `name`, dan `tags`
+Sangat mudah — **tidak perlu menyentuh kode sama sekali dan tidak butuh file JSON**:
+
+1. Siapkan file gambar stiker berformat **PNG transparan** (bisa juga WebP atau SVG).
+2. Taruh file tersebut ke folder `public/assets/stickers/<nama-kategori>/` (misalnya `public/assets/stickers/cute/kucing-lucu.png`).
+3. Kalau mau tanpa kategori khusus, taruh langsung di `public/assets/stickers/`.
+4. Muat ulang halaman — stiker baru otomatis muncul di panel editor!
+
+> Nama file otomatis diubah menjadi judul rapi (contoh: `kucing-lucu.png` → "Kucing Lucu"), dan nama folder otomatis menjadi nama tab kategori.
 
 ### Menambah filter baru
 

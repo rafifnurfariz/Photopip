@@ -2679,40 +2679,56 @@ option {
   .panel-label-row {
     display: none;
   }
-  /* Empty viewfinder: the headline must never bleed past the stage. */
+  /* Empty viewfinder: ensure complete onboarding is visible on mobile too */
   .camera-empty {
-    padding: 12px;
+    padding: clamp(10px, 3vw, 16px);
   }
   .camera-empty h2 {
-    font-size: clamp(1.25rem, 5.4vw, 1.55rem);
+    font-size: clamp(1.2rem, 5vw, 1.55rem);
   }
   .camera-mark {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 0;
-  }
-  .empty-steps {
-    display: none;
+    width: clamp(52px, 14vw, 72px);
+    height: clamp(52px, 14vw, 72px);
+    margin-bottom: 2px;
   }
   .booth-stage::before {
     padding: 12px;
   }
   .booth-stage:not(:has(.camera-empty.is-complete)) .camera-empty {
     place-items: center;
-    padding: 12px;
-  }
-  .booth-stage:not(:has(.camera-empty.is-complete)) .camera-mark {
-    display: none;
+    padding: clamp(10px, 3vw, 16px);
   }
   .booth-stage:not(:has(.camera-empty.is-complete)) .camera-empty-content {
     gap: 8px;
+    width: 100%;
+    max-width: 320px;
   }
   .booth-stage:not(:has(.camera-empty.is-complete)) .camera-empty-content > p {
-    display: none;
+    display: block;
+    font-size: 0.8125rem;
+    line-height: 1.4;
   }
   .booth-stage:not(:has(.camera-empty.is-complete)) .stage-action {
-    min-height: 52px;
-    margin-top: 0;
+    min-height: 44px;
+    padding: 0 16px;
+    margin-top: 4px;
+  }
+  .empty-steps {
+    display: grid;
+    margin: 8px 0 0;
+    padding: 8px 12px;
+    gap: 5px;
+    width: 100%;
+    max-width: 290px;
+  }
+  .empty-steps li {
+    font-size: 0.71875rem;
+    gap: 7px;
+  }
+  .step-number {
+    width: 16px;
+    height: 16px;
+    font-size: 0.65rem;
   }
   .completion-strip-wrap {
     flex: 0 1 auto;

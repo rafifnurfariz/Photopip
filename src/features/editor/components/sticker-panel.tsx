@@ -2,25 +2,8 @@
 
 import { useMemo, useState } from "react";
 import { useLanguage } from "@/translations/use-language";
-import { stickers, type Sticker } from "@/shared-tools/catalog/stickers";
-
-type Category = "all" | "fun" | "love" | "cool" | "fancy";
-
-const categoryTags: Record<Exclude<Category, "all">, string[]> = {
-  fun: ["funny", "talk", "comic", "emoji", "happy"],
-  love: ["love", "cute", "pink", "heart"],
-  cool: [
-    "cool",
-    "summer",
-    "style",
-    "electric",
-    "power",
-    "energy",
-    "peace",
-    "harmony",
-  ],
-  fancy: ["royal", "fancy", "gold", "formal", "classy", "smart", "nerdy"],
-};
+import type { Sticker } from "@/shared-tools/catalog/stickers";
+import { useStickerCatalog } from "../hooks/use-sticker-catalog";
 
 interface StickerPanelProps {
   stickerCount: number;
@@ -34,20 +17,34 @@ export function StickerPanel({
   onClear,
 }: StickerPanelProps) {
   const { t } = useLanguage();
+  const { stickers, categories } = useStickerCatalog();
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<Category>("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const allCategories = useMemo(() => {
+    return ["all", ...categories];
+  }, [categories]);
+
   const visibleStickers = useMemo(() => {
     const query = search.trim().toLowerCase();
-    const tags = category === "all" ? null : categoryTags[category];
     return stickers.filter((sticker) => {
       const haystack =
         `${sticker.name} ${sticker.tags.join(" ")}`.toLowerCase();
       const matchesSearch = !query || haystack.includes(query);
       const matchesCategory =
-        !tags || tags.some((tag) => sticker.tags.includes(tag));
+        selectedCategory === "all" ||
+        sticker.category === selectedCategory ||
+        sticker.tags.includes(selectedCategory);
       return matchesSearch && matchesCategory;
     });
-  }, [category, search]);
+  }, [stickers, selectedCategory, search]);
+
+  const getCategoryLabel = (id: string) => {
+    if (id === "all") return t.editor.allCategories;
+    return id
+      .replace(/[-_]+/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
 
   return (
     <section
@@ -65,15 +62,15 @@ export function StickerPanel({
         />
       </label>
       <div className="category-row" role="group" aria-label={t.editor.stickers}>
-        {(["all", "fun", "love", "cool", "fancy"] as const).map((id) => (
+        {allCategories.map((id) => (
           <button
             key={id}
             type="button"
             className="chip-button"
-            aria-pressed={category === id}
-            onClick={() => setCategory(id)}
+            aria-pressed={selectedCategory === id}
+            onClick={() => setSelectedCategory(id)}
           >
-            {t.editor.categories[id]}
+            {getCategoryLabel(id)}
           </button>
         ))}
       </div>
@@ -99,7 +96,7 @@ export function StickerPanel({
             className="chip-button"
             onClick={() => {
               setSearch("");
-              setCategory("all");
+              setSelectedCategory("all");
             }}
           >
             {t.editor.clearSearch}
