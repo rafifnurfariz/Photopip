@@ -14,6 +14,7 @@ import {
   type EditorObject,
 } from "@/shared-tools/composition/render";
 import type { Composition } from "@/shared-tools/composition/types";
+import { axisScroll } from "./scroll-reveal";
 
 export interface CanvasSelection {
   type: "sticker" | "text";
@@ -44,6 +45,45 @@ function findObject(canvas: Canvas, target: CanvasSelection) {
   });
 }
 
+/**
+ * A tall strip scrolls in the stacked editor, so a selection can be off screen
+ * when it comes from a panel (or from a fresh add). Bring it into view.
+ */
+function revealSelection(
+  canvas: Canvas,
+  stage: HTMLDivElement,
+  object: EditorObject,
+) {
+  const element = canvas.lowerCanvasEl;
+  const width = element.getBoundingClientRect().width;
+  if (!width) return;
+  const scale = width / Math.max(1, canvas.getWidth());
+  const box = object.getBoundingRect();
+  const elementRect = element.getBoundingClientRect();
+  const stageRect = stage.getBoundingClientRect();
+  const left =
+    elementRect.left - stageRect.left + stage.scrollLeft + box.left * scale;
+  const top =
+    elementRect.top - stageRect.top + stage.scrollTop + box.top * scale;
+  const next = {
+    left: axisScroll(
+      left,
+      box.width * scale,
+      stage.scrollLeft,
+      stage.clientWidth,
+    ),
+    top: axisScroll(
+      top,
+      box.height * scale,
+      stage.scrollTop,
+      stage.clientHeight,
+    ),
+  };
+  if (next.left !== stage.scrollLeft || next.top !== stage.scrollTop) {
+    stage.scrollTo(next);
+  }
+}
+
 export function useEditorCanvas(
   composition: Composition,
   theme: ThemePreset,
@@ -59,6 +99,7 @@ export function useEditorCanvas(
   const renderingRef = useRef(false);
   const renderedRef = useRef(false);
   const renderId = useRef(0);
+  const revealPending = useRef(false);
   const resizeRef = useRef<() => void>(() => {});
   const latest = useRef({
     composition,
@@ -245,6 +286,10 @@ export function useEditorCanvas(
         const object = current ? findObject(canvas, current) : undefined;
         if (object) canvas.setActiveObject(object);
         else canvas.discardActiveObject();
+        if (object && revealPending.current && containerRef.current) {
+          revealSelection(canvas, containerRef.current, object);
+          revealPending.current = false;
+        }
         renderingRef.current = false;
         renderedRef.current = true;
         canvas.requestRenderAll();
@@ -274,6 +319,14 @@ export function useEditorCanvas(
     if (object) canvas.setActiveObject(object);
     else canvas.discardActiveObject();
     canvas.requestRenderAll();
+    const stage = containerRef.current;
+    if (object && stage) {
+      revealSelection(canvas, stage, object);
+      revealPending.current = false;
+    } else {
+      // A freshly added object appears only after the async render completes.
+      revealPending.current = Boolean(selection);
+    }
   }, [selection, status]);
 
   return [
