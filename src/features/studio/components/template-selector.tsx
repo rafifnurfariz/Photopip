@@ -60,20 +60,24 @@ export function TemplateSelector({
   const place = useCallback(() => {
     const trigger = triggerRef.current;
     if (!trigger) return;
-    // Phones: a bottom sheet keeps the list in the thumb zone and off the app bar.
+    // Phones portrait: a bottom sheet keeps the list in the thumb zone.
+    // Landscape is excluded (min-height: 480px) — use positioned popover instead.
     if (window.matchMedia("(max-width: 640px) and (min-height: 480px)").matches) {
       setPosition({ sheet: true });
       return;
     }
     const rect = trigger.getBoundingClientRect();
+    const vh = window.innerHeight;
     const width = Math.max(240, Math.min(MENU_WIDTH, window.innerWidth - 16));
-    const room = Math.min(window.innerHeight - 24, MENU_ESTIMATE);
-    const below = window.innerHeight - rect.bottom - 12;
+    const room = Math.min(vh - 24, MENU_ESTIMATE);
+    const below = vh - rect.bottom - 12;
     const above = rect.top - 12;
-    const top =
+    const rawTop =
       below >= room || below >= above
         ? rect.bottom + 8
         : Math.max(12, rect.top - 8 - room);
+    // Clamp so the popover never overflows the bottom of the viewport.
+    const top = Math.min(rawTop, vh - room - 8);
     const left = Math.max(
       8,
       Math.min(rect.right - width, window.innerWidth - width - 8),

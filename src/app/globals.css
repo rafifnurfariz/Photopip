@@ -1013,7 +1013,7 @@ option {
 .layout-popover {
   position: fixed;
   z-index: 130;
-  max-height: min(70vh, 430px);
+  max-height: min(calc(100dvh - 32px), 430px);
   padding: 8px;
   overflow-y: auto;
   overscroll-behavior: contain;
