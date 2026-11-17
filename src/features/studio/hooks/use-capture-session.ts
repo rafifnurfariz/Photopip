@@ -6,7 +6,10 @@ import {
   findTemplate,
   type TemplateId,
 } from "@/shared-tools/catalog/templates";
-import { readPhotoFile } from "@/shared-tools/image-upload";
+import {
+  readPhotoFile,
+  isSupportedPhotoFile,
+} from "@/shared-tools/image-upload";
 import { initialSession, sessionReducer } from "@/shared-tools/session";
 import type { CameraController } from "../camera/use-camera";
 import type { StudioMessage } from "../types";
@@ -79,7 +82,12 @@ export function useCaptureSession({
 
   const capture = useCallback(
     async (automatic: boolean) => {
-      if (work.current || complete || cameraRef.current.status !== "ready")
+      if (
+        work.current ||
+        uploading ||
+        complete ||
+        cameraRef.current.status !== "ready"
+      )
         return;
       const controller = new AbortController();
       work.current = controller;
@@ -136,28 +144,31 @@ export function useCaptureSession({
       session.retakeIndex,
       timer,
       template.photoCount,
+      uploading,
     ],
   );
 
   const uploadPhotos = useCallback(
     async (files: File[]) => {
-      if (!files.length || uploading || complete) return;
+      if (!files.length || uploading || complete || work.current) return;
       const slots =
         session.retakeIndex !== null
           ? 1
           : template.photoCount - session.photos.length;
       if (slots <= 0) return;
+      const selected = files.slice(0, slots);
+      // All-or-nothing: one rejected file must not leave a half-filled strip.
+      if (!selected.every(isSupportedPhotoFile)) {
+        onMessage("upload");
+        return;
+      }
       setUploading(true);
       onMessage(null);
       try {
-        for (const file of files.slice(0, slots)) {
-          const src = await readPhotoFile(file);
-          dispatch({
-            type: "capture",
-            src,
-            count: template.photoCount,
-          });
-        }
+        const sources: string[] = [];
+        for (const file of selected) sources.push(await readPhotoFile(file));
+        for (const src of sources)
+          dispatch({ type: "capture", src, count: template.photoCount });
       } catch {
         onMessage("upload");
       } finally {

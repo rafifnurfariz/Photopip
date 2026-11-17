@@ -35,6 +35,15 @@ const EDIT_HANDLES = {
 const IMAGE_CACHE_LIMIT = 24;
 const imageCache = new Map<string, HTMLImageElement>();
 
+/**
+ * Dropping the references lets the browser free the bitmaps once no canvas
+ * object holds them. Called when the editor closes; images still on a live
+ * canvas share these elements, so they must never be cleared mid-session.
+ */
+export function clearImageCache() {
+  imageCache.clear();
+}
+
 function cacheImage(src: string, image: HTMLImageElement) {
   if (imageCache.size >= IMAGE_CACHE_LIMIT) {
     const oldest = imageCache.keys().next().value;
@@ -67,7 +76,12 @@ function loadImage(
     return Promise.reject(new DOMException("Cancelled", "AbortError"));
   }
   const cached = imageCache.get(src);
-  if (cached) return Promise.resolve(cached);
+  if (cached) {
+    // Refresh recency so the oldest entry is evicted first.
+    imageCache.delete(src);
+    imageCache.set(src, cached);
+    return Promise.resolve(cached);
+  }
   return new Promise((resolve, reject) => {
     const image = new Image();
     const cleanup = () => {

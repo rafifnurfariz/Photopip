@@ -2,13 +2,7 @@ import { readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import type { Sticker } from "@/shared-tools/catalog/stickers";
 
-const VALID_IMAGE_EXTENSIONS = new Set([
-  ".png",
-  ".webp",
-  ".svg",
-  ".jpg",
-  ".jpeg",
-]);
+const VALID_IMAGE_EXTENSIONS = new Set([".png", ".webp", ".jpg", ".jpeg"]);
 
 export interface StickerScanResponse {
   stickers: Sticker[];
@@ -25,10 +19,21 @@ function formatStickerName(fileName: string): string {
 }
 
 function sanitizeId(str: string): string {
-  return str
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+  return (
+    str
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "sticker"
+  );
+}
+
+/** Two file names can sanitize to the same id; a suffix keeps React keys unique. */
+function uniqueId(base: string, used: Set<string>): string {
+  let id = base;
+  let suffix = 2;
+  while (used.has(id)) id = `${base}-${suffix++}`;
+  used.add(id);
+  return id;
 }
 
 export async function scanStickersDirectory(
@@ -36,6 +41,7 @@ export async function scanStickersDirectory(
 ): Promise<StickerScanResponse> {
   const stickers: Sticker[] = [];
   const categoriesSet = new Set<string>();
+  const usedIds = new Set<string>();
 
   let entries;
   try {
@@ -77,7 +83,7 @@ export async function scanStickersDirectory(
 
         const baseName = path.parse(file.name).name;
         const name = formatStickerName(file.name);
-        const id = sanitizeId(`${category}-${baseName}`);
+        const id = uniqueId(sanitizeId(`${category}-${baseName}`), usedIds);
         const words = baseName.toLowerCase().split(/[-_]+/).filter(Boolean);
 
         const version = `${Math.round(fileStat.mtimeMs)}-${fileStat.size}`;
@@ -105,7 +111,7 @@ export async function scanStickersDirectory(
 
       const baseName = path.parse(entry.name).name;
       const name = formatStickerName(entry.name);
-      const id = sanitizeId(baseName);
+      const id = uniqueId(sanitizeId(baseName), usedIds);
       const words = baseName.toLowerCase().split(/[-_]+/).filter(Boolean);
 
       const version = `${Math.round(fileStat.mtimeMs)}-${fileStat.size}`;

@@ -224,7 +224,7 @@ export async function scanThemeDirectory(
       return { themes, diagnostics };
     }
     diagnostics.push({
-      folder: root,
+      folder: "<root>",
       level: "error",
       code: "unreadable",
       message: "Could not read the themes directory",
@@ -248,14 +248,12 @@ export async function scanThemeDirectory(
       diagnostics.push(...result.diagnostics);
       if (result.theme) themes.push(result.theme);
     } catch (error) {
+      console.warn(`[themes] could not read ${folder}`, error);
       diagnostics.push({
         folder,
         level: "error",
         code: "unreadable",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Could not read the theme folder",
+        message: "Could not read the theme folder",
       });
     }
   }

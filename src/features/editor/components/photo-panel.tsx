@@ -25,6 +25,7 @@ export function PhotoPanel({
   const current = composition.photoFilters[index] ?? "none";
 
   const applyFilter = (filter: PhotoFilterId) => {
+    if (filter === current) return;
     const photoFilters = composition.photos.map((_, position) =>
       position === index
         ? filter

@@ -10,6 +10,7 @@ import {
 } from "@/shared-tools/composition/geometry";
 import { normalizeText } from "@/shared-tools/composition/text";
 import {
+  clearImageCache,
   renderComposition,
   type EditorObject,
 } from "@/shared-tools/composition/render";
@@ -225,6 +226,8 @@ export function useEditorCanvas(
       canvas.off();
       canvasRef.current = null;
       void canvas.dispose();
+      // The editor is closing, so no live object needs these bitmaps anymore.
+      clearImageCache();
     };
   }, []);
 

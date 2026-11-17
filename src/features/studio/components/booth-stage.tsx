@@ -62,8 +62,8 @@ export function BoothStage({
                   className={`completion-strip ${template.layout}`}
                   style={{ aspectRatio: template.aspectRatio }}
                 >
-                  {photos.map((src) => (
-                    <img key={src} src={src} alt="" />
+                  {photos.map((src, index) => (
+                    <img key={index} src={src} alt="" />
                   ))}
                 </div>
               </div>
@@ -126,7 +126,7 @@ export function BoothStage({
         </div>
       )}
       {remaining !== null && (
-        <span className="countdown" role="status" aria-live="assertive">
+        <span className="countdown" role="timer" aria-live="polite">
           {remaining}
         </span>
       )}

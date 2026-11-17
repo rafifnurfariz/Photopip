@@ -1,6 +1,6 @@
 # 📸 PhotoPip
 
-PhotoPip adalah aplikasi **photo booth di browser**. Kamu bisa ambil foto pakai kamera laptop/HP, pilih tata letak seperti strip foto sungguhan, hias dengan tema dan stiker, lalu unduh hasilnya sebagai gambar siap cetak — semuanya terjadi langsung di browser, tanpa perlu install apapun, tanpa akun, dan foto kamu **tidak pernah dikirim ke internet**.
+PhotoPip adalah aplikasi **photo booth di browser**. Kamu bisa ambil foto pakai kamera laptop/HP, pilih tata letak seperti strip foto sungguhan, hias dengan bingkai dan stiker, lalu unduh hasilnya sebagai gambar siap cetak — semuanya terjadi langsung di browser, tanpa perlu install apapun, tanpa akun, dan foto kamu **tidak pernah dikirim ke internet**.
 
 ---
 
@@ -18,7 +18,7 @@ PhotoPip adalah aplikasi **photo booth di browser**. Kamu bisa ambil foto pakai 
 - [Bagaimana kode ini bekerja](#bagaimana-kode-ini-bekerja)
 - [Tech stack](#tech-stack)
 - [Peta folder dan file](#peta-folder-dan-file)
-- [Cara membuat paket tema sendiri](#cara-membuat-paket-tema-sendiri)
+- [Cara membuat paket bingkai sendiri](#cara-membuat-paket-bingkai-sendiri)
 - [Cara menambah stiker sendiri](#cara-menambah-stiker-sendiri)
 - [Cara menambah atau mengubah bagian kode](#cara-menambah-atau-mengubah-bagian-kode)
 - [Testing — cara menguji kode](#testing--cara-menguji-kode)
@@ -40,7 +40,7 @@ Kalau sudah ada link situsnya, tinggal buka di browser — selesai. Tidak perlu 
 2. **Ambil atau upload foto** — klik tombol kamera dan izinkan akses, atau klik tombol upload untuk pakai foto dari galeri/HP kamu.
 3. **Isi semua slot** — foto diambil satu per satu. Kalau ada yang kurang bagus, klik thumbnail fotonya untuk mengambil ulang — foto lain tidak terganggu.
 4. **Tekan Edit** — setelah semua slot terisi, tombol Edit akan aktif. Di sini kamu bisa:
-   - Ganti **tema** tampilan (latar, bingkai, font)
+   - Ganti **bingkai** — artwork, latar, dan font ikut berganti
    - Tambah **stiker** dan geser/ubah ukurannya di kanvas
    - Tambah **teks**
    - Ubah **filter** per foto (hitam putih, hangat, vintage, dll.)
@@ -188,7 +188,7 @@ PhotoPip sengaja dirancang tanpa server foto:
 
 - **Foto tidak pernah keluar dari browser kamu.** Semua pemrosesan terjadi di dalam tab browser — tidak ada upload ke server.
 - **Tidak ada database foto**, tidak ada akun, tidak ada login.
-- Server hanya punya dua endpoint read-only: `GET /api/themes` (membaca folder paket tema lokal) dan `GET /api/stickers` (membaca folder stiker lokal) — tidak menerima data atau unggahan foto apapun.
+- Server hanya punya dua endpoint read-only: `GET /api/themes` (membaca folder paket bingkai lokal) dan `GET /api/stickers` (membaca folder stiker lokal) — tidak menerima data atau unggahan foto apapun.
 - Yang disimpan di browser hanya pilihan **bahasa** dan **mode gelap/terang** (lewat `localStorage`).
 - Tutup atau refresh halaman → semua foto dan komposisi hilang. Memang by design.
 
@@ -286,7 +286,7 @@ Aplikasi punya dua fase utama. Keduanya dikelola oleh satu komponen bernama `stu
 │                                                          │
 │  Composition → Editor → renderComposition() → Fabric.js  │
 │                                                          │
-│  Setiap perubahan (tema/stiker/teks/filter) → render     │
+│  Setiap perubahan (bingkai/stiker/teks/filter) → render  │
 └──────────────────────────┬───────────────────────────────┘
                            │
                            ▼
@@ -316,7 +316,7 @@ Aplikasi punya dua fase utama. Keduanya dikelola oleh satu komponen bernama `stu
 {
   template: Template;            // geometri layout (ukuran slot, posisi)
   photos: string[];              // data URL foto
-  themeId: string;               // ID tema aktif
+  themeId: string;               // ID bingkai aktif
   stickers: StickerPlacement[];  // posisi, ukuran, rotasi tiap stiker
   texts: TextPlacement[];        // posisi, style tiap teks
   photoFilters: PhotoFilterId[]; // filter per foto
@@ -333,10 +333,10 @@ Ketika `renderComposition()` dipanggil, lapisan digambar dari bawah ke atas:
 8. Teks
 7. Stiker
 6. Logo PhotoPip (di footer bawah)
-5. Artwork paket tema (PNG transparan di atas foto)
+5. Artwork paket bingkai (PNG transparan di atas foto)
 4. Garis tepi bingkai slot
 3. Foto (dipotong cover-crop agar memenuhi slot)
-2. Bingkai preset dari tema (opsional)
+2. Bingkai preset dari paket bingkai (opsional)
 1. Latar (warna solid / gradasi / pola)
 ```
 
@@ -350,7 +350,7 @@ page.tsx
         ├── useCamera()           ← akses webcam
         ├── useCaptureSession()   ← kelola session.photos[]
         │     └── sessionReducer  ← state machine foto
-        ├── useThemeCatalog()     ← fetch /api/themes, merge tema
+        ├── useThemeCatalog()     ← fetch /api/themes, gabung bingkai
         ├── useExport()           ← handle download
         └── Editor (lazy load, SSR disabled)
               ├── useEditorCanvas()   ← Fabric canvas, resize
@@ -359,7 +359,7 @@ page.tsx
               └── Panels: Theme, Photo, Sticker, Text, Property
 ```
 
-### Bagaimana tema paket dan stiker dimuat
+### Bagaimana paket bingkai dan stiker dimuat
 
 ```
 GET /api/themes
@@ -371,7 +371,7 @@ GET /api/themes
 Browser
   └── useThemeCatalog()
         ├── fetch /api/themes
-        └── mergeThemePacks() → daftar tema di panel editor
+        └── mergeThemePacks() → daftar bingkai di panel editor
 
 GET /api/stickers
   └── scanStickersDirectory()
@@ -432,7 +432,7 @@ PhotoPip/
 │   │   │   ├── hooks/
 │   │   │   │   ├── use-capture-session.ts  ← Countdown, flash, dispatch ke reducer
 │   │   │   │   ├── use-export.ts           ← Download PNG/JPEG
-│   │   │   │   └── use-theme-catalog.ts    ← Fetch dan merge tema
+│   │   │   │   └── use-theme-catalog.ts    ← Fetch dan gabung bingkai
 │   │   │   └── components/
 │   │   │       ├── booth-stage.tsx      ← Area video kamera
 │   │   │       ├── capture-controls.tsx ← Tombol shutter, timer, mirror, upload
@@ -447,7 +447,7 @@ PhotoPip/
 │   │       │   ├── use-editor-canvas.ts  ← Inisialisasi Fabric, resize, event
 │   │       │   └── use-sticker-catalog.ts ← Fetch katalog stiker dinamis (/api/stickers)
 │   │       └── components/
-│   │           ├── theme-panel.tsx      ← Grid kartu tema
+│   │           ├── theme-panel.tsx      ← Grid kartu bingkai
 │   │           ├── photo-panel.tsx      ← Filter per foto, retake
 │   │           ├── sticker-panel.tsx    ← Cari dan tambah stiker (kategori dinamis)
 │   │           ├── text-panel.tsx       ← Tambah dan kelola teks
@@ -460,7 +460,7 @@ PhotoPip/
 │   │   ├── catalog/
 │   │   │   ├── templates.ts    ← 5 definisi tata letak (ukuran, jumlah foto, slot)
 │   │   │   ├── themes.ts       ← ThemePreset, themeById(), applyTheme()
-│   │   │   ├── theme-pack.ts   ← Kontrak folder tema: parsing, validasi PNG
+│   │   │   ├── theme-pack.ts   ← Kontrak folder bingkai: parsing, validasi PNG
 │   │   │   ├── theme-packs.ts  ← packToThemePreset(), mergeThemePacks()
 │   │   │   ├── stickers.ts     ← Tipe data Sticker & array stiker bawaan
 │   │   │   ├── photo-filters.ts ← Definisi 6 filter
@@ -496,7 +496,7 @@ PhotoPip/
 │   │   ├── app-icons/      ← Favicon, Apple touch icon
 │   │   ├── brand/logo.png  ← Logo di footer strip hasil cetakan
 │   │   ├── stickers/       ← Folder stiker PNG (kategori sebagai subfolder)
-│   │   └── theme-packs/    ← Taruh folder tema kamu di sini
+│   │   └── theme-packs/    ← Taruh folder bingkai kamu di sini
 │   │       └── _starter/   ← Contoh panduan (folder _ diabaikan scanner)
 │   └── manifest.json       ← Web App Manifest
 │
@@ -517,11 +517,13 @@ PhotoPip/
 
 ---
 
-## Cara membuat paket tema sendiri
+## Cara membuat paket bingkai sendiri
 
-Paket tema adalah folder berisi beberapa file PNG yang ditaruh di `public/assets/theme-packs/`. Saat dev server berjalan, folder ini dibaca otomatis dan tema langsung muncul di panel editor.
+Paket bingkai adalah folder berisi beberapa file PNG yang ditaruh di `public/assets/theme-packs/`. Saat dev server berjalan, folder ini dibaca otomatis dan bingkai langsung muncul di panel editor.
 
-### 1. Buat folder tema
+> Nama folder `theme-packs/` dan file `theme.json` sengaja dipertahankan supaya paket yang sudah ada tetap jalan. Di UI, paket ini tampil sebagai **Bingkai**.
+
+### 1. Buat folder bingkai
 
 Buat folder baru di `public/assets/theme-packs/` dengan nama yang:
 
@@ -592,16 +594,16 @@ Format: `x, y, lebar, tinggi` (dalam piksel)
 
 ### 3. Tambahkan file opsional (kalau mau)
 
-**`preview.png`** — gambar cover untuk kartu tema di panel editor.
+**`preview.png`** — gambar cover untuk kartu bingkai di panel editor.
 
 - Ukuran: 64 × 64 px hingga 2048 × 2048 px
 - Disarankan persegi, di bawah 1 MB
 
-**`theme.json`** — pengaturan tema:
+**`theme.json`** — pengaturan bingkai:
 
 ```json
 {
-  "name": "Nama Temamu",
+  "name": "Nama Bingkaimu",
   "textColor": "#20231f",
   "fontId": "app",
   "backgroundColor": "#ffffff"
@@ -617,13 +619,13 @@ Format: `x, y, lebar, tinggi` (dalam piksel)
 
 ### 4. Muat ulang halaman
 
-Setelah folder selesai dibuat, muat ulang `http://localhost:3000`. Tema akan muncul otomatis di panel editor.
+Setelah folder selesai dibuat, muat ulang `http://localhost:3000`. Bingkai akan muncul otomatis di panel editor.
 
-### Cara debug kalau tema tidak muncul
+### Cara debug kalau bingkai tidak muncul
 
 Buka `http://localhost:3000/api/themes` di browser. Response berisi dua bagian:
 
-- `themes` — daftar tema yang berhasil dimuat
+- `themes` — daftar bingkai yang berhasil dimuat
 - `diagnostics` — daftar error/warning per folder
 
 ---
@@ -662,7 +664,7 @@ Muat ulang browser di `http://localhost:3000`. Endpoint `/api/stickers` otomatis
 
 1. Tambah entry ke `src/shared-tools/catalog/templates.ts`
 2. Tambah `layoutNames` ke semua 7 locale di `src/translations/locales/`
-3. Semua paket tema yang sudah ada harus ditambahkan file PNG untuk template baru
+3. Semua paket bingkai yang sudah ada harus ditambahkan file PNG untuk template baru
 4. Update tabel di README ini
 
 ### Menambah filter baru
@@ -702,16 +704,16 @@ npx vitest --watch                          # watch mode — tes ulang saat file
 
 Tes ada di folder `tests/`, menggunakan Vitest + Testing Library + jsdom.
 
-| File tes                   | Yang diuji                                                 |
-| -------------------------- | ---------------------------------------------------------- |
-| `camera.test.tsx`          | Status kamera, penanganan error, abort, cleanup stream     |
-| `capture-session.test.tsx` | `sessionReducer`: capture, retake, reset, batas slot       |
-| `composition.test.ts`      | Geometri slot, cover-crop, clamp posisi stiker dan teks    |
-| `editor-tabs.test.ts`      | Navigasi keyboard Arrow/Home/End di tablist editor         |
-| `sticker-catalog.test.ts`  | Pemindaian folder stiker: format nama, id, kategori, tag   |
-| `theme-catalog.test.ts`    | `mergeThemePacks`, hook `useThemeCatalog`                  |
-| `theme-pack.test.ts`       | Validasi folder tema: ukuran PNG, format JSON, nama folder |
-| `theme-preview.test.tsx`   | Render komponen `ThemePreview`                             |
+| File tes                   | Yang diuji                                                    |
+| -------------------------- | ------------------------------------------------------------- |
+| `camera.test.tsx`          | Status kamera, penanganan error, abort, cleanup stream        |
+| `capture-session.test.tsx` | `sessionReducer`: capture, retake, reset, batas slot          |
+| `composition.test.ts`      | Geometri slot, cover-crop, clamp posisi stiker dan teks       |
+| `editor-tabs.test.ts`      | Navigasi keyboard Arrow/Home/End di tablist editor            |
+| `sticker-catalog.test.ts`  | Pemindaian folder stiker: format nama, id, kategori, tag      |
+| `theme-catalog.test.ts`    | `mergeThemePacks`, hook `useThemeCatalog`                     |
+| `theme-pack.test.ts`       | Validasi folder bingkai: ukuran PNG, format JSON, nama folder |
+| `theme-preview.test.tsx`   | Render komponen `ThemePreview`                                |
 
 > **Yang tidak dicakup tes:** hasil visual, kualitas cetak, perilaku kamera di hardware nyata.
 
@@ -726,7 +728,7 @@ Tes ada di folder `tests/`, menggunakan Vitest + Testing Library + jsdom.
 - Pastikan tidak ada aplikasi lain yang sedang memakai kamera (Zoom, Meet, dll.)
 - Lihat kode error yang muncul di UI dan cocokkan dengan tabel di atas
 
-### Paket tema tidak muncul di editor
+### Paket bingkai tidak muncul di editor
 
 1. Buka `http://localhost:3000/api/themes` — lihat bagian `diagnostics`
 2. Pastikan 5 file PNG ada dan ukurannya tepat

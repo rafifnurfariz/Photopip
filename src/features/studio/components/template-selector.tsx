@@ -93,6 +93,28 @@ export function TemplateSelector({
       if (event.key === "Escape") {
         event.stopPropagation();
         close();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const popover = popoverRef.current;
+      if (!popover) return;
+      const items = popover.querySelectorAll<HTMLButtonElement>(
+        "button:not([disabled])",
+      );
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      // The sheet is portaled to <body>, so Tab has to loop inside it.
+      if (event.shiftKey && (active === first || !popover.contains(active))) {
+        event.preventDefault();
+        last.focus();
+      } else if (
+        !event.shiftKey &&
+        (active === last || !popover.contains(active))
+      ) {
+        event.preventDefault();
+        first.focus();
       }
     };
     const onPointerDown = (event: PointerEvent) => {

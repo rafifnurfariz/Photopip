@@ -19,6 +19,7 @@ import {
   normalizeSticker,
   templateGeometry,
 } from "@/shared-tools/composition/geometry";
+import { newId } from "@/shared-tools/id";
 import { normalizeText } from "@/shared-tools/composition/text";
 import type {
   Composition,
@@ -176,7 +177,7 @@ export default function Editor({
   };
 
   const addSticker = (sticker: Sticker) => {
-    const id = crypto.randomUUID();
+    const id = newId();
     const placement: StickerPlacement = {
       id,
       stickerId: sticker.id,
@@ -199,7 +200,7 @@ export default function Editor({
   };
 
   const addText = () => {
-    const id = crypto.randomUUID();
+    const id = newId();
     const placement: TextPlacement = {
       id,
       text: t.editor.defaultCaption,
@@ -252,7 +253,7 @@ export default function Editor({
         (sticker) => sticker.id === selection.id,
       );
       if (!source) return;
-      const id = crypto.randomUUID();
+      const id = newId();
       const clone = {
         ...source,
         id,
@@ -268,7 +269,7 @@ export default function Editor({
     }
     const source = composition.texts.find((text) => text.id === selection.id);
     if (!source) return;
-    const id = crypto.randomUUID();
+    const id = newId();
     const clone = {
       ...source,
       id,
