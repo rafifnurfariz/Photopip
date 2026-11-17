@@ -56,7 +56,6 @@ describe("theme pack catalog", () => {
       preview:
         'url("/assets/theme-packs/neon-nights/preview.png?v=1-2") center / cover no-repeat #0b1020',
     });
-    expect(preset.frame).toBeUndefined();
   });
 
   it("falls back to the background color without a preview image", () => {

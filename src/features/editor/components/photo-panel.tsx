@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * PANEL FILTER FOTO
+ * Mengatur filter warna pada setiap foto di strip: hitam-putih (bw),
+ * vintage, warm, cool, atau fade, serta opsi retake foto tertentu.
+ */
+
 import { useState } from "react";
 import { useLanguage } from "@/translations/use-language";
 import { photoFilters as photoFilterCatalog } from "@/shared-tools/catalog/photo-filters";

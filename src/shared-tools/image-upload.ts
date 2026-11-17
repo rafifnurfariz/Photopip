@@ -1,3 +1,9 @@
+/**
+ * PENGOLAHAN FOTO UPLOAD
+ * Memeriksa validitas file foto (tipe gambar, batas ukuran maksimal 25 MB),
+ * lalu mengecilkan ukuran dimensi jika terlalu besar sebelum dipasang ke strip.
+ */
+
 const MAX_EDGE = 2000;
 const MAX_FILE_BYTES = 25 * 1024 * 1024;
 const MAX_SOURCE_PIXELS = 40_000_000;

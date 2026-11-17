@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * HOOK SESI PEMOTRETAN
+ * Mengatur urutan slot foto: hitungan mundur tiap jepretan, penampungan foto,
+ * alur upload banyak file sekaligus, dan pencegahan tabrakan jepret vs upload.
+ */
+
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { delay } from "@/shared-tools/async";
 import {

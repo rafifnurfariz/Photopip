@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * HOOK PENGENDALI KAMERA BROWSER
+ * Mengelola izin webcam/kamera HP via getUserMedia, streaming video,
+ * pengecekan frame siap pakai, penanganan error, dan pengambilan screenshot foto.
+ */
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   cameraFailure,

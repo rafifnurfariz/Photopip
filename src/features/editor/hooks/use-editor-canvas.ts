@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * HOOK KANVAS EDITOR (FABRIC.JS)
+ * Menghubungkan elemen HTML canvas dengan Fabric.js: responsif ukuran layar,
+ * drag-and-drop objek, zooming, panning sentuh mobile, dan sinkronisasi perubahan.
+ */
+
 import { useEffect, useRef, useState } from "react";
 import { Canvas } from "fabric";
 import type { ThemePreset } from "@/shared-tools/catalog/themes";

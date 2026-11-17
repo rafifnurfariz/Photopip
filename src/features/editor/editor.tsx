@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * TAMPILAN UTAMA EDITOR
+ * Ruang kerja dekorasi foto strip: kanvas interaktif (Fabric.js),
+ * bilah alat (tool rail), riwayat undo/redo, serta manajemen stiker dan teks.
+ */
+
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   BackIcon,

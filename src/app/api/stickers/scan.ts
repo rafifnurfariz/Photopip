@@ -1,3 +1,9 @@
+/**
+ * PEMINDAI FOLDER STIKER
+ * Membaca otomatis folder public/assets/stickers/: nama folder jadi kategori,
+ * nama file gambar PNG/WebP jadi stiker, lengkap dengan versi cache-busting.
+ */
+
 import { readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import type { Sticker } from "@/shared-tools/catalog/stickers";

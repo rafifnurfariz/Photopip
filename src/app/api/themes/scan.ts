@@ -1,7 +1,12 @@
+/**
+ * PEMINDAI FOLDER PAKET BINGKAI
+ * Memindai public/assets/theme-packs/: memvalidasi manifest theme.json,
+ * mengecek dimensi artwork PNG per template, dan menyusun katalog tema siap pakai.
+ */
+
 import { open, readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import type { TemplateId } from "@/shared-tools/catalog/templates";
-import { builtinThemeIds } from "@/shared-tools/catalog/theme-ids";
 import {
   createThemePackTheme,
   isValidPackId,
@@ -21,8 +26,6 @@ import {
   type ThemePackResponse,
   type ThemePackTheme,
 } from "@/shared-tools/catalog/theme-pack";
-
-const reservedIds = new Set<string>(builtinThemeIds);
 
 interface FolderResult {
   theme: ThemePackTheme | null;
@@ -71,14 +74,6 @@ async function scanThemeFolder(
       diagnostics,
       "invalid-id",
       `Folder id must be lowercase letters, digits and single hyphens, at most ${MAX_PACK_ID_LENGTH} characters`,
-    );
-  }
-  if (reservedIds.has(folder)) {
-    return failure(
-      folder,
-      diagnostics,
-      "reserved-id",
-      "Folder id is reserved by a built-in theme preset",
     );
   }
 

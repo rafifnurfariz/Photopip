@@ -1,3 +1,9 @@
+/**
+ * PENGELOLA STATUS SESI (REDUCER)
+ * Mengelola state foto yang terkumpul: menambah foto baru, mengganti foto
+ * saat retake, dan mereset sesi saat pengguna ingin mengulang dari awal.
+ */
+
 import type { TemplateId } from "@/shared-tools/catalog/templates";
 
 export interface Session {

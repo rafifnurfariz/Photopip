@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * TAMPILAN UTAMA STUDIO (FASE PENGAMBILAN FOTO)
+ * Mengatur alur pemotretan: kamera aktif, upload file, ganti template strip,
+ * hingga tombol lanjut ke mode editor setelah foto lengkap.
+ */
+
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/translations/use-language";

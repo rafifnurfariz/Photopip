@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * PANEL PROPERTI OBJEK TERPILIH
+ * Pengatur detail stiker atau teks yang sedang aktif diklik di kanvas:
+ * ukuran, posisi X/Y, rotasi derajat, transparansi (opacity), dan urutan layer.
+ */
+
 import { useLanguage } from "@/translations/use-language";
 import { templateGeometry } from "@/shared-tools/composition/geometry";
 import type {
