@@ -14,7 +14,15 @@ export async function GET() {
     log(`[themes] ${diagnostic.folder}: ${diagnostic.message}`);
   }
 
-  return Response.json(result, {
-    headers: { "Cache-Control": "no-store, max-age=0" },
-  });
+  return Response.json(
+    {
+      themes: result.themes,
+      // Absolute paths and raw filesystem errors stay on the server.
+      diagnostics:
+        process.env.NODE_ENV === "development" ? result.diagnostics : [],
+    },
+    {
+      headers: { "Cache-Control": "no-store, max-age=0" },
+    },
+  );
 }

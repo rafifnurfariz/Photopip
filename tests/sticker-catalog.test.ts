@@ -75,4 +75,27 @@ describe("scanStickersDirectory", () => {
       "/assets/stickers/sparkle-star.png?v=",
     );
   });
+
+  it("keeps ids unique when two file names sanitize alike", async () => {
+    const root = await makeRoot();
+    const y2k = path.join(root, "y2k");
+    await mkdir(y2k, { recursive: true });
+    await writeFile(path.join(y2k, "what!.png"), "first");
+    await writeFile(path.join(y2k, "what.png"), "second");
+
+    const result = await scanStickersDirectory(root);
+    const ids = result.stickers.map((sticker) => sticker.id);
+    expect(ids).toHaveLength(2);
+    expect(new Set(ids).size).toBe(2);
+  });
+
+  it("ignores svg files", async () => {
+    const root = await makeRoot();
+    const cute = path.join(root, "cute");
+    await mkdir(cute, { recursive: true });
+    await writeFile(path.join(cute, "icon.svg"), "<svg />");
+
+    const result = await scanStickersDirectory(root);
+    expect(result.stickers).toEqual([]);
+  });
 });

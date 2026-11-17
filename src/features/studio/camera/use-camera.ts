@@ -76,7 +76,7 @@ export function useCamera() {
         track.onended = () => {
           if (id !== generation.current) return;
           stopCamera();
-          setError("busy");
+          setError("unavailable");
           setStatus("error");
         };
       });

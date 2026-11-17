@@ -153,7 +153,8 @@ describe("camera recovery and lifecycle", () => {
     await act(() => result.current[1].startCamera());
     act(() => media.track.onended?.());
     expect(result.current[1].status).toBe("error");
-    expect(result.current[1].error).toBe("busy");
+    // A revoked or unplugged camera is not "busy"; unavailable is the honest code.
+    expect(result.current[1].error).toBe("unavailable");
     expect(media.track.stop).toHaveBeenCalled();
   });
   it("captures the full usable frame and mirrors only when selected", () => {

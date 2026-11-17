@@ -23,5 +23,5 @@ export const messages: Record<Language, Messages> = {
 };
 
 export function isLanguage(value: string): value is Language {
-  return value in messages;
+  return Object.hasOwn(messages, value);
 }
