@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * PANGGUNG KAMERA & HITUNGAN MUNDUR
+ * Menampilkan jendela bidik kamera, angka mundur 3-2-1 saat memotret,
+ * kedipan flash putih, serta panduan langkah awal saat kamera masih mati.
+ */
+
 import type { CSSProperties, RefObject } from "react";
 import { useLanguage } from "@/translations/use-language";
 import type { Template } from "@/shared-tools/catalog/templates";

@@ -21,7 +21,6 @@ export function ThemePreview({ template, theme }: ThemePreviewProps) {
   );
   const width = Math.max(1, Math.round(geometry.width * scale));
   const height = Math.max(1, Math.round(geometry.height * scale));
-  const frame = theme.frame;
   const artwork = theme.artwork?.[template.id];
 
   const makeSlots = (className: string) =>
@@ -34,7 +33,6 @@ export function ThemePreview({ template, theme }: ThemePreviewProps) {
           top: slot.y * scale,
           width: slot.width * scale,
           height: slot.height * scale,
-          borderColor: frame?.slotStroke || "transparent",
         }}
       />
     ));
@@ -67,9 +65,6 @@ export function ThemePreview({ template, theme }: ThemePreviewProps) {
       style={{ width, height, background: theme.background.preview }}
       aria-hidden="true"
     >
-      {frame ? (
-        <img className="theme-preview-frame" src={frame.src} alt="" />
-      ) : null}
       {slots}
       <span
         className="theme-preview-text"

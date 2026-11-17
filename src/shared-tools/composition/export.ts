@@ -1,3 +1,9 @@
+/**
+ * PEMBUAT FILE EKSPOR GAMBAR
+ * Merender kanvas di memori (StaticCanvas) dengan resolusi cetak penuh,
+ * mengonversinya menjadi URL data gambar (PNG/JPEG), dan memicu unduhan browser.
+ */
+
 import { StaticCanvas } from "fabric";
 import type { ThemePreset } from "@/shared-tools/catalog/themes";
 import { renderComposition } from "./render";

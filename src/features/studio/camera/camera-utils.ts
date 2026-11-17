@@ -1,3 +1,9 @@
+/**
+ * FUNGSI BANTU KAMERA
+ * Menangani pengelompokan error kamera (izin ditolak, kamera tidak ada, sibuk),
+ * pemotongan frame video kanvas, dan efek cermin (mirroring).
+ */
+
 export type CameraFailure =
   | "denied"
   | "missing"

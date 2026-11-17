@@ -3210,34 +3210,6 @@ option {
   .editor-tab {
     font-size: 0.75rem;
   }
-  .tool-section--stickers > h2 {
-    display: none;
-  }
-  .tool-section--stickers .search-label {
-    margin-bottom: 8px;
-  }
-  .tool-section--stickers .category-row {
-    flex-wrap: nowrap;
-    gap: 6px;
-    margin-bottom: 8px;
-    padding-bottom: 2px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .tool-section--stickers .category-row::-webkit-scrollbar {
-    display: none;
-  }
-  .tool-section--stickers .category-row .chip-button {
-    flex: none;
-  }
-  .tool-section--stickers .sticker-options button {
-    min-height: 56px;
-    padding: 4px 2px;
-  }
-  .tool-section--stickers .sticker-options img {
-    width: 34px;
-    height: 34px;
-  }
   /* The toast stops covering the editor toolbar. */
   .phase-edit .feedback {
     top: auto;

@@ -1,3 +1,9 @@
+/**
+ * PERHITUNGAN GEOMETRI & TATA LETAK CETAK
+ * Menghitung koordinat pixel cetak: margin tepi, jarak antar foto (gap),
+ * area footer bawah, posisi slot foto, dan pembatasan geser stiker.
+ */
+
 import type { Slot } from "./types";
 
 const VERTICAL_WIDTH = 600;

@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * STRIP PRATINJAU FOTO
+ * Menampilkan thumbnail foto-foto yang sudah diambil, slot yang masih kosong,
+ * dan tombol foto ulang (retake) per foto jika hasilnya kurang pas.
+ */
+
 import type { CSSProperties } from "react";
 import { RetakeIcon } from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";

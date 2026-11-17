@@ -1,8 +1,12 @@
+/**
+ * MESIN PENGGAMBAR KANVAS (RENDERER)
+ * Menggambar susunan strip foto utuh secara bertingkat: warna latar belakang,
+ * foto di setiap slot, filter warna, artwork bingkai di depan, teks, dan stiker.
+ */
 import {
   Canvas,
   FabricImage,
   FabricText,
-  Rect,
   StaticCanvas,
   filters,
   type FabricObject,
@@ -172,28 +176,7 @@ export async function renderComposition(
   canvas.clear();
   canvas.setDimensions({ width: geometry.width, height: geometry.height });
   canvas.backgroundImage = undefined;
-  canvas.backgroundColor = backgroundFill(
-    theme.background,
-    geometry.width,
-    geometry.height,
-  );
-  const frame = theme.frame;
-  // Frames sit around the photos, never as an opaque overlay hiding them.
-  if (frame) {
-    const image = await optionalImage(frame.src, signal);
-    if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
-    if (image) {
-      const frameObject = new FabricImage(image, {
-        ...TOP_LEFT,
-        left: 0,
-        top: 0,
-        ...STATIC_OBJECT,
-      });
-      frameObject.scaleX = geometry.width / image.width;
-      frameObject.scaleY = geometry.height / image.height;
-      canvas.add(frameObject);
-    }
-  }
+  canvas.backgroundColor = backgroundFill(theme.background);
   photos.forEach((image, index) => {
     const slot = geometry.slots[index];
     const crop = coverCrop(image.width, image.height, slot);
@@ -211,20 +194,6 @@ export async function renderComposition(
     });
     applyPhotoFilter(photo, composition.photoFilters?.[index] ?? "none");
     canvas.add(photo);
-    if (frame?.slotStroke)
-      canvas.add(
-        new Rect({
-          ...TOP_LEFT,
-          left: slot.x,
-          top: slot.y,
-          width: slot.width,
-          height: slot.height,
-          fill: "transparent",
-          stroke: frame.slotStroke,
-          strokeWidth: 3,
-          ...STATIC_OBJECT,
-        }),
-      );
   });
   // Pack artwork is the front layer: transparent pixels reveal the photo below,
   // while opaque pixels define the photo shape or add decoration above it.

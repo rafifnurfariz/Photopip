@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * PEMILIH FORMAT TATA LETAK (TEMPLATE)
+ * Menu popover / bottom sheet untuk memilih bentuk strip cetak:
+ * strip vertikal (4x1, 3x1), kotak grid (2x2, 2x3), atau foto tunggal (1x1).
+ */
+
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CheckIcon, ChevronIcon } from "@/components/icons";

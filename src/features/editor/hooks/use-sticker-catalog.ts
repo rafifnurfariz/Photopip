@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { stickers, type Sticker } from "@/shared-tools/catalog/stickers";
+import type { Sticker } from "@/shared-tools/catalog/stickers";
 
 export interface StickerCatalogData {
   stickers: Sticker[];
@@ -10,7 +10,7 @@ export interface StickerCatalogData {
 
 export function useStickerCatalog(): StickerCatalogData {
   const [data, setData] = useState<StickerCatalogData>({
-    stickers,
+    stickers: [],
     categories: [],
   });
 

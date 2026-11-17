@@ -1,23 +1,16 @@
 import type { TemplateId } from "@/shared-tools/catalog/templates";
 import type { Composition } from "@/shared-tools/composition/types";
 
-interface ThemeBackgroundBase {
+export type ThemeBackground = {
+  type: "color";
+  value: string;
   preview: string;
-}
-
-export type ThemeBackground =
-  | (ThemeBackgroundBase & { type: "color"; value: string })
-  | (ThemeBackgroundBase & { type: "gradient"; value: string })
-  | (ThemeBackgroundBase & {
-      type: "pattern";
-      pattern: "stripes" | "dots" | "checker";
-    });
+};
 
 export interface ThemePreset {
   id: string;
   name: string;
   background: ThemeBackground;
-  frame?: { src: string; slotStroke: string };
   artwork?: Partial<Record<TemplateId, string>>;
   textColor: string;
   fontId: string;
