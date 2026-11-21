@@ -9,8 +9,6 @@ export interface FramePackFrame {
   textColor: string;
   fontId: string;
   backgroundColor: string;
-  /** Optional cache-busted URL of the square cover. The card uses artwork. */
-  preview?: string;
   /** Cache-busted front-layer artwork URL for every print template. */
   artwork: Record<TemplateId, string>;
 }
@@ -55,10 +53,7 @@ export interface TemplateArtworkSpec {
 export const MAX_PACK_ID_LENGTH = 40;
 export const MAX_MANIFEST_BYTES = 16 * 1024;
 export const PNG_HEADER_BYTES = 24;
-const MIN_PREVIEW_EDGE = 64;
-const MAX_PREVIEW_EDGE = 2048;
 export const LARGE_ARTWORK_BYTES = 8 * 1024 * 1024;
-export const LARGE_PREVIEW_BYTES = 1024 * 1024;
 
 const DEFAULT_TEXT_COLOR = "#20231f";
 const DEFAULT_BACKGROUND_COLOR = "#ffffff";
@@ -198,16 +193,6 @@ export function readPngSize(bytes: Uint8Array): PngSize | null {
   return { width, height };
 }
 
-export function validatePreviewSize(size: PngSize): string | null {
-  if (size.width < MIN_PREVIEW_EDGE || size.height < MIN_PREVIEW_EDGE) {
-    return `preview.png must be at least ${MIN_PREVIEW_EDGE}x${MIN_PREVIEW_EDGE}`;
-  }
-  if (size.width > MAX_PREVIEW_EDGE || size.height > MAX_PREVIEW_EDGE) {
-    return `preview.png must be at most ${MAX_PREVIEW_EDGE}x${MAX_PREVIEW_EDGE}`;
-  }
-  return null;
-}
-
 /** Appends file metadata so replacing artwork busts the browser image cache. */
 export function packFileUrl(
   id: string,
@@ -220,7 +205,6 @@ export function packFileUrl(
 export function createFramePackFrame(input: {
   id: string;
   manifest: FrameManifest;
-  preview?: string;
   artwork: Record<TemplateId, string>;
 }): FramePackFrame {
   const defaults = packDefaults(input.id);
@@ -230,7 +214,6 @@ export function createFramePackFrame(input: {
     textColor: input.manifest.textColor ?? defaults.textColor,
     fontId: input.manifest.fontId ?? defaults.fontId,
     backgroundColor: input.manifest.backgroundColor ?? defaults.backgroundColor,
-    preview: input.preview,
     artwork: input.artwork,
   };
 }

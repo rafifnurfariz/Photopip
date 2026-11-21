@@ -11,7 +11,6 @@ import {
   createFramePackFrame,
   isValidPackId,
   LARGE_ARTWORK_BYTES,
-  LARGE_PREVIEW_BYTES,
   MAX_MANIFEST_BYTES,
   MAX_PACK_ID_LENGTH,
   packFileUrl,
@@ -19,7 +18,6 @@ import {
   PNG_HEADER_BYTES,
   readPngSize,
   templateArtworkSpecs,
-  validatePreviewSize,
   type FrameManifest,
   type FramePackDiagnostic,
   type FramePackResponse,
@@ -105,52 +103,6 @@ async function scanFrameFolder(
     manifest = parsed.manifest;
   }
 
-  let preview: string | undefined;
-  const previewPath = path.join(directory, "preview.png");
-  const previewStat = await statOrNull(previewPath);
-  if (previewStat) {
-    if (!previewStat.isFile()) {
-      return failure(
-        folder,
-        diagnostics,
-        "bad-png",
-        "preview.png must be a file",
-      );
-    }
-    const previewSize = readPngSize(
-      await readHeader(previewPath, PNG_HEADER_BYTES),
-    );
-    if (!previewSize) {
-      return failure(
-        folder,
-        diagnostics,
-        "bad-png",
-        "preview.png is not a valid PNG",
-      );
-    }
-    const previewError = validatePreviewSize(previewSize);
-    if (previewError) {
-      return failure(folder, diagnostics, "bad-preview-size", previewError);
-    }
-    if (previewSize.width !== previewSize.height) {
-      diagnostics.push({
-        folder,
-        level: "warning",
-        code: "non-square-preview",
-        message: "preview.png is not square; the cover will be cropped",
-      });
-    }
-    if (previewStat.size > LARGE_PREVIEW_BYTES) {
-      diagnostics.push({
-        folder,
-        level: "warning",
-        code: "large-preview",
-        message: `preview.png is larger than ${LARGE_PREVIEW_BYTES} bytes`,
-      });
-    }
-    preview = packFileUrl(folder, "preview.png", previewStat);
-  }
-
   const artworkEntries: Array<[TemplateId, string]> = [];
   for (const spec of templateArtworkSpecs) {
     const file = path.join(directory, spec.file);
@@ -208,7 +160,6 @@ async function scanFrameFolder(
     frame: createFramePackFrame({
       id: folder,
       manifest,
-      preview,
       artwork,
     }),
     diagnostics,

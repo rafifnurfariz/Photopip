@@ -3,8 +3,7 @@ import type { FramePreset } from "./frames";
 
 /**
  * Converts a discovered pack into the same shape the editor and renderer use.
- * The CSS preview is a fallback cover; the frame card layers per-template
- * artwork over neutral slot placeholders, so `preview.png` is optional.
+ * The frame card layers per-template artwork over neutral slot placeholders.
  */
 export function packToFramePreset(pack: FramePackFrame): FramePreset {
   return {
@@ -13,9 +12,7 @@ export function packToFramePreset(pack: FramePackFrame): FramePreset {
     background: {
       type: "color",
       value: pack.backgroundColor,
-      preview: pack.preview
-        ? `url("${pack.preview}") center / cover no-repeat ${pack.backgroundColor}`
-        : pack.backgroundColor,
+      preview: pack.backgroundColor,
     },
     artwork: pack.artwork,
     textColor: pack.textColor,

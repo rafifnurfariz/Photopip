@@ -12,7 +12,6 @@ import {
   PNG_HEADER_BYTES,
   readPngSize,
   templateArtworkSpecs,
-  validatePreviewSize,
 } from "@/shared-tools/catalog/frame-pack";
 
 const temporaryDirectories: string[] = [];
@@ -35,7 +34,6 @@ async function makeRoot() {
 
 interface PackOptions {
   manifest?: string;
-  preview?: [number, number];
   artwork?: Partial<Record<string, [number, number]>>;
   omit?: string[];
 }
@@ -46,13 +44,6 @@ async function writePack(root: string, id: string, options: PackOptions = {}) {
   const omit = new Set(options.omit ?? []);
   if (options.manifest !== undefined) {
     await writeFile(path.join(directory, "frame.json"), options.manifest);
-  }
-  if (!omit.has("preview.png")) {
-    const [width, height] = options.preview ?? [240, 240];
-    await writeFile(
-      path.join(directory, "preview.png"),
-      pngHeader(width, height),
-    );
   }
   for (const spec of templateArtworkSpecs) {
     if (omit.has(spec.file)) continue;
@@ -137,10 +128,7 @@ describe("frame pack validation", () => {
     );
   });
 
-  it("validates preview dimensions and builds cache-busted URLs", () => {
-    expect(validatePreviewSize({ width: 240, height: 240 })).toBeNull();
-    expect(validatePreviewSize({ width: 63, height: 240 })).not.toBeNull();
-    expect(validatePreviewSize({ width: 2049, height: 2049 })).not.toBeNull();
+  it("builds cache-busted URLs", () => {
     expect(
       packFileUrl("neon-nights", "4x1.png", { mtimeMs: 1000.6, size: 24 }),
     ).toBe("/assets/frame-packs/neon-nights/4x1.png?v=1001-24");
@@ -181,9 +169,6 @@ describe("frame directory scanner", () => {
       fontId: "app",
       backgroundColor: "#ffffff",
     });
-    expect(frame.preview).toMatch(
-      /^\/assets\/frame-packs\/neon-nights\/preview\.png\?v=\d+-\d+$/,
-    );
     expect(Object.keys(frame.artwork).sort()).toEqual(
       templateArtworkSpecs.map((spec) => spec.id).sort(),
     );
@@ -195,20 +180,7 @@ describe("frame directory scanner", () => {
     );
   });
 
-  it("accepts a pack without preview.png", async () => {
-    const root = await makeRoot();
-    await writePack(root, "no-preview", { omit: ["preview.png"] });
-
-    const result = await scanFrameDirectory(root);
-    expect(result.diagnostics).toEqual([]);
-    expect(result.frames).toHaveLength(1);
-    expect(result.frames[0].preview).toBeUndefined();
-    expect(result.frames[0].artwork["4x1"]).toMatch(
-      /^\/assets\/frame-packs\/no-preview\/4x1\.png\?v=\d+-\d+$/,
-    );
-  });
-
-  it("applies manifest fields and warns about a non-square preview", async () => {
+  it("applies manifest fields", async () => {
     const root = await makeRoot();
     await writePack(root, "neon-nights", {
       manifest: JSON.stringify({
@@ -217,7 +189,6 @@ describe("frame directory scanner", () => {
         fontId: "display",
         backgroundColor: "#0b1020",
       }),
-      preview: [240, 200],
     });
 
     const result = await scanFrameDirectory(root);
@@ -227,13 +198,7 @@ describe("frame directory scanner", () => {
       fontId: "display",
       backgroundColor: "#0b1020",
     });
-    expect(result.diagnostics).toEqual([
-      expect.objectContaining({
-        folder: "neon-nights",
-        level: "warning",
-        code: "non-square-preview",
-      }),
-    ]);
+    expect(result.diagnostics).toEqual([]);
   });
 
   it("ignores underscore folders and missing roots", async () => {

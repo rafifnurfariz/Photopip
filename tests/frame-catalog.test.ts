@@ -22,7 +22,6 @@ const pack: FramePackFrame = {
   textColor: "#f8fafc",
   fontId: "display",
   backgroundColor: "#0b1020",
-  preview: "/assets/frame-packs/neon-nights/preview.png?v=1-2",
   artwork: Object.fromEntries(
     templateArtworkSpecs.map((spec) => [
       spec.id,
@@ -41,7 +40,7 @@ const composition: Composition = {
 };
 
 describe("frame pack catalog", () => {
-  it("converts a pack into a frame preset with a CSS preview", () => {
+  it("converts a pack into a frame preset", () => {
     const preset = packToFramePreset(pack);
     expect(preset).toMatchObject({
       id: "neon-nights",
@@ -49,21 +48,11 @@ describe("frame pack catalog", () => {
       textColor: "#f8fafc",
       fontId: "display",
       artwork: pack.artwork,
-    });
-    expect(preset.background).toEqual({
-      type: "color",
-      value: "#0b1020",
-      preview:
-        'url("/assets/frame-packs/neon-nights/preview.png?v=1-2") center / cover no-repeat #0b1020',
-    });
-  });
-
-  it("falls back to the background color without a preview image", () => {
-    const preset = packToFramePreset({ ...pack, preview: undefined });
-    expect(preset.background).toEqual({
-      type: "color",
-      value: "#0b1020",
-      preview: "#0b1020",
+      background: {
+        type: "color",
+        value: "#0b1020",
+        preview: "#0b1020",
+      },
     });
   });
 
