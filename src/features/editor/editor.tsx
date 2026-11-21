@@ -17,10 +17,10 @@ import {
 import { useLanguage } from "@/translations/use-language";
 import type { Sticker } from "@/shared-tools/catalog/stickers";
 import {
-  applyTheme,
-  themeById,
-  type ThemePreset,
-} from "@/shared-tools/catalog/themes";
+  applyFrame,
+  frameById,
+  type FramePreset,
+} from "@/shared-tools/catalog/frames";
 import {
   normalizeSticker,
   templateGeometry,
@@ -32,11 +32,11 @@ import type {
   StickerPlacement,
   TextPlacement,
 } from "@/shared-tools/composition/types";
+import { FramePanel } from "./components/frame-panel";
 import { PhotoPanel } from "./components/photo-panel";
 import { PropertyPanel } from "./components/property-panel";
 import { StickerPanel } from "./components/sticker-panel";
 import { TextPanel } from "./components/text-panel";
-import { ThemePanel } from "./components/theme-panel";
 import { ToolRail } from "./components/tool-rail";
 import {
   initialHistory,
@@ -53,7 +53,7 @@ import type { ToolTab } from "./types";
 
 interface EditorProps {
   composition: Composition;
-  themes: readonly ThemePreset[];
+  frames: readonly FramePreset[];
   onChange: (composition: Composition) => void;
   onBack: () => void;
   onReset: () => void;
@@ -69,14 +69,14 @@ function clampOpacity(value: number) {
 
 export default function Editor({
   composition,
-  themes,
+  frames,
   onChange,
   onBack,
   onReset,
   onRetakePhoto,
 }: EditorProps) {
   const { t } = useLanguage();
-  const [tab, setTab] = useState<ToolTab>("theme");
+  const [tab, setTab] = useState<ToolTab>("frame");
   const [selection, setSelection] = useState<CanvasSelection | null>(null);
   const [zoom, setZoom] = useState(1);
   const [fitWhole, setFitWhole] = useState(false);
@@ -86,7 +86,7 @@ export default function Editor({
     () => templateGeometry(composition.template),
     [composition.template],
   );
-  const theme = themeById(composition.themeId, themes);
+  const frame = frameById(composition.frameId, frames);
 
   const commit = useCallback(
     (next: Composition) => {
@@ -124,7 +124,7 @@ export default function Editor({
 
   const [elementRef, containerRef, canvas] = useEditorCanvas(
     composition,
-    theme,
+    frame,
     commit,
     selection,
     handleSelect,
@@ -214,8 +214,8 @@ export default function Editor({
       y: geometry.height / 2,
       size: Math.round(geometry.width * 0.06),
       rotation: 0,
-      color: theme.textColor,
-      fontId: theme.fontId,
+      color: frame.textColor,
+      fontId: frame.fontId,
       align: "center",
       bold: false,
       italic: false,
@@ -312,12 +312,12 @@ export default function Editor({
   };
 
   const surprise = () => {
-    const pool = themes.filter((item) => item.id !== composition.themeId);
+    const pool = frames.filter((item) => item.id !== composition.frameId);
     const next =
       pool[Math.floor(Math.random() * pool.length)] ??
-      themes[0] ??
-      themeById("plain", themes);
-    commit(applyTheme(composition, next));
+      frames[0] ??
+      frameById("plain", frames);
+    commit(applyFrame(composition, next));
   };
 
   const changeZoom = (direction: 1 | -1) => {
@@ -471,10 +471,10 @@ export default function Editor({
             tabIndex={0}
             aria-label={t.editor.tabs[tab]}
           >
-            {tab === "theme" && (
-              <ThemePanel
+            {tab === "frame" && (
+              <FramePanel
                 composition={composition}
-                themes={themes}
+                frames={frames}
                 onChange={commit}
                 onSurprise={surprise}
               />

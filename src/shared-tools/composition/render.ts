@@ -12,7 +12,7 @@ import {
   type FabricObject,
 } from "fabric";
 import { resolveTextFont } from "@/shared-tools/catalog/fonts";
-import type { ThemePreset } from "@/shared-tools/catalog/themes";
+import type { FramePreset } from "@/shared-tools/catalog/frames";
 import { backgroundFill } from "./background-fill";
 import { coverCrop, normalizeSticker, templateGeometry } from "./geometry";
 import { normalizeText } from "./text";
@@ -157,14 +157,14 @@ function applyPhotoFilter(image: FabricImage, id: PhotoFilterId) {
 export async function renderComposition(
   canvas: Canvas | StaticCanvas,
   composition: Composition,
-  theme: ThemePreset,
+  frame: FramePreset,
   signal?: AbortSignal,
   interactive = false,
 ) {
   const geometry = templateGeometry(composition.template);
   if (composition.photos.length !== composition.template.photoCount)
     throw new Error("Incomplete composition");
-  const artworkSrc = theme.artwork?.[composition.template.id];
+  const artworkSrc = frame.artwork?.[composition.template.id];
   const [photos, stickerImages, artworkImage, logoImage] = await Promise.all([
     Promise.all(composition.photos.map((src) => loadImage(src, signal))),
     Promise.all(
@@ -181,7 +181,7 @@ export async function renderComposition(
   canvas.clear();
   canvas.setDimensions({ width: geometry.width, height: geometry.height });
   canvas.backgroundImage = undefined;
-  canvas.backgroundColor = backgroundFill(theme.background);
+  canvas.backgroundColor = backgroundFill(frame.background);
   photos.forEach((image, index) => {
     const slot = geometry.slots[index];
     const crop = coverCrop(image.width, image.height, slot);

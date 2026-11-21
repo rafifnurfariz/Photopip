@@ -1,19 +1,19 @@
 "use client";
 
 import { resolveTextFont } from "@/shared-tools/catalog/fonts";
-import type { ThemePreset } from "@/shared-tools/catalog/themes";
+import type { FramePreset } from "@/shared-tools/catalog/frames";
 import { templateGeometry } from "@/shared-tools/composition/geometry";
 import type { Composition } from "@/shared-tools/composition/types";
 
 const MAX_WIDTH = 104;
 const MAX_HEIGHT = 128;
 
-interface ThemePreviewProps {
+interface FramePreviewProps {
   template: Composition["template"];
-  theme: ThemePreset;
+  frame: FramePreset;
 }
 
-export function ThemePreview({ template, theme }: ThemePreviewProps) {
+export function FramePreview({ template, frame }: FramePreviewProps) {
   const geometry = templateGeometry(template);
   const scale = Math.min(
     MAX_WIDTH / geometry.width,
@@ -21,7 +21,7 @@ export function ThemePreview({ template, theme }: ThemePreviewProps) {
   );
   const width = Math.max(1, Math.round(geometry.width * scale));
   const height = Math.max(1, Math.round(geometry.height * scale));
-  const artwork = theme.artwork?.[template.id];
+  const artwork = frame.artwork?.[template.id];
 
   const makeSlots = (className: string) =>
     geometry.slots.map((slot, index) => (
@@ -38,41 +38,41 @@ export function ThemePreview({ template, theme }: ThemePreviewProps) {
     ));
 
   if (artwork) {
-    const slots = makeSlots("theme-preview-slot theme-preview-slot--artwork");
+    const slots = makeSlots("frame-preview-slot frame-preview-slot--artwork");
     return (
       <span
-        className="theme-preview"
+        className="frame-preview"
         style={{
           width,
           height,
           background:
-            theme.background.type === "color"
-              ? theme.background.value
+            frame.background.type === "color"
+              ? frame.background.value
               : "#ffffff",
         }}
         aria-hidden="true"
       >
         {slots}
-        <img className="theme-preview-artwork" src={artwork} alt="" />
+        <img className="frame-preview-artwork" src={artwork} alt="" />
       </span>
     );
   }
 
-  const slots = makeSlots("theme-preview-slot");
+  const slots = makeSlots("frame-preview-slot");
   return (
     <span
-      className="theme-preview"
-      style={{ width, height, background: theme.background.preview }}
+      className="frame-preview"
+      style={{ width, height, background: frame.background.preview }}
       aria-hidden="true"
     >
       {slots}
       <span
-        className="theme-preview-text"
+        className="frame-preview-text"
         style={{
           left: width / 2,
           top: height - (geometry.margin + geometry.footer / 2) * scale,
-          color: theme.textColor,
-          fontFamily: resolveTextFont(theme.fontId),
+          color: frame.textColor,
+          fontFamily: resolveTextFont(frame.fontId),
         }}
       >
         Aa

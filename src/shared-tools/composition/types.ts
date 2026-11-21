@@ -40,7 +40,7 @@ export interface TextPlacement {
 export interface Composition {
   template: Template;
   photos: string[];
-  themeId: string;
+  frameId: string;
   stickers: StickerPlacement[];
   texts: TextPlacement[];
   photoFilters: PhotoFilterId[];

@@ -10,7 +10,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/translations/use-language";
 import type { TemplateId } from "@/shared-tools/catalog/templates";
-import { themeById } from "@/shared-tools/catalog/themes";
+import { frameById } from "@/shared-tools/catalog/frames";
 import type { Composition } from "@/shared-tools/composition/types";
 import { useCamera } from "./camera/use-camera";
 import { BoothStage } from "./components/booth-stage";
@@ -21,7 +21,7 @@ import { FilmStrip } from "./components/film-strip";
 import { TemplateSelector } from "./components/template-selector";
 import { useCaptureSession } from "./hooks/use-capture-session";
 import { useExport } from "./hooks/use-export";
-import { useThemeCatalog } from "./hooks/use-theme-catalog";
+import { useFrameCatalog } from "./hooks/use-frame-catalog";
 import type { StudioMessage } from "./types";
 
 function EditorLoading() {
@@ -72,7 +72,7 @@ export default function Studio() {
     exportPhoto,
     cancel: cancelExport,
   } = useExport(setMessage);
-  const themes = useThemeCatalog();
+  const frames = useFrameCatalog();
 
   // The download toast is an acknowledgement, not state: clear it after 3s.
   useEffect(() => {
@@ -152,7 +152,7 @@ export default function Studio() {
             template,
             photos: session.photos,
             stickers: [],
-            themeId: "plain",
+            frameId: "plain",
             texts: [],
             photoFilters: session.photos.map(() => "none"),
           },
@@ -320,7 +320,7 @@ export default function Studio() {
         <div className="edit-shell">
           <Editor
             composition={stage.draft}
-            themes={themes}
+            frames={frames}
             onChange={(draft) => setStage({ mode: "edit", draft })}
             onBack={leaveEdit}
             onReset={() => requestReset()}
@@ -333,7 +333,7 @@ export default function Studio() {
             onExport={() =>
               void exportPhoto(
                 stage.draft,
-                themeById(stage.draft.themeId, themes),
+                frameById(stage.draft.frameId, frames),
               )
             }
           />

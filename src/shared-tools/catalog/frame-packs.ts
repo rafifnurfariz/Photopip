@@ -1,12 +1,12 @@
-import type { ThemePackTheme } from "./theme-pack";
-import type { ThemePreset } from "./themes";
+import type { FramePackFrame } from "./frame-pack";
+import type { FramePreset } from "./frames";
 
 /**
  * Converts a discovered pack into the same shape the editor and renderer use.
- * The CSS preview is a fallback cover; the theme card layers per-template
+ * The CSS preview is a fallback cover; the frame card layers per-template
  * artwork over neutral slot placeholders, so `preview.png` is optional.
  */
-export function packToThemePreset(pack: ThemePackTheme): ThemePreset {
+export function packToFramePreset(pack: FramePackFrame): FramePreset {
   return {
     id: pack.id,
     name: pack.name,
@@ -24,9 +24,9 @@ export function packToThemePreset(pack: ThemePackTheme): ThemePreset {
 }
 
 /** Built-in presets stay first; image packs follow in folder order. */
-export function mergeThemePacks(
-  builtins: readonly ThemePreset[],
-  packs: readonly ThemePackTheme[],
-): ThemePreset[] {
-  return [...builtins, ...packs.map(packToThemePreset)];
+export function mergeFramePacks(
+  builtins: readonly FramePreset[],
+  packs: readonly FramePackFrame[],
+): FramePreset[] {
+  return [...builtins, ...packs.map(packToFramePreset)];
 }

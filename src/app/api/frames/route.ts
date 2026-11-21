@@ -1,22 +1,22 @@
 import path from "node:path";
-import { scanThemeDirectory } from "./scan";
+import { scanFrameDirectory } from "./scan";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 export const runtime = "nodejs";
 
 export async function GET() {
-  const root = path.join(process.cwd(), "public", "assets", "theme-packs");
-  const result = await scanThemeDirectory(root);
+  const root = path.join(process.cwd(), "public", "assets", "frame-packs");
+  const result = await scanFrameDirectory(root);
 
   for (const diagnostic of result.diagnostics) {
     const log = diagnostic.level === "error" ? console.warn : console.info;
-    log(`[themes] ${diagnostic.folder}: ${diagnostic.message}`);
+    log(`[frames] ${diagnostic.folder}: ${diagnostic.message}`);
   }
 
   return Response.json(
     {
-      themes: result.themes,
+      frames: result.frames,
       // Absolute paths and raw filesystem errors stay on the server.
       diagnostics:
         process.env.NODE_ENV === "development" ? result.diagnostics : [],

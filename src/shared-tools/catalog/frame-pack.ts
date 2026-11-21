@@ -2,8 +2,8 @@ import { textFonts } from "@/shared-tools/catalog/fonts";
 import { templates, type TemplateId } from "@/shared-tools/catalog/templates";
 import { templateGeometry } from "@/shared-tools/composition/geometry";
 
-/** A theme pack discovered under `public/assets/theme-packs/<id>/`. */
-export interface ThemePackTheme {
+/** A frame pack discovered under `public/assets/frame-packs/<id>/`. */
+export interface FramePackFrame {
   id: string;
   name: string;
   textColor: string;
@@ -15,21 +15,21 @@ export interface ThemePackTheme {
   artwork: Record<TemplateId, string>;
 }
 
-type ThemePackDiagnosticLevel = "warning" | "error";
+type FramePackDiagnosticLevel = "warning" | "error";
 
-export interface ThemePackDiagnostic {
+export interface FramePackDiagnostic {
   folder: string;
-  level: ThemePackDiagnosticLevel;
+  level: FramePackDiagnosticLevel;
   code: string;
   message: string;
 }
 
-export interface ThemePackResponse {
-  themes: ThemePackTheme[];
-  diagnostics: ThemePackDiagnostic[];
+export interface FramePackResponse {
+  frames: FramePackFrame[];
+  diagnostics: FramePackDiagnostic[];
 }
 
-export interface ThemeManifest {
+export interface FrameManifest {
   name?: string;
   textColor?: string;
   fontId?: string;
@@ -37,7 +37,7 @@ export interface ThemeManifest {
 }
 
 export type ManifestParseResult =
-  | { ok: true; manifest: ThemeManifest }
+  | { ok: true; manifest: FrameManifest }
   | { ok: false; message: string };
 
 export interface PngSize {
@@ -95,7 +95,7 @@ export function isHexColor(value: string): boolean {
   return hexColorPattern.test(value);
 }
 
-/** Humanizes a folder id when `theme.json` does not provide a name. */
+/** Humanizes a folder id when `frame.json` does not provide a name. */
 export function nameFromPackId(id: string): string {
   return id
     .split("-")
@@ -113,29 +113,29 @@ function packDefaults(id: string) {
   };
 }
 
-export function parseThemeManifest(raw: string): ManifestParseResult {
+export function parseFrameManifest(raw: string): ManifestParseResult {
   let value: unknown;
   try {
     value = JSON.parse(raw);
   } catch {
-    return { ok: false, message: "theme.json is not valid JSON" };
+    return { ok: false, message: "frame.json is not valid JSON" };
   }
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return { ok: false, message: "theme.json must contain a JSON object" };
+    return { ok: false, message: "frame.json must contain a JSON object" };
   }
 
   const record = value as Record<string, unknown>;
-  const manifest: ThemeManifest = {};
+  const manifest: FrameManifest = {};
 
   if (record.name !== undefined) {
     if (typeof record.name !== "string") {
-      return { ok: false, message: "theme.json name must be a string" };
+      return { ok: false, message: "frame.json name must be a string" };
     }
     const name = record.name.trim();
     if (name.length === 0 || name.length > 60) {
       return {
         ok: false,
-        message: "theme.json name must be 1-60 characters",
+        message: "frame.json name must be 1-60 characters",
       };
     }
     manifest.name = name;
@@ -143,7 +143,7 @@ export function parseThemeManifest(raw: string): ManifestParseResult {
 
   if (record.textColor !== undefined) {
     if (typeof record.textColor !== "string" || !isHexColor(record.textColor)) {
-      return { ok: false, message: "theme.json textColor must be #rrggbb" };
+      return { ok: false, message: "frame.json textColor must be #rrggbb" };
     }
     manifest.textColor = record.textColor;
   }
@@ -155,7 +155,7 @@ export function parseThemeManifest(raw: string): ManifestParseResult {
     ) {
       return {
         ok: false,
-        message: "theme.json backgroundColor must be #rrggbb",
+        message: "frame.json backgroundColor must be #rrggbb",
       };
     }
     manifest.backgroundColor = record.backgroundColor;
@@ -168,7 +168,7 @@ export function parseThemeManifest(raw: string): ManifestParseResult {
     ) {
       return {
         ok: false,
-        message: "theme.json fontId must be app, serif, sans, mono or display",
+        message: "frame.json fontId must be app, serif, sans, mono or display",
       };
     }
     manifest.fontId = record.fontId;
@@ -214,15 +214,15 @@ export function packFileUrl(
   file: string,
   stats: { mtimeMs: number; size: number },
 ): string {
-  return `/assets/theme-packs/${id}/${file}?v=${Math.round(stats.mtimeMs)}-${stats.size}`;
+  return `/assets/frame-packs/${id}/${file}?v=${Math.round(stats.mtimeMs)}-${stats.size}`;
 }
 
-export function createThemePackTheme(input: {
+export function createFramePackFrame(input: {
   id: string;
-  manifest: ThemeManifest;
+  manifest: FrameManifest;
   preview?: string;
   artwork: Record<TemplateId, string>;
-}): ThemePackTheme {
+}): FramePackFrame {
   const defaults = packDefaults(input.id);
   return {
     id: input.id,

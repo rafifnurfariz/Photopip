@@ -17,6 +17,7 @@ const contentSecurityPolicy = [
 ].join("; ");
 
 const nextConfig = {
+  allowedDevOrigins: ["192.168.100.195"],
   output: "standalone",
   poweredByHeader: false,
   images: { unoptimized: true },

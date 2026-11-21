@@ -2,18 +2,18 @@ import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { scanThemeDirectory } from "@/app/api/themes/scan";
+import { scanFrameDirectory } from "@/app/api/frames/scan";
 import {
   isHexColor,
   isValidPackId,
   nameFromPackId,
   packFileUrl,
-  parseThemeManifest,
+  parseFrameManifest,
   PNG_HEADER_BYTES,
   readPngSize,
   templateArtworkSpecs,
   validatePreviewSize,
-} from "@/shared-tools/catalog/theme-pack";
+} from "@/shared-tools/catalog/frame-pack";
 
 const temporaryDirectories: string[] = [];
 
@@ -28,7 +28,7 @@ function pngHeader(width: number, height: number): Buffer {
 }
 
 async function makeRoot() {
-  const root = await mkdtemp(path.join(tmpdir(), "photopip-themes-"));
+  const root = await mkdtemp(path.join(tmpdir(), "photopip-frames-"));
   temporaryDirectories.push(root);
   return root;
 }
@@ -45,7 +45,7 @@ async function writePack(root: string, id: string, options: PackOptions = {}) {
   await mkdir(directory, { recursive: true });
   const omit = new Set(options.omit ?? []);
   if (options.manifest !== undefined) {
-    await writeFile(path.join(directory, "theme.json"), options.manifest);
+    await writeFile(path.join(directory, "frame.json"), options.manifest);
   }
   if (!omit.has("preview.png")) {
     const [width, height] = options.preview ?? [240, 240];
@@ -72,7 +72,7 @@ afterEach(async () => {
   );
 });
 
-describe("theme pack validation", () => {
+describe("frame pack validation", () => {
   it("reads PNG dimensions from the IHDR chunk", () => {
     expect(readPngSize(pngHeader(600, 1800))).toEqual({
       width: 600,
@@ -87,7 +87,7 @@ describe("theme pack validation", () => {
 
   it("accepts lowercase hyphenated folder ids only", () => {
     expect(isValidPackId("neon-nights")).toBe(true);
-    expect(isValidPackId("theme2")).toBe(true);
+    expect(isValidPackId("frame2")).toBe(true);
     for (const value of ["Neon", "-neon", "neon--nights", "neon_nights", ""]) {
       expect(isValidPackId(value)).toBe(false);
     }
@@ -104,7 +104,7 @@ describe("theme pack validation", () => {
 
   it("parses optional manifest fields and rejects bad values", () => {
     expect(
-      parseThemeManifest(
+      parseFrameManifest(
         JSON.stringify({
           name: "  Neon Nights  ",
           textColor: "#F8FAFC",
@@ -122,17 +122,17 @@ describe("theme pack validation", () => {
         backgroundColor: "#0b1020",
       },
     });
-    expect(parseThemeManifest("{}")).toEqual({ ok: true, manifest: {} });
-    expect(parseThemeManifest("{").ok).toBe(false);
-    expect(parseThemeManifest("[]").ok).toBe(false);
-    expect(parseThemeManifest(JSON.stringify({ name: "" })).ok).toBe(false);
-    expect(parseThemeManifest(JSON.stringify({ textColor: "red" })).ok).toBe(
+    expect(parseFrameManifest("{}")).toEqual({ ok: true, manifest: {} });
+    expect(parseFrameManifest("{").ok).toBe(false);
+    expect(parseFrameManifest("[]").ok).toBe(false);
+    expect(parseFrameManifest(JSON.stringify({ name: "" })).ok).toBe(false);
+    expect(parseFrameManifest(JSON.stringify({ textColor: "red" })).ok).toBe(
       false,
     );
     expect(
-      parseThemeManifest(JSON.stringify({ backgroundColor: "#fff" })).ok,
+      parseFrameManifest(JSON.stringify({ backgroundColor: "#fff" })).ok,
     ).toBe(false);
-    expect(parseThemeManifest(JSON.stringify({ fontId: "comic" })).ok).toBe(
+    expect(parseFrameManifest(JSON.stringify({ fontId: "comic" })).ok).toBe(
       false,
     );
   });
@@ -143,7 +143,7 @@ describe("theme pack validation", () => {
     expect(validatePreviewSize({ width: 2049, height: 2049 })).not.toBeNull();
     expect(
       packFileUrl("neon-nights", "4x1.png", { mtimeMs: 1000.6, size: 24 }),
-    ).toBe("/assets/theme-packs/neon-nights/4x1.png?v=1001-24");
+    ).toBe("/assets/frame-packs/neon-nights/4x1.png?v=1001-24");
   });
 
   it("derives one artwork file per template from print geometry", () => {
@@ -165,33 +165,33 @@ describe("theme pack validation", () => {
   });
 });
 
-describe("theme directory scanner", () => {
+describe("frame directory scanner", () => {
   it("returns a valid pack with defaults and cache-busted artwork", async () => {
     const root = await makeRoot();
     await writePack(root, "neon-nights");
 
-    const result = await scanThemeDirectory(root);
+    const result = await scanFrameDirectory(root);
     expect(result.diagnostics).toEqual([]);
-    expect(result.themes).toHaveLength(1);
-    const theme = result.themes[0];
-    expect(theme).toMatchObject({
+    expect(result.frames).toHaveLength(1);
+    const frame = result.frames[0];
+    expect(frame).toMatchObject({
       id: "neon-nights",
       name: "Neon Nights",
       textColor: "#20231f",
       fontId: "app",
       backgroundColor: "#ffffff",
     });
-    expect(theme.preview).toMatch(
-      /^\/assets\/theme-packs\/neon-nights\/preview\.png\?v=\d+-\d+$/,
+    expect(frame.preview).toMatch(
+      /^\/assets\/frame-packs\/neon-nights\/preview\.png\?v=\d+-\d+$/,
     );
-    expect(Object.keys(theme.artwork).sort()).toEqual(
+    expect(Object.keys(frame.artwork).sort()).toEqual(
       templateArtworkSpecs.map((spec) => spec.id).sort(),
     );
-    expect(theme.artwork["4x1"]).toMatch(
-      /^\/assets\/theme-packs\/neon-nights\/4x1\.png\?v=\d+-\d+$/,
+    expect(frame.artwork["4x1"]).toMatch(
+      /^\/assets\/frame-packs\/neon-nights\/4x1\.png\?v=\d+-\d+$/,
     );
-    expect(theme.artwork["1x1"]).toMatch(
-      /^\/assets\/theme-packs\/neon-nights\/single\.png\?v=\d+-\d+$/,
+    expect(frame.artwork["1x1"]).toMatch(
+      /^\/assets\/frame-packs\/neon-nights\/single\.png\?v=\d+-\d+$/,
     );
   });
 
@@ -199,12 +199,12 @@ describe("theme directory scanner", () => {
     const root = await makeRoot();
     await writePack(root, "no-preview", { omit: ["preview.png"] });
 
-    const result = await scanThemeDirectory(root);
+    const result = await scanFrameDirectory(root);
     expect(result.diagnostics).toEqual([]);
-    expect(result.themes).toHaveLength(1);
-    expect(result.themes[0].preview).toBeUndefined();
-    expect(result.themes[0].artwork["4x1"]).toMatch(
-      /^\/assets\/theme-packs\/no-preview\/4x1\.png\?v=\d+-\d+$/,
+    expect(result.frames).toHaveLength(1);
+    expect(result.frames[0].preview).toBeUndefined();
+    expect(result.frames[0].artwork["4x1"]).toMatch(
+      /^\/assets\/frame-packs\/no-preview\/4x1\.png\?v=\d+-\d+$/,
     );
   });
 
@@ -220,8 +220,8 @@ describe("theme directory scanner", () => {
       preview: [240, 200],
     });
 
-    const result = await scanThemeDirectory(root);
-    expect(result.themes[0]).toMatchObject({
+    const result = await scanFrameDirectory(root);
+    expect(result.frames[0]).toMatchObject({
       name: "Neon Nights",
       textColor: "#f8fafc",
       fontId: "display",
@@ -239,12 +239,12 @@ describe("theme directory scanner", () => {
   it("ignores underscore folders and missing roots", async () => {
     const root = await makeRoot();
     await writePack(root, "_starter");
-    expect(await scanThemeDirectory(root)).toEqual({
-      themes: [],
+    expect(await scanFrameDirectory(root)).toEqual({
+      frames: [],
       diagnostics: [],
     });
-    expect(await scanThemeDirectory(path.join(root, "does-not-exist"))).toEqual(
-      { themes: [], diagnostics: [] },
+    expect(await scanFrameDirectory(path.join(root, "does-not-exist"))).toEqual(
+      { frames: [], diagnostics: [] },
     );
   });
 
@@ -255,17 +255,17 @@ describe("theme directory scanner", () => {
       artwork: { "3x1": [600, 600] },
     });
 
-    const result = await scanThemeDirectory(root);
-    expect(result.themes).toEqual([]);
+    const result = await scanFrameDirectory(root);
+    expect(result.frames).toEqual([]);
     expect(result.diagnostics).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           folder: "missing-art",
-          code: "missing-file",
+          code: "missing-artwork",
         }),
         expect.objectContaining({
           folder: "wrong-size",
-          code: "wrong-size",
+          code: "bad-dimensions",
         }),
       ]),
     );
@@ -273,16 +273,19 @@ describe("theme directory scanner", () => {
 
   it("rejects reserved, invalid and badly configured packs", async () => {
     const root = await makeRoot();
-    await writePack(root, "Bad Theme");
+    await writePack(root, "Bad Frame");
     await writePack(root, "bad-manifest", {
       manifest: JSON.stringify({ fontId: "comic" }),
     });
 
-    const result = await scanThemeDirectory(root);
-    expect(result.themes).toEqual([]);
+    const result = await scanFrameDirectory(root);
+    expect(result.frames).toEqual([]);
     expect(result.diagnostics).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ folder: "Bad Theme", code: "invalid-id" }),
+        expect.objectContaining({
+          folder: "Bad Frame",
+          code: "bad-folder-name",
+        }),
         expect.objectContaining({
           folder: "bad-manifest",
           code: "bad-manifest",

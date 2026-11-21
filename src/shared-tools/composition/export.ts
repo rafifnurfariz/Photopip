@@ -5,7 +5,7 @@
  */
 
 import { StaticCanvas } from "fabric";
-import type { ThemePreset } from "@/shared-tools/catalog/themes";
+import type { FramePreset } from "@/shared-tools/catalog/frames";
 import { renderComposition } from "./render";
 import type { Composition } from "./types";
 
@@ -13,14 +13,14 @@ export type ExportFormat = "png" | "jpeg";
 
 export async function exportComposition(
   composition: Composition,
-  theme: ThemePreset,
+  frame: FramePreset,
   format: ExportFormat,
   signal?: AbortSignal,
 ) {
   const element = document.createElement("canvas");
   const canvas = new StaticCanvas(element, { enableRetinaScaling: false });
   try {
-    await renderComposition(canvas, composition, theme, signal);
+    await renderComposition(canvas, composition, frame, signal);
     if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
     const data = canvas.toDataURL({
       format,
