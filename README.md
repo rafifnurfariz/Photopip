@@ -1,116 +1,144 @@
-# 📸 PhotoPip
+# PhotoPip
 
-PhotoPip adalah aplikasi **photo booth di browser**. Kamu bisa ambil foto pakai kamera laptop/HP, pilih tata letak seperti strip foto sungguhan, hias dengan bingkai dan stiker, lalu unduh hasilnya sebagai gambar siap cetak — semuanya terjadi langsung di browser, tanpa perlu install apapun, tanpa akun, dan foto kamu **tidak pernah dikirim ke internet**.
+PhotoPip adalah photo booth yang jalan di browser. Ambil foto pakai kamera laptop atau HP, susun jadi strip seperti hasil photo booth di mal, tempel bingkai dan stiker, lalu unduh sebagai gambar siap cetak.
+
+Tidak perlu install apa pun, dan tidak perlu akun. Fotonya juga tidak pernah dikirim ke mana-mana, karena semua pemrosesan terjadi di dalam tab browser kamu.
+
+Server cuma dipakai untuk dua hal kecil: memberi daftar bingkai dan daftar stiker yang tersedia. Itu saja.
 
 ---
 
 ## Daftar isi
 
+- [Cara membaca README ini](#cara-membaca-readme-ini)
 - [Mau pakai situsnya saja? Mulai dari sini](#mau-pakai-situsnya-saja-mulai-dari-sini)
 - [Mau jalankan sendiri di komputer? Mulai dari sini](#mau-jalankan-sendiri-di-komputer-mulai-dari-sini)
-  - [Langkah 1 — Install Node.js](#langkah-1--install-nodejs)
-  - [Langkah 2 — Download kode ini](#langkah-2--download-kode-ini)
-  - [Langkah 3 — Install dependency](#langkah-3--install-dependency)
-  - [Langkah 4 — Jalankan](#langkah-4--jalankan)
+  - [Langkah 1: Install Node.js](#langkah-1-install-nodejs)
+  - [Langkah 2: Download kode ini](#langkah-2-download-kode-ini)
+  - [Langkah 3: Install dependency](#langkah-3-install-dependency)
+  - [Langkah 4: Jalankan](#langkah-4-jalankan)
 - [Perintah yang tersedia](#perintah-yang-tersedia)
 - [Privasi dan penyimpanan data](#privasi-dan-penyimpanan-data)
+- [Keamanan dan header HTTP](#keamanan-dan-header-http)
 - [Semua fitur yang ada](#semua-fitur-yang-ada)
+- [Perilaku di ponsel](#perilaku-di-ponsel)
 - [Bagaimana kode ini bekerja](#bagaimana-kode-ini-bekerja)
+  - [Dua fase: Capture dan Edit](#dua-fase-capture-dan-edit)
+  - [Istilah yang dipakai](#istilah-yang-dipakai)
+  - [Baca kode dalam 10 menit](#baca-kode-dalam-10-menit)
+  - [Jejak satu foto: dari klik sampai unduh](#jejak-satu-foto-dari-klik-sampai-unduh)
+  - [Struktur data penting](#struktur-data-penting)
+  - [Urutan lapisan gambar](#urutan-lapisan-gambar)
+  - [Pohon komponen](#pohon-komponen)
+  - [Bagaimana paket bingkai dan stiker dimuat](#bagaimana-paket-bingkai-dan-stiker-dimuat)
 - [Tech stack](#tech-stack)
 - [Peta folder dan file](#peta-folder-dan-file)
 - [Cara membuat paket bingkai sendiri](#cara-membuat-paket-bingkai-sendiri)
 - [Cara menambah stiker sendiri](#cara-menambah-stiker-sendiri)
 - [Cara menambah atau mengubah bagian kode](#cara-menambah-atau-mengubah-bagian-kode)
-- [Testing — cara menguji kode](#testing--cara-menguji-kode)
+- [Testing: cara menguji kode](#testing-cara-menguji-kode)
 - [Pemecahan masalah umum](#pemecahan-masalah-umum)
 - [Kontribusi](#kontribusi)
-- [Lisensi font](#lisensi-font)
+- [Lisensi aset](#lisensi-aset)
+
+---
+
+## Cara membaca README ini
+
+README ini panjang, dan kamu tidak perlu membaca semuanya. Cari baris yang paling mirip dengan keadaanmu, lalu ikuti jalurnya.
+
+| Kalau kamu…                                          | Baca ini                                                                                                                                                                                                                                   | Perkiraan waktu |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- |
+| Cuma mau bikin foto strip                            | [Mau pakai situsnya saja](#mau-pakai-situsnya-saja-mulai-dari-sini)                                                                                                                                                                        | 2 menit         |
+| Mau bikin bingkai atau stiker sendiri, tanpa ngoding | [Cara membuat paket bingkai](#cara-membuat-paket-bingkai-sendiri) lalu [Cara menambah stiker](#cara-menambah-stiker-sendiri)                                                                                                               | 10 menit        |
+| Mau menjalankan di komputer sendiri                  | [Mau jalankan sendiri](#mau-jalankan-sendiri-di-komputer-mulai-dari-sini)                                                                                                                                                                  | 15 menit        |
+| Mau **memahami kode**                                | [Peta folder](#peta-folder-dan-file), lalu [Dua fase](#dua-fase-capture-dan-edit), [Istilah](#istilah-yang-dipakai), [Baca kode dalam 10 menit](#baca-kode-dalam-10-menit), dan [Jejak satu foto](#jejak-satu-foto-dari-klik-sampai-unduh) | 30–60 menit     |
+| Mau **mengubah kode**                                | Jalur di atas, lalu [Cara menambah atau mengubah bagian kode](#cara-menambah-atau-mengubah-bagian-kode) dan [Testing](#testing-cara-menguji-kode)                                                                                          | -               |
+
+Beberapa kebiasaan penulisan yang dipakai di sini:
+
+- Semua path dihitung dari folder utama repo. `src/features/studio/studio.tsx` artinya file `studio.tsx` di dalam `src/features/studio/`.
+- Tanda `←` cuma keterangan tambahan, bukan bagian dari kode.
+- Blok kode berlabel `typescript` berisi bentuk data asli di repo, bukan karangan.
+- Nama fungsi seperti `renderComposition()` bisa dicari langsung dengan `Ctrl + F`.
 
 ---
 
 ## Mau pakai situsnya saja? Mulai dari sini
 
-> 🔗 **[photopip.vercel.app](https://photopip.vercel.app)**
+> **[photopip.vercel.app](https://photopip.vercel.app)**
 
-Kalau sudah ada link situsnya, tinggal buka di browser — selesai. Tidak perlu install apapun.
+Buka link di atas. Tidak ada yang perlu di-install.
 
-**Cara pakainya:**
+1. **Pilih tata letak.** Ada lima pilihan: strip 4 foto, strip 3 foto, grid 2×3, grid 2×2, dan satu foto besar. Ukurannya sudah disiapkan untuk cetak.
+2. **Ambil foto atau upload.** Klik tombol kamera lalu izinkan browser memakai kamera. Kalau lebih suka pakai foto yang sudah ada, klik tombol upload dan pilih dari galeri.
+3. **Isi semua slot.** Foto diambil satu per satu. Kalau ada yang kurang bagus, klik thumbnail-nya untuk jepret ulang. Foto lain tidak ikut terhapus.
+4. **Tekan Edit.** Tombol ini baru aktif setelah semua slot terisi. Di editor kamu bisa ganti bingkai (warna latar dan font ikut menyesuaikan), menambah stiker lalu menggeser dan mengubah ukurannya, menulis teks, dan memasang filter berbeda untuk tiap foto.
+5. **Unduh.** Pilih PNG atau JPEG, lalu klik Download.
 
-1. **Pilih tata letak** — ada 5 pilihan: strip 4 foto, strip 3 foto, grid 2×2, grid 2×3, atau satu foto besar.
-2. **Ambil atau upload foto** — klik tombol kamera dan izinkan akses, atau klik tombol upload untuk pakai foto dari galeri/HP kamu.
-3. **Isi semua slot** — foto diambil satu per satu. Kalau ada yang kurang bagus, klik thumbnail fotonya untuk mengambil ulang — foto lain tidak terganggu.
-4. **Tekan Edit** — setelah semua slot terisi, tombol Edit akan aktif. Di sini kamu bisa:
-   - Ganti **bingkai** — artwork, latar, dan font ikut berganti
-   - Tambah **stiker** dan geser/ubah ukurannya di kanvas
-   - Tambah **teks**
-   - Ubah **filter** per foto (hitam putih, hangat, vintage, dll.)
-5. **Unduh** — pilih format PNG atau JPEG, lalu klik Download.
+Ada tiga hal yang sering bikin kaget di percobaan pertama:
 
-**Beberapa hal yang perlu diketahui:**
-
-- Kamera hanya bekerja di halaman **HTTPS** atau **`http://localhost`**. Tidak bisa di jaringan lokal biasa seperti `http://192.168.x.x`.
-- Foto **hilang** kalau halaman di-refresh atau ditutup — unduh dulu sebelum meninggalkan halaman.
-- Semua foto dan hiasan ada di memori browser saja, tidak pernah dikirim ke server.
+- Kamera hanya jalan di halaman **HTTPS** atau `http://localhost`. Kalau dibuka lewat IP jaringan lokal seperti `http://192.168.x.x`, browser akan menolak.
+- Refresh atau tutup tab, fotonya hilang. Unduh dulu sebelum pindah halaman.
+- Semua foto dan hiasan cuma ada di memori browser. Tidak ada satu byte pun yang dikirim ke server.
 
 ---
 
 ## Mau jalankan sendiri di komputer? Mulai dari sini
 
-Bagian ini untuk kamu yang ingin menjalankan PhotoPip di komputer sendiri, misalnya untuk belajar kodenya, mengubah sesuatu, atau sekadar ingin mencoba tanpa internet.
+Bagian ini untuk kamu yang mau membuka kodenya, mengubah sesuatu, atau mencoba tanpa internet.
 
-Ikuti langkah-langkah berikut **secara berurutan**. Jangan lewat satu pun.
+Ikuti berurutan. Langkah 3 akan gagal kalau langkah 1 dilewati.
 
 ---
 
-### Langkah 1 — Install Node.js
+### Langkah 1: Install Node.js
 
-Node.js adalah program yang dibutuhkan untuk menjalankan kode JavaScript di luar browser — termasuk dev server PhotoPip.
+PhotoPip ditulis dengan JavaScript, dan butuh Node.js supaya kodenya bisa jalan di komputermu. Anggap Node.js sebagai mesin yang menyalakan kode di luar browser.
 
-**Cara install:**
-
-1. Buka [nodejs.org](https://nodejs.org)
-2. Klik tombol **"LTS"** (Long Term Support) — ini versi yang paling stabil
-3. Download dan jalankan installernya, ikuti langkah sampai selesai
-4. Buka terminal (di Windows: cari "Command Prompt" atau "PowerShell" di menu Start)
-5. Ketik perintah ini untuk memastikan instalasi berhasil:
+1. Buka [nodejs.org](https://nodejs.org).
+2. Klik tombol **LTS** (Long Term Support). Versi ini yang paling stabil.
+3. Unduh installernya, jalankan, klik Next sampai selesai.
+4. Buka terminal. Kalau belum pernah, lihat kotak di bawah langkah ini.
+5. Cek apakah sudah terpasang:
 
 ```bash
 node --version
 ```
 
-Kalau muncul angka seperti `v22.11.0` atau lebih baru, Node.js sudah berhasil terinstall.
+Kalau keluar angka seperti `v22.11.0` atau lebih besar, beres. Sekarang cek npm, yang otomatis ikut terpasang bersama Node.js:
 
 ```bash
 npm --version
 ```
 
-npm (Node Package Manager) sudah otomatis ikut terinstall bersama Node.js. Pastikan versinya `11.x.x` atau lebih baru.
+Versi `11.x.x` ke atas aman dipakai.
 
-> **Belum punya terminal?**
+> **Belum pernah pakai terminal?**
 >
 > - Windows: tekan `Windows + R`, ketik `cmd`, tekan Enter
 > - Mac: buka Spotlight (`Cmd + Space`), ketik "Terminal"
 
 ---
 
-### Langkah 2 — Download kode ini
+### Langkah 2: Download kode ini
 
-Ada dua cara:
+Ada dua cara. Pilih salah satu.
 
-**Cara A — Pakai Git (disarankan):**
+**Cara A, pakai Git (disarankan):**
 
-Kalau sudah punya [Git](https://git-scm.com) terinstall, jalankan:
+Kalau [Git](https://git-scm.com) sudah terpasang:
 
 ```bash
 git clone <url-repositori-ini>
 cd PhotoPip
 ```
 
-**Cara B — Download ZIP:**
+**Cara B, download ZIP:**
 
-1. Klik tombol hijau **"Code"** di halaman GitHub ini
-2. Klik **"Download ZIP"**
-3. Ekstrak ZIP ke folder yang kamu inginkan
+1. Klik tombol hijau **Code** di halaman GitHub ini.
+2. Klik **Download ZIP**.
+3. Ekstrak ZIP ke folder yang kamu mau.
 4. Buka terminal, lalu masuk ke folder hasil ekstrak:
 
 ```bash
@@ -121,31 +149,31 @@ Ganti `path/ke/folder/PhotoPip` dengan lokasi folder yang sebenarnya di komputer
 
 ---
 
-### Langkah 3 — Install dependency
+### Langkah 3: Install dependency
 
-Dependency adalah paket-paket kode buatan orang lain yang dipakai PhotoPip (seperti React, Fabric.js, dll.). Semuanya sudah didaftarkan di file `package.json` — kamu tinggal minta npm untuk mengunduh dan menyiapkannya.
+PhotoPip dibangun di atas kode buatan orang lain: React untuk tampilan, Fabric.js untuk kanvas, dan beberapa lainnya. Paket seperti itu disebut dependency.
 
-Pastikan terminal kamu sudah berada di dalam folder PhotoPip, lalu jalankan:
+Daftarnya ada di file `package.json`. Kamu tidak perlu mengunduh satu per satu, cukup minta npm mengambil semuanya.
+
+Pastikan terminal sudah berada di dalam folder PhotoPip, lalu jalankan:
 
 ```bash
 npm install
 ```
 
-Proses ini membutuhkan koneksi internet dan mungkin perlu beberapa menit. Nanti akan muncul folder baru bernama `node_modules/` — isinya semua dependency yang diunduh tadi.
+Proses ini butuh koneksi internet dan bisa makan beberapa menit. Setelah selesai akan muncul folder `node_modules/`, isinya semua dependency tadi.
 
-> Kalau muncul pesan error soal versi Node.js, pastikan kamu sudah install versi 22 atau lebih baru (cek kembali Langkah 1).
+> Kalau muncul error soal versi Node.js, cek lagi Langkah 1. PhotoPip butuh versi 22 atau lebih baru.
 
 ---
 
-### Langkah 4 — Jalankan
-
-Setelah install selesai, jalankan dev server:
+### Langkah 4: Jalankan
 
 ```bash
 npm run dev
 ```
 
-Tunggu sampai muncul pesan seperti:
+Tunggu sampai terminal menampilkan alamat lokal, kira-kira seperti ini:
 
 ```
 ▲ Next.js 16.4.5
@@ -154,9 +182,7 @@ Tunggu sampai muncul pesan seperti:
 
 Buka `http://localhost:3000` di browser. PhotoPip siap dipakai.
 
-Biarkan terminal tetap terbuka selama kamu menggunakan PhotoPip — kalau terminal ditutup, servernya berhenti.
-
-Untuk menghentikan server, tekan `Ctrl + C` di terminal.
+Biarkan terminal tetap terbuka selama kamu memakai PhotoPip. Menutup terminal berarti mematikan servernya. Kalau mau berhenti dengan rapi, tekan `Ctrl + C`.
 
 ---
 
@@ -178,19 +204,40 @@ Semua perintah dijalankan dari folder utama PhotoPip.
 | `npm run audit:production` | Periksa celah keamanan di dependency produksi                                            |
 | `npm run verify`           | **Jalankan semuanya sekaligus**: format → types → lint → test → deadcode → audit → build |
 
-> Sebelum menganggap perubahan selesai, selalu jalankan `npm run verify`.
+Sebelum menganggap sebuah perubahan selesai, jalankan `npm run verify`. Perintah ini menjalankan semuanya berurutan, jadi kalau ada satu yang gagal, kamu langsung tahu di mana masalahnya.
 
 ---
 
 ## Privasi dan penyimpanan data
 
-PhotoPip sengaja dirancang tanpa server foto:
+PhotoPip tidak punya tempat untuk menyimpan foto, dan itu disengaja.
 
-- **Foto tidak pernah keluar dari browser kamu.** Semua pemrosesan terjadi di dalam tab browser — tidak ada upload ke server.
-- **Tidak ada database foto**, tidak ada akun, tidak ada login.
-- Server hanya punya dua endpoint read-only: `GET /api/themes` (membaca folder paket bingkai lokal) dan `GET /api/stickers` (membaca folder stiker lokal) — tidak menerima data atau unggahan foto apapun.
-- Yang disimpan di browser hanya pilihan **bahasa** dan **mode gelap/terang** (lewat `localStorage`).
-- Tutup atau refresh halaman → semua foto dan komposisi hilang. Memang by design.
+- **Foto tidak pernah keluar dari browser.** Semua pemrosesan terjadi di dalam tab, tidak ada upload ke server.
+- Tidak ada database foto, tidak ada akun, tidak ada login.
+- Server hanya punya dua endpoint read-only: `GET /api/frames` untuk membaca folder paket bingkai, dan `GET /api/stickers` untuk membaca folder stiker. Keduanya cuma mengirim data, tidak menerima apa pun.
+- Yang tersimpan di browser hanya pilihan **bahasa** (key `photobooth-language`) dan **mode gelap atau terang** (dikelola `next-themes`). Dua-duanya lewat `localStorage`.
+- Tutup atau refresh halaman, semua foto dan komposisi hilang.
+- Folder `public/assets/` dibaca di server saat endpoint dipanggil, bukan di browser. Isi folder itu bukan data pengguna.
+
+---
+
+## Keamanan dan header HTTP
+
+`next.config.mjs` memasang header keamanan untuk semua route. Tidak ada konfigurasi tambahan yang perlu kamu lakukan saat deploy.
+
+| Header                    | Nilai                                                                                                      | Fungsi                                                                                                                                              |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Content-Security-Policy` | `default-src 'self'`, `img-src 'self' data: blob:`, `font-src 'self'`, `script-src 'self' 'unsafe-inline'` | Hanya izinkan aset dari origin sendiri, plus data URL/blob untuk foto di kanvas. Di mode dev, `'unsafe-eval'` dan `ws:` ditambahkan agar HMR jalan. |
+| `Permissions-Policy`      | `camera=(self), microphone=(), geolocation=()`                                                             | Kamera hanya untuk origin ini; mikrofon dan lokasi diblokir total.                                                                                  |
+| `X-Content-Type-Options`  | `nosniff`                                                                                                  | Browser tidak menebak tipe file.                                                                                                                    |
+| `X-Frame-Options`         | `DENY`                                                                                                     | Halaman tidak bisa di-embed di iframe (anti clickjacking).                                                                                          |
+| `Referrer-Policy`         | `strict-origin-when-cross-origin`                                                                          | Referrer tidak membocorkan path.                                                                                                                    |
+
+Tiga catatan tambahan:
+
+- Foto disimpan sebagai data URL di memori. Itu sebabnya CSP mengizinkan `data:` dan `blob:` untuk gambar.
+- Kedua endpoint memakai `Cache-Control: no-store` dan `runtime = "nodejs"`, jadi selalu membaca isi folder terbaru.
+- `/api/frames` hanya mengirim `diagnostics` saat `NODE_ENV === "development"`. Di produksi array-nya selalu kosong, dan path absolut server tidak pernah keluar.
 
 ---
 
@@ -208,13 +255,16 @@ PhotoPip sengaja dirancang tanpa server foto:
 
 ### Kamera
 
-- Pakai kamera depan, resolusi ideal 1280 × 960
-- **Timer** — pilih 0 (langsung), 3 detik, atau 5 detik sebelum jepret
-- **Mirror** — balik gambar seperti selfie
-- **Auto** — isi semua slot otomatis dengan jeda antar foto (hanya di tata letak dengan lebih dari 1 foto)
-- **Retake** — ganti satu foto tanpa mengulang semuanya
+Kamera yang dipakai adalah kamera depan, resolusi ideal 1280 × 960.
 
-**Kode error kamera yang mungkin muncul:**
+- **Timer** pilihannya 0 detik (langsung), 3 detik, atau 5 detik.
+- **Mirror** membalik gambar seperti selfie. Video dan hasil fotonya ikut terbalik.
+- **Auto** mengisi semua slot tanpa kamu klik berkali-kali. Jepretan pertama memakai timer yang kamu pilih, jepretan berikutnya berjarak tetap 5 detik. Kamera mati sendiri setelah slot terakhir terisi. Tombol ini hanya muncul di tata letak dengan lebih dari satu foto.
+- **Retake** mengganti satu foto saja, tanpa mengulang semuanya.
+- **Upload** bisa menerima beberapa file sekaligus, tapi hanya kalau tata letaknya punya lebih dari satu slot.
+- Kamera berhenti otomatis saat tab disembunyikan (`visibilitychange`) atau halaman ditinggalkan (`pagehide`).
+
+Kalau kamera bermasalah, UI akan menampilkan salah satu kode ini:
 
 | Kode          | Artinya                                                |
 | ------------- | ------------------------------------------------------ |
@@ -227,9 +277,13 @@ PhotoPip sengaja dirancang tanpa server foto:
 
 ### Upload foto
 
-- Format yang bisa diupload: AVIF, BMP, GIF, HEIC, HEIF, JPG, JPEG, PNG, WebP
-- Foto otomatis dikecilkan kalau lebih besar dari 2000 px di sisi terpanjang
-- Latar transparan diratakan ke putih (agar kompatibel dengan semua format)
+- Format yang diterima: AVIF, BMP, GIF, HEIC, HEIF, JPG, JPEG, PNG, WebP. Pengenalannya lewat MIME `image/*` atau ekstensi file.
+- Ukuran maksimal **25 MB** per foto.
+- Resolusi sumber dibatasi **40 megapiksel**, dan pengecekannya dilakukan sebelum gambar di-decode. File semacam "decompression bomb" langsung ditolak.
+- Foto yang sisi terpanjangnya lebih dari **2000 px** akan dikecilkan otomatis.
+- Latar transparan diratakan ke putih, lalu disimpan sebagai JPEG kualitas 0.92.
+- Upload bersifat **all-or-nothing**. Kalau satu file dari pilihanmu ditolak, tidak ada foto yang masuk setengah-setengah.
+- Jumlah file yang diambil dibatasi sisa slot kosong.
 
 ### Filter foto (6 jenis)
 
@@ -244,31 +298,67 @@ PhotoPip sengaja dirancang tanpa server foto:
 
 ### Stiker
 
-Stiker dibaca otomatis dari folder `public/assets/stickers/`. Sudah tersedia 33 stiker 3D bergaya viral (Cute, Y2K, Mood, Food, Nature) berbasis Microsoft Fluent Emoji (lisensi MIT).
+Stiker dibaca otomatis dari folder `public/assets/stickers/`. Sekarang ada 24 stiker dalam 5 kategori:
 
-Stiker bisa dicari lewat kolom pencarian atau difilter per tab kategori. Setelah ditambahkan ke foto, stiker bisa digeser, diubah ukuran, diputar, dibalik horizontal/vertikal, dan diatur opacity-nya langsung di kanvas.
+| Kategori | Jumlah |
+| -------- | ------ |
+| Cute     | 5      |
+| Emoji    | 5      |
+| Food     | 5      |
+| Nature   | 4      |
+| Y2K      | 5      |
+
+Kategori dibuat dari nama subfolder, jadi menambah folder baru otomatis menambah tab baru. Stiker bisa dicari lewat kolom pencarian atau difilter per tab.
+
+Setelah masuk ke kanvas, stiker bisa digeser, diubah ukuran, diputar, dibalik horizontal atau vertikal, dan diatur opacity-nya. Bisa juga digandakan, dibawa ke depan, atau dikirim ke belakang.
 
 ### Teks
 
-Tambahkan tulisan ke foto dengan pilihan font: `app` (font halaman), `serif` (Georgia), `sans` (Arial), `mono` (Courier New), `display` (Impact). Bisa diatur warna, ukuran, rotasi, opacity, align, bold, dan italic.
+Tulisan bisa ditambahkan ke foto dengan lima pilihan font: `app` (font halaman), `serif` (Georgia), `sans` (Arial), `mono` (Courier New), dan `display` (Impact). Warna, ukuran, rotasi, opacity, perataan, bold, dan italic semuanya bisa diatur.
+
+Ada batas yang perlu diketahui: maksimal **120 karakter**, ukuran minimal **18 px**, posisi selalu dijepit di dalam kanvas, dan rotasi dinormalisasi ke 0–359°.
 
 ### Undo/Redo
 
-Tekan tombol undo/redo atau pakai shortcut keyboard. Bisa mundur sampai **40 langkah** ke belakang.
+Tombol undo dan redo di header editor bisa mundur sampai **40 langkah**.
+
+Riwayat hanya bertambah saat ada perubahan sungguhan. Menggeser slider lalu mengembalikannya ke nilai awal, atau sekadar klik masuk lalu keluar dari sebuah field, tidak membuat langkah kosong.
+
+Tidak ada shortcut keyboard untuk undo/redo. Keyboard hanya dipakai untuk navigasi tab: `←`, `→`, `Home`, dan `End`.
 
 ### Ekspor
 
-- Format: **PNG** (kualitas penuh) atau **JPEG** (kualitas 95%)
-- Resolusi: ukuran cetak penuh — bukan ukuran layar
-- File dinamai `photopip-<timestamp>.png` atau `.jpg`
+- Formatnya **PNG** (lossless) atau **JPEG** (kualitas 95%).
+- Resolusinya ukuran cetak penuh, bukan ukuran layar.
+- Nama file: `photopip-<timestamp>.png` atau `.jpg`.
+- Ekspor membuat `StaticCanvas` baru di luar layar, memanggil `renderComposition()` yang sama dengan editor, lalu mengambil hasilnya lewat `toDataURL()`.
+- Kalau data URL yang dihasilkan tidak sesuai format yang diminta, ekspor dianggap gagal dan pengguna diberi pesan error.
+- Ekspor bisa dibatalkan lewat `AbortController`, misalnya saat sesi direset.
+
+---
+
+## Perilaku di ponsel
+
+Beberapa hal hanya aktif di layar kecil:
+
+- **Tombol Back tidak membuang sesi.** Saat masuk editor di layar di bawah 900 px, aplikasi menambah satu entri history. Gestur back mengembalikanmu ke kamera dengan foto tetap utuh, bukan keluar dari halaman.
+- **Editor bertumpuk.** Strip 1:3 yang dipaskan ke tinggi layar jadi terlalu sempit untuk diedit. Karena itu di ponsel editor membuat lebarnya pas dengan layar, lalu halaman bisa di-scroll vertikal.
+- **Mode paskan ke layar.** Tombol fit di header editor membuat seluruh strip pas di layar, di kedua sumbu. Cocok untuk meninjau hasil tanpa scroll.
+- **Pan satu jari.** Kanvas memakai `touch-action: none`. Drag yang dimulai di area kosong menggeser tampilan, sedangkan drag yang dimulai di atas objek tetap menggeser objeknya.
+- **Pemilih tata letak jadi bottom sheet** di layar sempit dan portrait (lebar ≤ 640 px, tinggi ≥ 480 px). Di landscape tetap muncul sebagai popover biasa.
+- **Toast unduhan** hilang sendiri setelah 3 detik.
 
 ---
 
 ## Bagaimana kode ini bekerja
 
+Bagian ini untuk kamu yang mau membaca kodenya. Urutannya dibuat bertahap: lihat gambaran besar dulu, kenali nama-nama yang sering muncul, buka delapan file inti, lalu ikuti satu foto dari klik sampai unduh. Detail data dan urutan lapisan ada di bawahnya, jadi tidak perlu dihafal di awal.
+
+Kalau waktumu cuma 10 menit, lompat langsung ke [Baca kode dalam 10 menit](#baca-kode-dalam-10-menit).
+
 ### Dua fase: Capture dan Edit
 
-Aplikasi punya dua fase utama. Keduanya dikelola oleh satu komponen bernama `studio.tsx`.
+Ada dua fase besar, dan satu file yang mengatur perpindahannya: `studio.tsx`. Baca diagram ini dulu sebelum membuka file apa pun.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -298,9 +388,153 @@ Aplikasi punya dua fase utama. Keduanya dikelola oleh satu komponen bernama `stu
 └──────────────────────────────────────────────────────────┘
 ```
 
+Fase pertama mengumpulkan bahan. Foto dari kamera atau file yang kamu upload masuk ke `session.photos`. Begitu semua slot penuh, tombol Edit aktif.
+
+Fase kedua mengolah bahan itu. `studio.edit()` membungkus sesi jadi `Composition`, lalu editor menampilkannya lewat `renderComposition()`. Setiap kali kamu mengubah sesuatu, fungsi render yang sama dipanggil lagi.
+
+Ekspor ada di ujung rantai. Kanvas baru dibuat di luar layar, renderer yang sama dipanggil sekali lagi, lalu hasilnya diubah menjadi file. Karena renderer-nya sama, pratinjau dan hasil unduhan tidak mungkin berbeda.
+
+### Istilah yang dipakai
+
+Hampir semua kebingungan waktu membaca kode ini datang dari nama-nama yang mirip. Buka tabel ini setiap kali lupa.
+
+| Istilah            | Artinya                                                                                                                                 | Didefinisikan di                           |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| **Session**        | State selama fase kamera: tata letak yang dipilih, foto yang sudah diambil, dan indeks retake.                                          | `src/shared-tools/session.ts`              |
+| **Composition**    | Paket lengkap yang dirender: template, semua foto, bingkai, stiker, teks, dan filter. Ini yang disimpan editor dan dikirim ke renderer. | `src/shared-tools/composition/types.ts`    |
+| **Template**       | Definisi tata letak: id, rasio, jumlah foto, jenis susunan. Tidak menyimpan foto.                                                       | `src/shared-tools/catalog/templates.ts`    |
+| **FramePreset**    | Bentuk bingkai yang dipakai editor dan renderer: warna latar, artwork per template, warna teks, font.                                   | `src/shared-tools/catalog/frames.ts`       |
+| **FramePackFrame** | Bentuk **mentah** bingkai hasil scan folder `frame-packs/`. Dikonversi ke `FramePreset` oleh `packToFramePreset()`.                     | `src/shared-tools/catalog/frame-pack.ts`   |
+| **Slot**           | Satu kotak tempat foto digambar: `x`, `y`, `width`, `height` dalam piksel cetak.                                                        | `src/shared-tools/composition/geometry.ts` |
+| **Placement**      | Satu stiker atau teks yang ditempatkan: posisi, ukuran, rotasi, opacity, dan properti lainnya.                                          | `src/shared-tools/composition/types.ts`    |
+| **Renderer**       | Fungsi `renderComposition()` yang menggambar seluruh strip. Dipakai editor **dan** ekspor.                                              | `src/shared-tools/composition/render.ts`   |
+
+Ada tiga aturan yang menjelaskan hampir semua keputusan desain di repo ini.
+
+**Satu, `Session` dan `Composition` immutable.** Kode tidak pernah mengubah objek yang sudah ada. Setiap perubahan membuat objek baru. Kalau kamu menambah stiker, yang terjadi adalah salinan `Composition` dibuat, stiker dimasukkan ke salinan itu, lalu salinan tersebut menggantikan yang lama. Kebiasaan ini yang membuat undo/redo bisa dipercaya, karena versi lama tetap utuh dan bisa dikembalikan kapan saja.
+
+**Dua, editor dan ekspor memakai satu renderer.** Fungsinya `renderComposition()`, dan cuma ada satu. Jadi yang terlihat di kanvas adalah yang akan terunduh.
+
+**Tiga, foto hidup di memori sebagai data URL.** Tidak ada server, tidak ada database. Refresh berarti hilang.
+
+Kalau kamu baru mulai belajar coding, beberapa kata umum ini akan muncul terus di dokumen ini. Tidak perlu dihafal sekarang, buka lagi saat menemukannya di kode.
+
+| Kata      | Arti singkatnya                                                                                 |
+| --------- | ----------------------------------------------------------------------------------------------- |
+| Komponen  | Potongan tampilan yang bisa dipakai berulang. Di React, bentuknya fungsi yang mengembalikan UI. |
+| Props     | Nilai yang dikirim dari komponen induk ke komponen anak, mirip parameter fungsi.                |
+| State     | Data yang bisa berubah, dan perubahannya membuat tampilan ikut diperbarui.                      |
+| Hook      | Fungsi React berawalan `use` untuk menempelkan state atau efek samping ke komponen.             |
+| Render    | Proses menggambar ulang tampilan dari data yang sedang dipegang.                                |
+| Reducer   | Fungsi yang menerima state lama dan sebuah aksi, lalu mengembalikan state baru.                 |
+| Immutable | Tidak diubah di tempat. Perubahan menghasilkan salinan baru, objek lama tetap utuh.             |
+| Data URL  | Teks panjang yang isinya sudah berupa data gambar, jadi tidak butuh file terpisah.              |
+| Endpoint  | Alamat URL di server yang mengembalikan data, misalnya `/api/frames`.                           |
+| Cache     | Salinan sementara supaya sesuatu tidak diunduh atau dihitung ulang dari awal.                   |
+| SSR       | Render di server. `ssr: false` berarti komponen itu hanya dirender di browser.                  |
+
+### Baca kode dalam 10 menit
+
+Delapan file ini cukup untuk memahami hampir seluruh aplikasi. Urutannya disusun supaya tiap file hanya butuh konteks dari file sebelumnya. Totalnya sekitar 1.600 baris, jadi sekali duduk selesai.
+
+| #   | File                                             | Kenapa dibaca di sini                                                  |
+| --- | ------------------------------------------------ | ---------------------------------------------------------------------- |
+| 1   | `src/shared-tools/composition/types.ts`          | Bentuk semua data. Hanya ~50 baris, selesai dalam 1 menit.             |
+| 2   | `src/shared-tools/catalog/templates.ts`          | 5 tata letak yang mungkin. Menjelaskan `photoCount` dan `aspectRatio`. |
+| 3   | `src/shared-tools/session.ts`                    | Reducer fase kamera: capture, retake, reset.                           |
+| 4   | `src/features/studio/studio.tsx`                 | Pengatur dua fase. Perhatikan `Stage`, `edit()`, dan `leaveEdit()`.    |
+| 5   | `src/shared-tools/composition/render.ts`         | Cara strip digambar, lapisan demi lapisan.                             |
+| 6   | `src/features/editor/editor.tsx`                 | Semua aksi editor: tambah, ubah, duplikat, layer, undo.                |
+| 7   | `src/features/editor/hooks/use-editor-canvas.ts` | Jembatan antara Fabric.js dan `Composition`.                           |
+| 8   | `src/shared-tools/composition/export.ts`         | Ekspor: render ulang di kanvas terpisah, lalu unduh.                   |
+
+Sisanya (komponen panel, ikon, file locale, scanner folder) hanya detail. Baca saat kamu benar-benar menyentuhnya.
+
+### Jejak satu foto: dari klik sampai unduh
+
+Bagian ini mengikuti satu foto dari awal sampai jadi file. Semua nama fungsi di bawah ada di kode, jadi bisa langsung dicari.
+
+**1. Pilih tata letak**
+
+`TemplateSelector` memanggil `onSelectTemplate(id)`, yang diteruskan ke `requestReset(id)` di `studio.tsx`. Kalau sudah ada foto, dialog konfirmasi muncul dulu. Setelah dikonfirmasi, `performReset()` menjalankan `resetSession(templateId)` dan reducer menerima `{ type: "reset" }`.
+
+**2. Klik tombol jepret**
+
+`CaptureControls` memanggil `onCapture(false)`, yang berujung ke `capture(false)` di `useCaptureSession`.
+
+**3. Hitung mundur**
+
+`capture()` menjalankan loop dan memanggil `delay(1000, signal)` dari `src/shared-tools/async.ts`. Angka di layar diperbarui lewat `setRemaining()`. Kalau tab disembunyikan, `AbortController` membatalkan loop ini di tengah jalan.
+
+**4. Ambil gambar dari video**
+
+`camera.capturePhoto(mirror)` memanggil `capturePhotoFromVideo()` di `camera-utils.ts`:
+
+```text
+<video> → <canvas> 2D → (opsional mirror) → toDataURL("image/jpeg", 0.95)
+```
+
+Hasilnya string `data:image/jpeg;base64,...`. String inilah isi `session.photos[]`.
+
+**5. Simpan ke state**
+
+`dispatch({ type: "capture", src, count })` dikirim ke `sessionReducer`, yang menambah foto baru. Kalau sedang retake, foto di `retakeIndex` yang diganti, bukan ditambah.
+
+**6. Masuk editor**
+
+Saat `photos.length === template.photoCount`, `complete` jadi `true`. Klik Edit, lalu `studio.edit()` membangun `Composition` pertama:
+
+```typescript
+{
+  template,                                  // dari session.templateId
+  photos: session.photos,
+  frameId: "plain",
+  stickers: [],
+  texts: [],
+  photoFilters: session.photos.map(() => "none"),
+}
+```
+
+Setelah itu `setStage({ mode: "edit", draft })`. Komponen `Editor` di-lazy-load dengan `ssr: false`, karena Fabric.js hanya bisa jalan di browser.
+
+Kalau `previous.draft` sudah ada (kamu pernah masuk editor lalu kembali ke kamera), `edit()` memakai draft itu lagi. Stiker dan teks tidak hilang, hanya `template` dan `photos` yang disegarkan.
+
+**7. Kanvas menggambar strip**
+
+`useEditorCanvas` membuat `new Fabric.Canvas(...)`, lalu memanggil `renderComposition(canvas, composition, frame, signal, true)`. Urutan kerjanya:
+
+```text
+validasi jumlah foto
+  → muat semua gambar (dari cache LRU kalau ada, timeout 10 s)
+  → tunggu document.fonts.ready
+  → canvas.clear() + setDimensions(ukuran cetak)
+  → gambar latar, foto, artwork bingkai, logo, stiker, teks
+  → canvas.renderAll()
+```
+
+**8. Setiap edit mengulang langkah 7**
+
+Panel memanggil `commit(nextComposition)`. `pushHistory()` menyimpan versi lama, `onChange()` di `studio.tsx` menyimpan draft baru, lalu `useEffect` di `useEditorCanvas` menjalankan `renderComposition()` lagi. Drag dan resize di kanvas menempuh jalur yang sama lewat event `object:modified`.
+
+Khusus slider (posisi, ukuran, rotasi, opacity), panel memakai `beginGesture()` sebelum geser dan `endGesture()` setelah selesai. Jadi satu geseran utuh dihitung satu langkah undo, bukan puluhan.
+
+**9. Unduh**
+
+`ExportBar` memanggil `useExport().exportPhoto(composition, frame)`, yang mengimpor `export.ts` secara dinamis lalu menjalankan `exportComposition()`:
+
+```text
+StaticCanvas baru (di luar layar)
+  → renderComposition()  ← fungsi yang sama dengan pratinjau
+  → toDataURL(format, 0.95)
+  → downloadImage() → <a download>.click()
+  → canvas.dispose()
+```
+
+Karena renderer-nya sama, tidak ada kemungkinan "di editor terlihat bagus tapi hasil unduhan beda".
+
 ### Struktur data penting
 
-**`Session`** — menyimpan state selama fase capture:
+**`Session`** menyimpan state selama fase kamera:
 
 ```typescript
 {
@@ -310,101 +544,130 @@ Aplikasi punya dua fase utama. Keduanya dikelola oleh satu komponen bernama `stu
 }
 ```
 
-**`Composition`** — paket lengkap untuk editor dan renderer:
+**`Composition`** adalah paket lengkap yang dipakai editor dan renderer:
 
 ```typescript
 {
   template: Template;            // geometri layout (ukuran slot, posisi)
   photos: string[];              // data URL foto
-  themeId: string;               // ID bingkai aktif
+  frameId: string;               // ID bingkai aktif
   stickers: StickerPlacement[];  // posisi, ukuran, rotasi tiap stiker
   texts: TextPlacement[];        // posisi, style tiap teks
   photoFilters: PhotoFilterId[]; // filter per foto
 }
 ```
 
-`Composition` **tidak pernah diubah langsung** — setiap perubahan membuat objek baru. Ini mencegah bug yang sulit dilacak.
+`Composition` tidak pernah diubah langsung. Setiap perubahan membuat objek baru, dan itu yang mencegah bug re-render yang susah dilacak.
+
+**Aturan `sessionReducer`:**
+
+- `capture` diabaikan kalau `photos` sudah penuh (`photos.length >= count`) atau `src` kosong.
+- `capture` saat `retakeIndex` terisi akan mengganti foto di indeks itu, bukan menambah.
+- `retake` diabaikan kalau indeksnya di luar rentang foto yang ada.
+- `reset` mengosongkan foto tapi mempertahankan `templateId`, kecuali diberi nilai baru.
+
+**Cara bingkai dipilih:**
+
+- `frameById(id, frames)` mencari di katalog. Kalau tidak ketemu, ia jatuh ke objek `plain` yang identitasnya stabil, bukan objek baru tiap panggilan.
+- `applyFrame()` mengganti `frameId` sekaligus menimpa warna dan font semua teks agar cocok dengan bingkai.
+- `activeFrame()` mengembalikan `null` kalau ada teks yang warnanya atau fontnya sudah diubah manual. Ini yang dipakai untuk menandai bingkai "tidak lagi aktif".
 
 ### Urutan lapisan gambar
 
-Ketika `renderComposition()` dipanggil, lapisan digambar dari bawah ke atas:
+`renderComposition()` menggambar dari bawah ke atas. Ada enam lapisan, tidak lebih:
 
 ```
-8. Teks
-7. Stiker
-6. Logo PhotoPip (di footer bawah)
-5. Artwork paket bingkai (PNG transparan di atas foto)
-4. Garis tepi bingkai slot
-3. Foto (dipotong cover-crop agar memenuhi slot)
-2. Bingkai preset dari paket bingkai (opsional)
-1. Latar (warna solid / gradasi / pola)
+6. Teks
+5. Stiker
+4. Logo PhotoPip (di footer bawah)
+3. Artwork paket bingkai (PNG transparan, diskalakan penuh ke kanvas)
+2. Foto (dipotong cover-crop agar memenuhi slot, lalu filter diterapkan)
+1. Latar (satu warna solid dari frame.json)
 ```
 
-**Renderer yang sama** dipakai untuk pratinjau editor dan hasil ekspor. Jadi apa yang kamu lihat di editor = apa yang keluar di file unduhan.
+Beberapa hal yang sering ditanyakan:
 
-### Alur data dalam kode
+- Tidak ada garis tepi slot, gradasi, atau pola. Latar selalu satu warna solid, karena `background-fill.ts` hanya mengembalikan `background.value`.
+- Artwork bingkai ada di depan. Piksel transparan memperlihatkan foto di bawahnya, piksel opaque menutupinya. Begitulah cara bingkai membentuk tepi foto.
+- Logo selalu digambar, termasuk saat paket bingkai punya artwork sendiri.
+- Renderer menolak komposisi yang belum lengkap. Kalau `photos.length !== template.photoCount`, yang keluar error "Incomplete composition".
+- Gambar di-cache di memori, maksimal 24 entri dengan urutan LRU. Cache dibersihkan saat editor ditutup.
+- Setiap gambar punya batas waktu muat 10 detik. Gambar dekoratif seperti artwork bingkai yang gagal dimuat akan dilewati dengan warning. Yang menghentikan render hanya pembatalan (`AbortError`).
+- Font ditunggu sampai siap (`document.fonts.ready`) sebelum kanvas digambar, supaya teks tidak muncul dengan font fallback.
+
+### Pohon komponen
+
+Ini peta siapa memanggil siapa. Berguna waktu kamu mencari komponen, tapi bukan alur eksekusi. Alurnya ada di [Jejak satu foto](#jejak-satu-foto-dari-klik-sampai-unduh) di atas.
 
 ```
 page.tsx
-  └── Studio
+  └── Studio (studio.tsx)
         ├── useCamera()           ← akses webcam
         ├── useCaptureSession()   ← kelola session.photos[]
         │     └── sessionReducer  ← state machine foto
-        ├── useThemeCatalog()     ← fetch /api/themes, gabung bingkai
+        ├── useFrameCatalog()     ← fetch /api/frames, gabung bingkai
         ├── useExport()           ← handle download
         └── Editor (lazy load, SSR disabled)
-              ├── useEditorCanvas()   ← Fabric canvas, resize
+              ├── useEditorCanvas()   ← Fabric canvas, resize, pan, zoom
               ├── useStickerCatalog() ← fetch /api/stickers dinamis
               ├── history.ts          ← undo/redo stack
-              └── Panels: Theme, Photo, Sticker, Text, Property
+              ├── tabs.ts             ← navigasi keyboard tablist
+              └── Panels: Frame, Photo, Sticker, Text, Property
 ```
 
 ### Bagaimana paket bingkai dan stiker dimuat
 
 ```
-GET /api/themes
-  └── scanThemeDirectory()
+GET /api/frames
+  └── scanFrameDirectory()
         ├── validasi nama folder
-        ├── baca theme.json (opsional)
+        ├── baca frame.json (opsional)
         ├── validasi 5 PNG (ukuran piksel harus tepat)
-        └── kembalikan data ke browser
+        └── kembalikan data + diagnostics (diagnostics hanya dev)
 Browser
-  └── useThemeCatalog()
-        ├── fetch /api/themes
-        └── mergeThemePacks() → daftar bingkai di panel editor
+  └── useFrameCatalog()
+        ├── mulai dengan preset bawaan (katalog tidak pernah kosong)
+        ├── fetch /api/frames
+        └── mergeFramePacks() → daftar bingkai di panel editor
 
 GET /api/stickers
   └── scanStickersDirectory()
         ├── pindai folder public/assets/stickers/
         ├── buat kategori dinamis dari subfolder
         ├── beri cache-busting (?v=mtime-size)
-        └── kembalikan daftar stiker & kategori ke browser
+        ├── kembalikan daftar stiker & kategori ke browser
+        └── kalau scan gagal → { stickers: [], categories: [] } (bukan HTML 500)
 Browser
   └── useStickerCatalog()
         ├── fetch /api/stickers
         └── tampilkan kategori & item di panel stiker
 ```
 
+Kalau scan stiker gagal, endpoint mengembalikan daftar kosong, bukan halaman error. Panel stiker jadi kosong, tapi aplikasi tetap jalan. Bingkai juga tidak pernah kosong, karena katalog dimulai dari preset bawaan sebelum hasil fetch datang.
+
 ---
 
 ## Tech stack
 
-| Teknologi       | Versi  | Fungsinya di PhotoPip                                     |
-| --------------- | ------ | --------------------------------------------------------- |
-| **Next.js**     | 16.4.5 | Framework utama — routing, server, App Router             |
-| **React**       | 19.3   | Library UI — komponen, state, rendering                   |
-| **TypeScript**  | 5.9    | Bahasa yang dipakai — mencegah error tipe sebelum runtime |
-| **Fabric.js**   | 7.4.0  | Canvas editor — drag, resize, rotate stiker dan teks      |
-| **next-themes** | 0.4.6  | Mode gelap/terang tanpa flash saat halaman dimuat         |
-| **CSS**         | —      | Satu file global `globals.css` — tidak ada Tailwind       |
-| **Vitest**      | 4.1    | Test runner                                               |
-| **ESLint**      | 9      | Mencegah pola kode bermasalah                             |
-| **Prettier**    | 3.6    | Formatter kode dan Markdown                               |
-| **Knip**        | 6      | Deteksi file dan export yang tidak terpakai               |
+| Teknologi       | Versi  | Fungsinya di PhotoPip                                    |
+| --------------- | ------ | -------------------------------------------------------- |
+| **Next.js**     | 16.4.5 | Framework utama: routing, server, App Router             |
+| **React**       | 19.3   | Library UI: komponen, state, rendering                   |
+| **TypeScript**  | 5.9    | Bahasa yang dipakai, mencegah error tipe sebelum runtime |
+| **Fabric.js**   | 7.4.0  | Canvas editor: drag, resize, rotate stiker dan teks      |
+| **next-themes** | 0.4.6  | Mode gelap/terang tanpa flash saat halaman dimuat        |
+| **CSS**         | -      | Satu file global `globals.css`, tidak ada Tailwind       |
+| **Vitest**      | 4.1    | Test runner                                              |
+| **ESLint**      | 9      | Mencegah pola kode bermasalah                            |
+| **Prettier**    | 3.6    | Formatter kode dan Markdown                              |
+| **Knip**        | 6      | Deteksi file dan export yang tidak terpakai              |
+| **Node.js**     | ≥ 22   | Runtime minimum untuk dev server dan build               |
 
 ---
 
 ## Peta folder dan file
+
+Susunan folder mengikuti dua fase tadi. `studio/` untuk fase kamera, `editor/` untuk fase edit. Sisanya pendukung.
 
 ```
 PhotoPip/
@@ -412,11 +675,15 @@ PhotoPip/
 ├── src/
 │   ├── app/
 │   │   ├── layout.tsx          ← Kerangka HTML: metadata, font, ThemeProvider, LanguageProvider, Header
-│   │   ├── page.tsx            ← Halaman "/" — hanya render <Studio />
+│   │   ├── page.tsx            ← Halaman "/", hanya render <Studio />
 │   │   ├── globals.css         ← Satu-satunya file CSS: semua variabel warna, komponen, layout, responsif
 │   │   └── api/
-│   │       ├── themes/         ← Endpoint GET /api/themes (baca folder theme-packs)
-│   │       └── stickers/       ← Endpoint GET /api/stickers (baca folder stiker PNG)
+│   │       ├── frames/         ← GET /api/frames
+│   │       │   ├── route.ts    ← handler: panggil scanner, log diagnostics, kirim JSON
+│   │       │   └── scan.ts     ← validasi folder, frame.json, ukuran PNG tiap template
+│   │       └── stickers/       ← GET /api/stickers
+│   │           ├── route.ts    ← handler: scan, fallback ke daftar kosong saat gagal
+│   │           └── scan.ts     ← pindai subfolder, format nama, id unik, cache-busting
 │   │
 │   ├── components/
 │   │   ├── header.tsx          ← App bar: logo, pilih bahasa, toggle gelap/terang
@@ -426,28 +693,32 @@ PhotoPip/
 │   ├── features/
 │   │   ├── studio/             ← FASE 1: semua yang terjadi sebelum editor
 │   │   │   ├── studio.tsx      ← Komponen utama: fase, session, layout picker
+│   │   │   ├── types.ts        ← StudioMessage ("capture" | "upload" | "export" | "downloaded")
 │   │   │   ├── camera/
 │   │   │   │   ├── use-camera.ts       ← Hook kamera: start/stop/capture/status
 │   │   │   │   └── camera-utils.ts     ← Fungsi pendukung kamera
 │   │   │   ├── hooks/
 │   │   │   │   ├── use-capture-session.ts  ← Countdown, flash, dispatch ke reducer
 │   │   │   │   ├── use-export.ts           ← Download PNG/JPEG
-│   │   │   │   └── use-theme-catalog.ts    ← Fetch dan gabung bingkai
+│   │   │   │   └── use-frame-catalog.ts    ← Fetch dan gabung bingkai
 │   │   │   └── components/
 │   │   │       ├── booth-stage.tsx      ← Area video kamera
 │   │   │       ├── capture-controls.tsx ← Tombol shutter, timer, mirror, upload
 │   │   │       ├── export-bar.tsx       ← Pilih format + tombol Download
+│   │   │       ├── feedback.tsx         ← Toast pesan error/sukses
 │   │   │       ├── film-strip.tsx       ← Grid thumbnail foto + tombol retake
-│   │   │       └── template-selector.tsx ← Pilih tata letak
+│   │   │       └── template-selector.tsx ← Pilih tata letak (popover / bottom sheet)
 │   │   │
 │   │   └── editor/             ← FASE 2: editor Fabric.js
 │   │       ├── editor.tsx      ← Komponen utama editor
 │   │       ├── history.ts      ← Undo/redo stack (max 40 entry)
+│   │       ├── tabs.ts         ← Hitung indeks tab untuk Arrow/Home/End
+│   │       ├── types.ts        ← ToolTab ("frame" | "photo" | "sticker" | "text" | "properties")
 │   │       ├── hooks/
 │   │       │   ├── use-editor-canvas.ts  ← Inisialisasi Fabric, resize, event
 │   │       │   └── use-sticker-catalog.ts ← Fetch katalog stiker dinamis (/api/stickers)
 │   │       └── components/
-│   │           ├── theme-panel.tsx      ← Grid kartu bingkai
+│   │           ├── frame-panel.tsx      ← Grid kartu bingkai
 │   │           ├── photo-panel.tsx      ← Filter per foto, retake
 │   │           ├── sticker-panel.tsx    ← Cari dan tambah stiker (kategori dinamis)
 │   │           ├── text-panel.tsx       ← Tambah dan kelola teks
@@ -459,21 +730,23 @@ PhotoPip/
 │   ├── shared-tools/
 │   │   ├── catalog/
 │   │   │   ├── templates.ts    ← 5 definisi tata letak (ukuran, jumlah foto, slot)
-│   │   │   ├── themes.ts       ← ThemePreset, themeById(), applyTheme()
-│   │   │   ├── theme-pack.ts   ← Kontrak folder bingkai: parsing, validasi PNG
-│   │   │   ├── theme-packs.ts  ← packToThemePreset(), mergeThemePacks()
+│   │   │   ├── frames.ts       ← FramePreset, frameById(), applyFrame()
+│   │   │   ├── frame-pack.ts   ← Kontrak folder bingkai: parsing, validasi PNG
+│   │   │   ├── frame-packs.ts  ← packToFramePreset(), mergeFramePacks()
 │   │   │   ├── stickers.ts     ← Tipe data Sticker & array stiker bawaan
 │   │   │   ├── photo-filters.ts ← Definisi 6 filter
 │   │   │   └── fonts.ts        ← 5 font stack + resolveTextFont()
 │   │   ├── composition/
 │   │   │   ├── types.ts        ← Composition, StickerPlacement, TextPlacement
 │   │   │   ├── geometry.ts     ← Hitung posisi slot, crop, clamp
-│   │   │   ├── render.ts       ← renderComposition() — satu renderer untuk editor dan ekspor
+│   │   │   ├── render.ts       ← renderComposition(), satu renderer untuk editor dan ekspor
 │   │   │   ├── export.ts       ← exportComposition() → toDataURL → download
-│   │   │   └── background-fill.ts ← Latar: warna solid / gradasi / pola
+│   │   │   ├── text.ts         ← normalizeText(): batas 120 char, min 18 px, clamp posisi
+│   │   │   └── background-fill.ts ← Latar kanvas (satu warna solid)
 │   │   ├── session.ts          ← Session type + sessionReducer
 │   │   ├── image-upload.ts     ← Validasi dan resize foto upload
-│   │   └── async.ts            ← delay(ms, signal) — setTimeout yang bisa di-abort
+│   │   ├── id.ts               ← newId(): randomUUID dengan fallback untuk HTTP non-secure
+│   │   └── async.ts            ← delay(ms, signal), setTimeout yang bisa di-abort
 │   │
 │   ├── translations/
 │   │   ├── types.ts            ← Daftar bahasa, interface Messages
@@ -496,7 +769,7 @@ PhotoPip/
 │   │   ├── app-icons/      ← Favicon, Apple touch icon
 │   │   ├── brand/logo.png  ← Logo di footer strip hasil cetakan
 │   │   ├── stickers/       ← Folder stiker PNG (kategori sebagai subfolder)
-│   │   └── theme-packs/    ← Taruh folder bingkai kamu di sini
+│   │   └── frame-packs/    ← Taruh folder bingkai kamu di sini
 │   │       └── _starter/   ← Contoh panduan (folder _ diabaikan scanner)
 │   └── manifest.json       ← Web App Manifest
 │
@@ -505,40 +778,48 @@ PhotoPip/
 │   ├── capture-session.test.tsx
 │   ├── composition.test.ts
 │   ├── editor-tabs.test.ts
+│   ├── frame-catalog.test.ts
+│   ├── frame-pack.test.ts
+│   ├── frame-preview.test.tsx
+│   ├── image-upload.test.ts
 │   ├── sticker-catalog.test.ts
-│   ├── theme-catalog.test.ts
-│   ├── theme-pack.test.ts
-│   └── theme-preview.test.tsx
+│   └── translations.test.ts
 │
-└── scripts/
-    ├── audit-production.mjs    ← npm audit hanya untuk dependency produksi
-    └── package-standalone.mjs  ← Menyalin public/ ke .next/standalone/ setelah build
+├── scripts/
+│   ├── audit-production.mjs    ← npm audit hanya untuk dependency produksi
+│   └── package-standalone.mjs  ← Menyalin public/ ke .next/standalone/ setelah build
+│
+├── next.config.mjs             ← Header keamanan (CSP, Permissions-Policy), output standalone
+├── vitest.config.mts           ← Konfigurasi Vitest (jsdom)
+├── eslint.config.mjs           ← Konfigurasi ESLint
+├── tsconfig.json               ← Konfigurasi TypeScript strict
+└── package.json                ← Dependency dan semua npm script
 ```
 
 ---
 
 ## Cara membuat paket bingkai sendiri
 
-Paket bingkai adalah folder berisi beberapa file PNG yang ditaruh di `public/assets/theme-packs/`. Saat dev server berjalan, folder ini dibaca otomatis dan bingkai langsung muncul di panel editor.
+Paket bingkai adalah folder berisi beberapa file PNG yang ditaruh di `public/assets/frame-packs/`. Selama dev server jalan, folder itu dibaca otomatis dan bingkainya langsung muncul di panel editor.
 
-> Nama folder `theme-packs/` dan file `theme.json` sengaja dipertahankan supaya paket yang sudah ada tetap jalan. Di UI, paket ini tampil sebagai **Bingkai**.
+Tidak perlu menulis kode. Tidak perlu mendaftarkan apa pun.
 
 ### 1. Buat folder bingkai
 
-Buat folder baru di `public/assets/theme-packs/` dengan nama yang:
+Buat folder baru di `public/assets/frame-packs/`. Namanya harus memenuhi syarat ini:
 
-- Hanya menggunakan huruf kecil (`a-z`), angka (`0-9`), dan tanda hubung (`-`)
+- Hanya huruf kecil (`a-z`), angka (`0-9`), dan tanda hubung (`-`)
 - Tidak diawali atau diakhiri tanda hubung
 - Maksimal 40 karakter
-- Tidak diawali `_` atau `.` (folder seperti itu diabaikan)
+- Tidak diawali `_` atau `.` (folder seperti itu dilewati)
 
-Contoh nama yang valid: `cherry-blossom`, `retro80s`, `pastel-pink`
+Contoh yang valid: `cherry-blossom`, `retro80s`, `pastel-pink`.
 
 ### 2. Siapkan 5 file PNG artwork
 
-Artwork adalah **lapisan transparan yang ditaruh di atas foto**. Bayangkan seperti bingkai foto: area transparan memperlihatkan foto di bawahnya, area berwarna menutupinya.
+Artwork itu lapisan transparan yang ditaruh di atas foto. Cara kerjanya persis seperti bingkai foto fisik: bagian transparan memperlihatkan foto di bawahnya, bagian berwarna menutupinya.
 
-Setiap file harus **tepat** dimensinya — scanner akan menolak kalau ukurannya salah satu piksel pun:
+Ukurannya harus tepat. Selisih satu piksel saja, foldernya ditolak.
 
 | File         | Ukuran (piksel) | Untuk tata letak |
 | ------------ | --------------- | ---------------- |
@@ -548,9 +829,9 @@ Setiap file harus **tepat** dimensinya — scanner akan menolak kalau ukurannya 
 | `2x2.png`    | 1200 × 1200     | Grid 2×2         |
 | `single.png` | 1200 × 1800     | Satu foto        |
 
-> **Penting:** Nama file untuk satu foto adalah `single.png`, **bukan** `1x1.png`. Ad-blocker di browser bisa memblokir file bernama `1x1.png` karena dikira tracking pixel.
+> **Penting:** nama file untuk satu foto adalah `single.png`, bukan `1x1.png`. Ad-blocker bisa memblokir file bernama `1x1.png` karena dikira tracking pixel.
 
-Kalau butuh tahu posisi slot foto (supaya bisa desain bingkai yang pas), buka bagian ini:
+Kalau perlu tahu posisi slot foto supaya desainmu pas, buka bagian ini:
 
 <details>
 <summary>Koordinat slot foto tiap template</summary>
@@ -594,12 +875,13 @@ Format: `x, y, lebar, tinggi` (dalam piksel)
 
 ### 3. Tambahkan file opsional (kalau mau)
 
-**`preview.png`** — gambar cover untuk kartu bingkai di panel editor.
+**`preview.png`** adalah gambar cover untuk kartu bingkai di panel editor.
 
-- Ukuran: 64 × 64 px hingga 2048 × 2048 px
-- Disarankan persegi, di bawah 1 MB
+- Ukuran 64 × 64 px sampai 2048 × 2048 px.
+- Sebaiknya persegi dan di bawah 1 MB. Kalau tidak persegi, scanner memberi warning dan cover-nya di-crop.
+- File ini opsional. Tanpa `preview.png`, kartu memakai warna latar plus artwork template.
 
-**`theme.json`** — pengaturan bingkai:
+**`frame.json`** mengatur tampilan bingkai:
 
 ```json
 {
@@ -617,44 +899,67 @@ Format: `x, y, lebar, tinggi` (dalam piksel)
 | `fontId`          | `app`       | `app`, `serif`, `sans`, `mono`, atau `display` |
 | `backgroundColor` | `#ffffff`   | Warna latar solid (`#rrggbb`)                  |
 
+### Batas validasi yang diterapkan scanner
+
+| Aturan               | Nilai                                                                                 |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| Panjang nama folder  | maksimal 40 karakter, pola `kata-kata-kata` (huruf kecil/angka, tanda hubung tunggal) |
+| Ukuran `frame.json`  | maksimal 16 KB, harus objek JSON                                                      |
+| Ukuran tiap artwork  | maksimal 8 MB (lebih dari itu hanya warning)                                          |
+| Ukuran `preview.png` | maksimal 1 MB (lebih dari itu hanya warning)                                          |
+| Dimensi artwork      | harus **tepat** sama dengan tabel di atas, selisih 1 piksel = folder ditolak          |
+| Dimensi preview      | 64–2048 px per sisi                                                                   |
+
+Artwork selalu diskalakan penuh ke ukuran kanvas template. Jadi desainlah di ukuran cetak aslinya, bukan ukuran yang lebih kecil, supaya tidak blur.
+
+Folder yang ditolak tidak muncul di katalog dan tidak merusak paket lain. Semua masalahnya dicatat di `diagnostics`.
+
 ### 4. Muat ulang halaman
 
-Setelah folder selesai dibuat, muat ulang `http://localhost:3000`. Bingkai akan muncul otomatis di panel editor.
+Setelah foldernya selesai, muat ulang `http://localhost:3000`. Bingkai baru langsung muncul di panel editor.
 
 ### Cara debug kalau bingkai tidak muncul
 
-Buka `http://localhost:3000/api/themes` di browser. Response berisi dua bagian:
+Buka `http://localhost:3000/api/frames` di browser. Response-nya punya dua bagian:
 
-- `themes` — daftar bingkai yang berhasil dimuat
-- `diagnostics` — daftar error/warning per folder
+- `frames`: daftar bingkai yang berhasil dimuat
+- `diagnostics`: daftar error dan warning per folder. Bagian ini hanya muncul saat development; di produksi array-nya selalu kosong.
+
+Kode diagnostic yang mungkin muncul: `invalid-id`, `manifest-not-file`, `manifest-too-large`, `bad-manifest`, `preview-not-file`, `bad-png`, `bad-preview-size`, `non-square-preview`, `large-preview`, `missing-file`, `wrong-size`, `large-artwork`, `unreadable`.
 
 ---
 
 ## Cara menambah stiker sendiri
 
-Menambah stiker di PhotoPip sangat praktis — **tidak perlu menyentuh kode sama sekali dan tidak butuh file JSON**:
+Menambah stiker tidak perlu menyentuh kode sama sekali, dan tidak ada file JSON yang harus diedit.
 
 ### 1. Siapkan file gambar
 
-- Format: **PNG transparan** (direkomendasikan), bisa juga WebP, SVG, atau JPG.
-- Bentuk persegi (rasio 1:1) dengan resolusi sekitar 256×256 px hingga 512×512 px.
-- Disarankan ukuran file di bawah 500 KB agar kanvas editor tetap ringan dan cepat.
+- Format yang dipindai: **PNG**, **WebP**, **JPG/JPEG**. SVG, AVIF, BMP, GIF, dan HEIC tidak dipindai.
+- PNG transparan paling aman, karena latar kanvas belum tentu putih.
+- Harus persegi (rasio 1:1), sekitar 256×256 px sampai 512×512 px. Renderer memakai lebar gambar untuk kedua sumbu, jadi stiker non-persegi akan gepeng.
+- Sebaiknya di bawah 500 KB supaya kanvas editor tetap ringan.
 
 ### 2. Taruh ke folder kategori
 
-- Masukkan file gambar ke dalam subfolder kategori di:
-  `public/assets/stickers/<nama-kategori>/`
-  _(contoh: `public/assets/stickers/cute/kucing-lucu.png`)_
-- Jika ingin stiker langsung muncul tanpa kategori khusus, taruh langsung di `public/assets/stickers/`.
+- Masukkan file ke subfolder kategori: `public/assets/stickers/<nama-kategori>/`
+- Contoh: `public/assets/stickers/cute/kucing-lucu.png`
+- Kalau mau stiker tanpa kategori khusus, taruh langsung di `public/assets/stickers/`. Stiker seperti ini masuk kategori `all`.
+- Folder atau file yang diawali `_` atau `.` dilewati, jadi bisa dipakai untuk menyimpan draf.
 
 ### 3. Kategori dan nama otomatis
 
-- **Nama tab kategori** otomatis diambil dari nama folder dan dikapitalisasi secara dinamis (contoh: folder `y2k` → tab **Y2K**, folder `retro-vibes` → tab **Retro Vibes**).
-- **Nama stiker & tag pencarian** otomatis diambil dari nama file (contoh: `kucing-lucu.png` → nama **Kucing Lucu** dengan tag pencarian `kucing`, `lucu`).
+- Nama tab kategori diambil dari nama folder, lalu dikapitalisasi. Folder `y2k` jadi tab **Y2K**, folder `retro-vibes` jadi tab **Retro Vibes**.
+- Nama stiker diambil dari nama file. `_` dan `-` berubah jadi spasi, tiap kata dikapitalisasi. `kucing-lucu.png` jadi **Kucing Lucu**.
+- Tag pencarian diambil dari nama kategori plus tiap kata di nama file. Untuk contoh tadi: `cute`, `kucing`, `lucu`.
+- ID dibentuk dari `kategori-namafile` yang sudah disanitasi. Kalau bentrok, diberi akhiran `-2`, `-3`, dan seterusnya.
+- Daftar stiker diurutkan alfabetis berdasarkan nama.
 
 ### 4. Muat ulang halaman
 
-Muat ulang browser di `http://localhost:3000`. Endpoint `/api/stickers` otomatis membaca file baru dengan cache-busting sehingga stiker langsung bisa digunakan.
+Muat ulang browser di `http://localhost:3000`. Endpoint `/api/stickers` otomatis membaca file baru, tidak perlu restart server.
+
+Setiap URL stiker diberi query `?v=<mtime>-<size>`. Jadi kalau kamu mengganti isi file dengan nama yang sama, cache browser langsung ter-bust.
 
 ---
 
@@ -664,15 +969,23 @@ Muat ulang browser di `http://localhost:3000`. Endpoint `/api/stickers` otomatis
 
 1. Tambah entry ke `src/shared-tools/catalog/templates.ts`
 2. Tambah `layoutNames` ke semua 7 locale di `src/translations/locales/`
-3. Semua paket bingkai yang sudah ada harus ditambahkan file PNG untuk template baru
+3. Tambahkan file PNG untuk template baru di setiap paket bingkai yang sudah ada
 4. Update tabel di README ini
+
+`templateArtworkSpecs` di `frame-pack.ts` dihitung otomatis dari geometri template, jadi nama file dan ukuran PNG yang diminta scanner ikut menyesuaikan. Kamu tetap harus menyediakan file PNG-nya di tiap paket.
 
 ### Menambah filter baru
 
 1. Tambah ID ke union `PhotoFilterId` di `src/shared-tools/composition/types.ts`
-2. Tambah case ke `applyPhotoFilter()` di `render.ts` (efek Fabric yang sesungguhnya)
-3. Tambah entry ke `photoFilters` di `src/shared-tools/catalog/photo-filters.ts`
+2. Tambah case ke `applyPhotoFilter()` di `render.ts`. Ini efek Fabric yang sesungguhnya.
+3. Tambah entry ke `photoFilters` di `src/shared-tools/catalog/photo-filters.ts`. Preview CSS di panel hanya perkiraan, jadi sinkronkan manual dengan `render.ts`.
 4. Tambah key `filterNames.<id>` ke semua 7 locale
+
+### Menambah jenis objek baru di kanvas
+
+Agar bisa dipilih dan diedit, setiap objek interaktif butuh tiga hal: `placementId` (id-nya di `Composition`), `objectType` (`"sticker"` atau `"text"`), dan `selectable/evented` sesuai mode.
+
+Perubahan transform ditangkap `object:modified` di `use-editor-canvas.ts`, lalu dikembalikan ke `Composition` lewat `onCommit`.
 
 ### Menambah bahasa baru
 
@@ -685,24 +998,24 @@ Muat ulang browser di `http://localhost:3000`. Endpoint `/api/stickers` otomatis
 
 | Aturan                                                                            | Kenapa                                                                                           |
 | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Perubahan visual wajib masuk `render.ts`                                          | Editor dan ekspor pakai renderer yang sama — kalau hanya ubah editor, hasil unduhan akan berbeda |
+| Perubahan visual wajib masuk `render.ts`                                          | Editor dan ekspor pakai renderer yang sama. Kalau cuma editor yang diubah, hasil unduhan berbeda |
 | Jangan mutasi `Composition` atau `Session` langsung                               | State immutable mencegah bug re-render yang sulit dilacak                                        |
-| Semua string UI harus masuk ke 7 locale                                           | Hardcode teks bahasa apapun di komponen = bug i18n                                               |
+| Semua string UI harus masuk ke 7 locale                                           | Hardcode teks bahasa apa pun di komponen = bug i18n                                              |
 | Jangan import `window`, `document`, `navigator` di kode yang bisa dirender server | Next.js merender sebagian kode di server Node.js                                                 |
-| Jangan pakai `// eslint-disable` atau `@ts-ignore`                                | Perbaiki akar masalahnya, bukan sembunyikan error-nya                                            |
+| Jangan pakai `// eslint-disable` atau `@ts-ignore`                                | Perbaiki akar masalahnya, jangan sembunyikan error-nya                                           |
 | Jalankan `npm run verify` sebelum selesai                                         | Satu perintah yang cek semua                                                                     |
 
 ---
 
-## Testing — cara menguji kode
+## Testing: cara menguji kode
 
 ```bash
 npm test                                    # jalankan semua tes
 npx vitest run tests/camera.test.tsx        # jalankan satu file saja
-npx vitest --watch                          # watch mode — tes ulang saat file berubah
+npx vitest --watch                          # watch mode, tes ulang saat file berubah
 ```
 
-Tes ada di folder `tests/`, menggunakan Vitest + Testing Library + jsdom.
+Semua tes ada di folder `tests/` dan memakai Vitest, Testing Library, serta jsdom.
 
 | File tes                   | Yang diuji                                                    |
 | -------------------------- | ------------------------------------------------------------- |
@@ -710,12 +1023,14 @@ Tes ada di folder `tests/`, menggunakan Vitest + Testing Library + jsdom.
 | `capture-session.test.tsx` | `sessionReducer`: capture, retake, reset, batas slot          |
 | `composition.test.ts`      | Geometri slot, cover-crop, clamp posisi stiker dan teks       |
 | `editor-tabs.test.ts`      | Navigasi keyboard Arrow/Home/End di tablist editor            |
+| `image-upload.test.ts`     | Validasi file upload, batas ukuran, resize                    |
 | `sticker-catalog.test.ts`  | Pemindaian folder stiker: format nama, id, kategori, tag      |
-| `theme-catalog.test.ts`    | `mergeThemePacks`, hook `useThemeCatalog`                     |
-| `theme-pack.test.ts`       | Validasi folder bingkai: ukuran PNG, format JSON, nama folder |
-| `theme-preview.test.tsx`   | Render komponen `ThemePreview`                                |
+| `frame-catalog.test.ts`    | `mergeFramePacks`, hook `useFrameCatalog`                     |
+| `frame-pack.test.ts`       | Validasi folder bingkai: ukuran PNG, format JSON, nama folder |
+| `frame-preview.test.tsx`   | Render komponen `FramePreview`                                |
+| `translations.test.ts`     | Kelengkapan key di ketujuh locale                             |
 
-> **Yang tidak dicakup tes:** hasil visual, kualitas cetak, perilaku kamera di hardware nyata.
+Yang tidak dicakup tes: hasil visual, kualitas cetak, dan perilaku kamera di hardware nyata. Tiga hal itu harus dicek manual.
 
 ---
 
@@ -723,66 +1038,95 @@ Tes ada di folder `tests/`, menggunakan Vitest + Testing Library + jsdom.
 
 ### Kamera tidak menyala
 
-- Pastikan halaman dibuka lewat **HTTPS** atau **`http://localhost`** — tidak bisa di `http://192.168.x.x`
-- Periksa izin kamera di browser (biasanya ada ikon di address bar)
-- Pastikan tidak ada aplikasi lain yang sedang memakai kamera (Zoom, Meet, dll.)
-- Lihat kode error yang muncul di UI dan cocokkan dengan tabel di atas
+- Pastikan halaman dibuka lewat **HTTPS** atau `http://localhost`. Alamat seperti `http://192.168.x.x` tidak akan berhasil.
+- Periksa izin kamera di browser. Biasanya ada ikon kecil di address bar.
+- Tutup aplikasi lain yang sedang memakai kamera (Zoom, Meet, dan sejenisnya).
+- Lihat kode error yang muncul di UI, lalu cocokkan dengan tabel kode error di bagian Kamera.
+
+### Dev server dibuka dari HP atau IP jaringan lokal
+
+Next.js 16 memblokir resource dev (HMR, chunk internal) dari origin yang tidak dikenal. Gejalanya: halaman tampil, tapi console penuh pesan `Blocked cross-origin request to Next.js dev resource` dan `WebSocket ... ERR_INVALID_HTTP_RESPONSE`.
+
+1. Tambahkan IP kamu ke `allowedDevOrigins` di `next.config.mjs`:
+
+   ```js
+   allowedDevOrigins: ["192.168.1.50"],
+   ```
+
+2. Restart `npm run dev`.
+3. Ingat, kamera tetap tidak akan jalan lewat `http://192.168.x.x` karena bukan secure context. Untuk menguji kamera di HP, pakai tunnel HTTPS seperti `ngrok` atau Cloudflare Tunnel, atau deploy ke Vercel.
+
+### Stiker baru tidak muncul di panel
+
+1. Cek ekstensinya. Hanya `.png`, `.webp`, `.jpg`, dan `.jpeg` yang dipindai.
+2. Pastikan file ada di dalam subfolder kategori, bukan di folder yang lebih dalam lagi. Scanner hanya membaca satu level.
+3. Pastikan nama file atau foldernya tidak diawali `_` atau `.`.
+4. Buka `http://localhost:3000/api/stickers` dan cari nama stiker di response.
+5. Muat ulang halaman. Endpoint memakai `no-store`, jadi tidak perlu restart server.
+
+### Editor berhenti di "Processing…" atau menampilkan error render
+
+- Buka console browser. Error aslinya selalu dicatat sebagai `[editor] preview render failed`.
+- Pastikan jumlah foto sama dengan `photoCount` template.
+- Kalau artwork bingkai gagal dimuat, render tetap lanjut dengan warning `[render] skipped decorative image`. Yang menghentikan render hanya kegagalan pada foto utama.
+- Klik tombol **Coba lagi** di area kanvas untuk mengulang render.
 
 ### Paket bingkai tidak muncul di editor
 
-1. Buka `http://localhost:3000/api/themes` — lihat bagian `diagnostics`
-2. Pastikan 5 file PNG ada dan ukurannya tepat
-3. Pastikan nama folder: huruf kecil, angka, tanda hubung saja — tidak mulai dengan `_` atau `.`
-4. Pastikan `theme.json` valid (cek tanda kurung, tanda kutip, koma)
-5. Muat ulang halaman setelah menambah atau mengubah paket
+1. Buka `http://localhost:3000/api/frames`, lalu lihat bagian `diagnostics`.
+2. Pastikan kelima file PNG ada dan ukurannya tepat.
+3. Pastikan nama folder hanya berisi huruf kecil, angka, dan tanda hubung, serta tidak diawali `_` atau `.`.
+4. Pastikan `frame.json` valid. Periksa tanda kurung, tanda kutip, dan koma.
+5. Muat ulang halaman setelah menambah atau mengubah paket.
 
 ### `npm install` gagal
 
 - Pastikan Node.js versi 22 atau lebih baru: `node --version`
-- Coba hapus folder `node_modules/` dan file `package-lock.json`, lalu jalankan `npm install` lagi
+- Hapus folder `node_modules/` dan file `package-lock.json`, lalu jalankan `npm install` lagi
 - Pastikan koneksi internet aktif
 
 ### Stiker atau teks tidak muncul di file unduhan
 
-- Pastikan `renderComposition()` di `render.ts` sudah diperbarui — editor dan ekspor pakai fungsi yang sama
-- Cek console browser untuk error gambar yang gagal dimuat
+- Pastikan `renderComposition()` di `render.ts` sudah diperbarui. Editor dan ekspor memakai fungsi yang sama.
+- Cek console browser untuk error gambar yang gagal dimuat.
 
 ### Halaman terasa lambat atau macet di editor
 
-- Cek console browser untuk error Fabric.js
-- Pastikan kanvas editor punya ukuran lebih dari 0 (tidak tersembunyi CSS)
+- Cek console browser untuk error Fabric.js.
+- Pastikan kanvas editor punya ukuran lebih dari 0 dan tidak tersembunyi oleh CSS.
 
 ### Aset 404 setelah `npm run build`
 
-- Pastikan jalankan `npm run build` dulu sebelum `npm start` — skrip build menyalin `public/` ke folder standalone
-- Jangan jalankan `npm start` tanpa build sebelumnya
+- Jalankan `npm run build` sebelum `npm start`. Skrip build yang menyalin `public/` ke folder standalone, jadi tanpa build asetnya belum ada di sana.
+- Jangan menjalankan `npm start` tanpa build sebelumnya.
 
 ### Foto hilang setelah refresh
 
-Ini memang by design — tidak ada penyimpanan permanen. Unduh foto dulu sebelum meninggalkan atau me-refresh halaman.
+Ini memang disengaja. Tidak ada penyimpanan permanen, jadi unduh fotomu dulu sebelum me-refresh atau meninggalkan halaman.
 
 ---
 
 ## Kontribusi
 
-Kontribusi disambut! Ikuti langkah berikut:
+Kontribusi terbuka untuk siapa saja.
 
-1. **Fork** repositori ini di GitHub
-2. **Buat branch** untuk perubahan kamu: `git checkout -b fitur/nama-fitur`
-3. **Buat perubahan** — ikuti aturan pengembangan di atas
-4. **Jalankan gate:** `npm run verify` harus lolos penuh tanpa error
-5. **Commit** dengan pesan yang jelas tentang apa yang berubah
-6. **Buat Pull Request** — deskripsikan apa yang berubah dan kenapa
+1. **Fork** repositori ini di GitHub.
+2. **Buat branch** untuk perubahanmu: `git checkout -b fitur/nama-fitur`
+3. **Buat perubahan.** Ikuti aturan pengembangan di atas.
+4. **Jalankan gate.** `npm run verify` harus lolos penuh tanpa error.
+5. **Commit** dengan pesan yang jelas tentang apa yang berubah.
+6. **Buat Pull Request**, lalu jelaskan apa yang berubah dan kenapa.
 
-**Yang perlu diingat saat PR:**
+Beberapa hal yang paling sering ditanyakan saat review:
 
-- Semua string UI baru harus ada di **7 locale**
-- Perubahan visual harus mengubah `render.ts`, bukan hanya komponen editor
-- Jangan tambahkan dependency baru tanpa diskusi dulu
-- Satu PR satu tujuan — lebih mudah di-review
+- Semua string UI baru harus ada di 7 locale.
+- Perubahan visual harus masuk `render.ts`, bukan hanya komponen editor.
+- Dependency baru perlu didiskusikan dulu sebelum ditambahkan.
+- Satu PR sebaiknya satu tujuan. Lebih mudah di-review, lebih cepat di-merge.
 
 ---
 
-## Lisensi font
+## Lisensi aset
 
-Font **Google Sans Flex** digunakan dengan lisensi [SIL Open Font License (OFL)](https://scripts.sil.org/OFL). File lisensi ada di `src/assets/fonts/`. Pertahankan file lisensi saat mendistribusikan ulang.
+- **Font Google Sans Flex** memakai [SIL Open Font License (OFL)](https://scripts.sil.org/OFL). File lisensinya ada di `src/assets/fonts/OFL.txt`, dan harus tetap disertakan kalau kamu mendistribusikan ulang.
+- **Stiker dan paket bingkai** di `public/assets/` adalah aset gambar pihak ketiga atau buatan sendiri. Sebelum memakai atau mendistribusikan ulang, pastikan lisensi tiap asetnya jelas. Kalau kamu menambahkan aset baru, sertakan file lisensinya di folder aset tersebut.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import type { ThemePreset } from "@/shared-tools/catalog/themes";
+import type { FramePreset } from "@/shared-tools/catalog/frames";
 import type { ExportFormat } from "@/shared-tools/composition/export";
 import type { Composition } from "@/shared-tools/composition/types";
 import type { StudioMessage } from "../types";
@@ -12,7 +12,7 @@ export function useExport(onMessage: (message: StudioMessage | null) => void) {
   const work = useRef<AbortController | null>(null);
 
   const exportPhoto = useCallback(
-    async (composition: Composition, theme: ThemePreset) => {
+    async (composition: Composition, frame: FramePreset) => {
       const controller = new AbortController();
       work.current = controller;
       setExporting(true);
@@ -25,7 +25,7 @@ export function useExport(onMessage: (message: StudioMessage | null) => void) {
         if (controller.signal.aborted) return;
         const src = await exportComposition(
           composition,
-          theme,
+          frame,
           format,
           controller.signal,
         );

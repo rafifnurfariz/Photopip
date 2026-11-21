@@ -3,11 +3,11 @@ import { messages } from "@/translations";
 import { delay } from "@/shared-tools/async";
 import { templates } from "@/shared-tools/catalog/templates";
 import {
-  activeTheme,
-  applyTheme,
-  themePresets,
-  type ThemePreset,
-} from "@/shared-tools/catalog/themes";
+  activeFrame,
+  applyFrame,
+  framePresets,
+  type FramePreset,
+} from "@/shared-tools/catalog/frames";
 import {
   coverCrop,
   fitCanvas,
@@ -39,7 +39,7 @@ function shape(value: unknown): unknown {
 const emptyComposition: Composition = {
   template: templates[0],
   photos: [],
-  themeId: "plain",
+  frameId: "plain",
   stickers: [],
   texts: [],
   photoFilters: [],
@@ -126,25 +126,25 @@ describe("composition and capture state", () => {
     expect(result.opacity).toBe(1);
   });
   it("undoes and redoes composition snapshots in order", () => {
-    const first = { ...emptyComposition, themeId: "plain" };
-    const second = { ...emptyComposition, themeId: "noir" };
-    const third = { ...emptyComposition, themeId: "candy" };
+    const first = { ...emptyComposition, frameId: "plain" };
+    const second = { ...emptyComposition, frameId: "noir" };
+    const third = { ...emptyComposition, frameId: "candy" };
     let history = pushHistory(initialHistory, first);
     history = pushHistory(history, second);
     const undone = undoHistory(history, third);
-    expect(undone?.next.themeId).toBe("noir");
+    expect(undone?.next.frameId).toBe("noir");
     const redone = undone ? redoHistory(undone.state, second) : null;
-    expect(redone?.next.themeId).toBe("candy");
+    expect(redone?.next.frameId).toBe("candy");
   });
-  it("applies a theme to the strip and existing captions", () => {
-    const theme: ThemePreset = {
+  it("applies a frame to the strip and existing captions", () => {
+    const frame: FramePreset = {
       id: "classic",
       name: "Classic",
       background: { type: "color", value: "#ffffff", preview: "#ffffff" },
       textColor: "#20231f",
       fontId: "serif",
     };
-    const result = applyTheme(
+    const result = applyFrame(
       {
         ...emptyComposition,
         texts: [
@@ -164,31 +164,31 @@ describe("composition and capture state", () => {
           },
         ],
       },
-      theme,
+      frame,
     );
-    expect(result.themeId).toBe(theme.id);
-    expect(result.texts[0].color).toBe(theme.textColor);
-    expect(result.texts[0].fontId).toBe(theme.fontId);
+    expect(result.frameId).toBe(frame.id);
+    expect(result.texts[0].color).toBe(frame.textColor);
+    expect(result.texts[0].fontId).toBe(frame.fontId);
   });
-  it("keeps theme ids unique and every background well formed", () => {
-    expect(themePresets).toHaveLength(0);
-    expect(new Set(themePresets.map((theme) => theme.id)).size).toBe(
-      themePresets.length,
+  it("keeps frame ids unique and every background well formed", () => {
+    expect(framePresets).toHaveLength(0);
+    expect(new Set(framePresets.map((frame) => frame.id)).size).toBe(
+      framePresets.length,
     );
-    // No built-in themes to validate since we removed them
-    // Users can add themes via folders in public/assets/theme-packs/
+    // No built-in frames to validate since we removed them
+    // Users can add frames via folders in public/assets/frame-packs/
   });
-  it("only marks a preset active while theme and caption style match", () => {
-    const theme: ThemePreset = {
+  it("only marks a preset active while frame and caption style match", () => {
+    const frame: FramePreset = {
       id: "plain",
       name: "Plain",
       background: { type: "color", value: "#ffffff", preview: "#ffffff" },
       textColor: "#20231f",
       fontId: "app",
     };
-    const applied = applyTheme(emptyComposition, theme);
-    expect(activeTheme(applied, [theme])?.id).toBe(theme.id);
-    expect(activeTheme({ ...applied, themeId: "missing" }, [theme])).toBeNull();
+    const applied = applyFrame(emptyComposition, frame);
+    expect(activeFrame(applied, [frame])?.id).toBe(frame.id);
+    expect(activeFrame({ ...applied, frameId: "missing" }, [frame])).toBeNull();
     const captioned = {
       ...applied,
       texts: [
@@ -199,8 +199,8 @@ describe("composition and capture state", () => {
           y: 900,
           size: 32,
           rotation: 0,
-          color: theme.textColor,
-          fontId: theme.fontId,
+          color: frame.textColor,
+          fontId: frame.fontId,
           align: "center" as const,
           bold: false,
           italic: false,
@@ -208,14 +208,14 @@ describe("composition and capture state", () => {
         },
       ],
     };
-    expect(activeTheme(captioned, [theme])?.id).toBe(theme.id);
+    expect(activeFrame(captioned, [frame])?.id).toBe(frame.id);
     expect(
-      activeTheme(
+      activeFrame(
         {
           ...captioned,
           texts: [{ ...captioned.texts[0], color: "#123456" }],
         },
-        [theme],
+        [frame],
       ),
     ).toBeNull();
   });

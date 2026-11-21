@@ -39,7 +39,7 @@ export function MoonIcon() {
   );
 }
 
-export function ThemeIcon() {
+export function FrameIcon() {
   return (
     <Icon>
       <circle cx="12" cy="12" r="8" />

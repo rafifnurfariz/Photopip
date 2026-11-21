@@ -1,1 +1,1 @@
-export type ToolTab = "theme" | "photo" | "sticker" | "text" | "properties";
+export type ToolTab = "frame" | "photo" | "sticker" | "text" | "properties";

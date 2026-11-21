@@ -8,7 +8,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Canvas } from "fabric";
-import type { ThemePreset } from "@/shared-tools/catalog/themes";
+import type { FramePreset } from "@/shared-tools/catalog/frames";
 import {
   fitCanvas,
   normalizeSticker,
@@ -53,7 +53,7 @@ function findObject(canvas: Canvas, target: CanvasSelection) {
 
 export function useEditorCanvas(
   composition: Composition,
-  theme: ThemePreset,
+  frame: FramePreset,
   onCommit: (composition: Composition) => void,
   selection: CanvasSelection | null,
   onSelect: (selection: CanvasSelection | null) => void,
@@ -246,7 +246,7 @@ export function useEditorCanvas(
     let active = true;
     if (!renderedRef.current) setStatus("loading");
     renderingRef.current = true;
-    void renderComposition(canvas, composition, theme, controller.signal, true)
+    void renderComposition(canvas, composition, frame, controller.signal, true)
       .then(() => {
         if (!active || id !== renderId.current) return;
         resizeRef.current();
@@ -270,7 +270,7 @@ export function useEditorCanvas(
       active = false;
       controller.abort();
     };
-  }, [composition, theme, revision]);
+  }, [composition, frame, revision]);
 
   useEffect(() => {
     resizeRef.current();

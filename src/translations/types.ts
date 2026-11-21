@@ -74,14 +74,14 @@ export interface Messages {
     zoomOut: string;
     fit: string;
     tabs: {
-      theme: string;
+      frame: string;
       photo: string;
       sticker: string;
       text: string;
       properties: string;
     };
-    themePresets: string;
-    themeHint: string;
+    framePresets: string;
+    frameHint: string;
     surprise: string;
     filters: string;
     photoLabel: string;

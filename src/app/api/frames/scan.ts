@@ -1,35 +1,34 @@
 /**
  * PEMINDAI FOLDER PAKET BINGKAI
- * Memindai public/assets/theme-packs/: memvalidasi manifest theme.json,
- * mengecek dimensi artwork PNG per template, dan menyusun katalog tema siap pakai.
+ * Memindai public/assets/frame-packs/: memvalidasi manifest frame.json,
+ * mengecek dimensi artwork PNG per template, dan menyusun katalog bingkai siap pakai.
  */
 
 import { open, readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import type { TemplateId } from "@/shared-tools/catalog/templates";
 import {
-  createThemePackTheme,
+  createFramePackFrame,
   isValidPackId,
   LARGE_ARTWORK_BYTES,
   LARGE_PREVIEW_BYTES,
   MAX_MANIFEST_BYTES,
   MAX_PACK_ID_LENGTH,
   packFileUrl,
-  parseThemeManifest,
+  parseFrameManifest,
   PNG_HEADER_BYTES,
   readPngSize,
   templateArtworkSpecs,
   validatePreviewSize,
-  type PngSize,
-  type ThemeManifest,
-  type ThemePackDiagnostic,
-  type ThemePackResponse,
-  type ThemePackTheme,
-} from "@/shared-tools/catalog/theme-pack";
+  type FrameManifest,
+  type FramePackDiagnostic,
+  type FramePackResponse,
+  type FramePackFrame,
+} from "@/shared-tools/catalog/frame-pack";
 
 interface FolderResult {
-  theme: ThemePackTheme | null;
-  diagnostics: ThemePackDiagnostic[];
+  frame: FramePackFrame | null;
+  diagnostics: FramePackDiagnostic[];
 }
 
 async function statOrNull(file: string) {
@@ -41,12 +40,12 @@ async function statOrNull(file: string) {
   }
 }
 
-async function readPngHeader(file: string): Promise<PngSize | null> {
+async function readHeader(file: string, bytes: number): Promise<Uint8Array> {
   const handle = await open(file, "r");
   try {
-    const buffer = Buffer.alloc(PNG_HEADER_BYTES);
-    const { bytesRead } = await handle.read(buffer, 0, PNG_HEADER_BYTES, 0);
-    return readPngSize(buffer.subarray(0, bytesRead));
+    const buffer = new Uint8Array(bytes);
+    const { bytesRead } = await handle.read(buffer, 0, bytes, 0);
+    return buffer.subarray(0, bytesRead);
   } finally {
     await handle.close();
   }
@@ -54,50 +53,51 @@ async function readPngHeader(file: string): Promise<PngSize | null> {
 
 function failure(
   folder: string,
-  diagnostics: ThemePackDiagnostic[],
+  diagnostics: FramePackDiagnostic[],
   code: string,
   message: string,
 ): FolderResult {
   diagnostics.push({ folder, level: "error", code, message });
-  return { theme: null, diagnostics };
+  return { frame: null, diagnostics };
 }
 
-async function scanThemeFolder(
-  directory: string,
+async function scanFrameFolder(
+  root: string,
   folder: string,
 ): Promise<FolderResult> {
-  const diagnostics: ThemePackDiagnostic[] = [];
+  const diagnostics: FramePackDiagnostic[] = [];
+  const directory = path.join(root, folder);
 
   if (!isValidPackId(folder)) {
     return failure(
       folder,
       diagnostics,
-      "invalid-id",
-      `Folder id must be lowercase letters, digits and single hyphens, at most ${MAX_PACK_ID_LENGTH} characters`,
+      "bad-folder-name",
+      `folder name must be kebab-case and at most ${MAX_PACK_ID_LENGTH} characters`,
     );
   }
 
-  let manifest: ThemeManifest = {};
-  const manifestStat = await statOrNull(path.join(directory, "theme.json"));
+  let manifest: FrameManifest = {};
+  const manifestStat = await statOrNull(path.join(directory, "frame.json"));
   if (manifestStat) {
     if (!manifestStat.isFile()) {
       return failure(
         folder,
         diagnostics,
-        "manifest-not-file",
-        "theme.json must be a file",
+        "bad-manifest",
+        "frame.json must be a file",
       );
     }
     if (manifestStat.size > MAX_MANIFEST_BYTES) {
       return failure(
         folder,
         diagnostics,
-        "manifest-too-large",
-        `theme.json must be at most ${MAX_MANIFEST_BYTES} bytes`,
+        "bad-manifest",
+        `frame.json must be at most ${MAX_MANIFEST_BYTES} bytes`,
       );
     }
-    const parsed = parseThemeManifest(
-      await readFile(path.join(directory, "theme.json"), "utf8"),
+    const parsed = parseFrameManifest(
+      await readFile(path.join(directory, "frame.json"), "utf8"),
     );
     if (!parsed.ok) {
       return failure(folder, diagnostics, "bad-manifest", parsed.message);
@@ -106,18 +106,19 @@ async function scanThemeFolder(
   }
 
   let preview: string | undefined;
-  const previewStat = await statOrNull(path.join(directory, "preview.png"));
+  const previewPath = path.join(directory, "preview.png");
+  const previewStat = await statOrNull(previewPath);
   if (previewStat) {
     if (!previewStat.isFile()) {
       return failure(
         folder,
         diagnostics,
-        "preview-not-file",
+        "bad-png",
         "preview.png must be a file",
       );
     }
-    const previewSize = await readPngHeader(
-      path.join(directory, "preview.png"),
+    const previewSize = readPngSize(
+      await readHeader(previewPath, PNG_HEADER_BYTES),
     );
     if (!previewSize) {
       return failure(
@@ -154,15 +155,23 @@ async function scanThemeFolder(
   for (const spec of templateArtworkSpecs) {
     const file = path.join(directory, spec.file);
     const fileStat = await statOrNull(file);
-    if (!fileStat?.isFile()) {
+    if (!fileStat) {
       return failure(
         folder,
         diagnostics,
-        "missing-file",
-        `${spec.file} is missing`,
+        "missing-artwork",
+        `missing ${spec.file}`,
       );
     }
-    const size = await readPngHeader(file);
+    if (!fileStat.isFile()) {
+      return failure(
+        folder,
+        diagnostics,
+        "bad-png",
+        `${spec.file} must be a file`,
+      );
+    }
+    const size = readPngSize(await readHeader(file, PNG_HEADER_BYTES));
     if (!size) {
       return failure(
         folder,
@@ -175,8 +184,8 @@ async function scanThemeFolder(
       return failure(
         folder,
         diagnostics,
-        "wrong-size",
-        `${spec.file} must be ${spec.width}x${spec.height}, got ${size.width}x${size.height}`,
+        "bad-dimensions",
+        `${spec.file} is ${size.width}x${size.height}, expected ${spec.width}x${spec.height}`,
       );
     }
     if (fileStat.size > LARGE_ARTWORK_BYTES) {
@@ -190,68 +199,49 @@ async function scanThemeFolder(
     artworkEntries.push([spec.id, packFileUrl(folder, spec.file, fileStat)]);
   }
 
+  const artwork = Object.fromEntries(artworkEntries) as Record<
+    TemplateId,
+    string
+  >;
+
   return {
-    theme: createThemePackTheme({
+    frame: createFramePackFrame({
       id: folder,
       manifest,
       preview,
-      artwork: Object.fromEntries(artworkEntries) as Record<TemplateId, string>,
+      artwork,
     }),
     diagnostics,
   };
 }
 
 /**
- * Scans a themes directory and returns valid packs plus developer-facing
- * diagnostics. Invalid packs are omitted instead of surfacing broken cards.
+ * Scans a frames directory and returns valid packs sorted alphabetically,
+ * plus diagnostic messages for any broken or non-conforming folders.
  */
-export async function scanThemeDirectory(
+export async function scanFrameDirectory(
   root: string,
-): Promise<ThemePackResponse> {
-  const themes: ThemePackTheme[] = [];
-  const diagnostics: ThemePackDiagnostic[] = [];
-
-  let entries;
-  try {
-    entries = await readdir(root, { withFileTypes: true });
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      return { themes, diagnostics };
-    }
-    diagnostics.push({
-      folder: "<root>",
-      level: "error",
-      code: "unreadable",
-      message: "Could not read the themes directory",
-    });
-    return { themes, diagnostics };
-  }
+): Promise<FramePackResponse> {
+  const entries = await readdir(root, { withFileTypes: true }).catch(
+    () => [] as import("node:fs").Dirent[],
+  );
 
   const folders = entries
-    .filter(
-      (entry) =>
-        entry.isDirectory() &&
-        !entry.name.startsWith("_") &&
-        !entry.name.startsWith("."),
-    )
+    .filter((entry) => entry.isDirectory() && !entry.name.startsWith("_"))
     .map((entry) => entry.name)
-    .sort();
+    .sort((first, second) => first.localeCompare(second));
 
-  for (const folder of folders) {
-    try {
-      const result = await scanThemeFolder(path.join(root, folder), folder);
-      diagnostics.push(...result.diagnostics);
-      if (result.theme) themes.push(result.theme);
-    } catch (error) {
-      console.warn(`[themes] could not read ${folder}`, error);
-      diagnostics.push({
-        folder,
-        level: "error",
-        code: "unreadable",
-        message: "Could not read the theme folder",
-      });
-    }
+  const results = await Promise.all(
+    folders.map((folder) => scanFrameFolder(root, folder)),
+  );
+
+  const frames: FramePackFrame[] = [];
+  const diagnostics: FramePackDiagnostic[] = [];
+
+  for (const result of results) {
+    if (result.frame) frames.push(result.frame);
+    diagnostics.push(...result.diagnostics);
   }
 
-  return { themes, diagnostics };
+  return { frames, diagnostics };
 }

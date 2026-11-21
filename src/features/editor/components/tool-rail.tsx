@@ -9,11 +9,11 @@
 import { useRef } from "react";
 import type { ComponentType, KeyboardEvent } from "react";
 import {
+  FrameIcon,
   PhotoIcon,
   SlidersIcon,
   StickerIcon,
   TextIcon,
-  ThemeIcon,
 } from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";
 import { nextTabIndex } from "../tabs";
@@ -32,7 +32,7 @@ export function ToolRail({ tab, onChange }: ToolRailProps) {
     label: string;
     Icon: ComponentType;
   }[] = [
-    { id: "theme", label: t.editor.tabs.theme, Icon: ThemeIcon },
+    { id: "frame", label: t.editor.tabs.frame, Icon: FrameIcon },
     { id: "photo", label: t.editor.tabs.photo, Icon: PhotoIcon },
     { id: "sticker", label: t.editor.tabs.sticker, Icon: StickerIcon },
     { id: "text", label: t.editor.tabs.text, Icon: TextIcon },

@@ -2,31 +2,31 @@ import { describe, expect, it } from "vitest";
 import { templates, type TemplateId } from "@/shared-tools/catalog/templates";
 import {
   templateArtworkSpecs,
-  type ThemePackTheme,
-} from "@/shared-tools/catalog/theme-pack";
+  type FramePackFrame,
+} from "@/shared-tools/catalog/frame-pack";
 import {
-  mergeThemePacks,
-  packToThemePreset,
-} from "@/shared-tools/catalog/theme-packs";
+  mergeFramePacks,
+  packToFramePreset,
+} from "@/shared-tools/catalog/frame-packs";
 import {
-  activeTheme,
-  applyTheme,
-  themeById,
-  themePresets,
-} from "@/shared-tools/catalog/themes";
+  activeFrame,
+  applyFrame,
+  frameById,
+  framePresets,
+} from "@/shared-tools/catalog/frames";
 import type { Composition } from "@/shared-tools/composition/types";
 
-const pack: ThemePackTheme = {
+const pack: FramePackFrame = {
   id: "neon-nights",
   name: "Neon Nights",
   textColor: "#f8fafc",
   fontId: "display",
   backgroundColor: "#0b1020",
-  preview: "/assets/theme-packs/neon-nights/preview.png?v=1-2",
+  preview: "/assets/frame-packs/neon-nights/preview.png?v=1-2",
   artwork: Object.fromEntries(
     templateArtworkSpecs.map((spec) => [
       spec.id,
-      `/assets/theme-packs/neon-nights/${spec.file}?v=1-2`,
+      `/assets/frame-packs/neon-nights/${spec.file}?v=1-2`,
     ]),
   ) as Record<TemplateId, string>,
 };
@@ -34,15 +34,15 @@ const pack: ThemePackTheme = {
 const composition: Composition = {
   template: templates[0],
   photos: [],
-  themeId: "neon-nights",
+  frameId: "neon-nights",
   stickers: [],
   texts: [],
   photoFilters: [],
 };
 
-describe("theme pack catalog", () => {
-  it("converts a pack into a theme preset with a CSS preview", () => {
-    const preset = packToThemePreset(pack);
+describe("frame pack catalog", () => {
+  it("converts a pack into a frame preset with a CSS preview", () => {
+    const preset = packToFramePreset(pack);
     expect(preset).toMatchObject({
       id: "neon-nights",
       name: "Neon Nights",
@@ -54,12 +54,12 @@ describe("theme pack catalog", () => {
       type: "color",
       value: "#0b1020",
       preview:
-        'url("/assets/theme-packs/neon-nights/preview.png?v=1-2") center / cover no-repeat #0b1020',
+        'url("/assets/frame-packs/neon-nights/preview.png?v=1-2") center / cover no-repeat #0b1020',
     });
   });
 
   it("falls back to the background color without a preview image", () => {
-    const preset = packToThemePreset({ ...pack, preview: undefined });
+    const preset = packToFramePreset({ ...pack, preview: undefined });
     expect(preset.background).toEqual({
       type: "color",
       value: "#0b1020",
@@ -68,17 +68,17 @@ describe("theme pack catalog", () => {
   });
 
   it("keeps built-in presets first and appends packs", () => {
-    const merged = mergeThemePacks(themePresets, [pack]);
-    expect(merged).toHaveLength(themePresets.length + 1);
-    expect(merged.slice(0, themePresets.length)).toEqual(themePresets);
+    const merged = mergeFramePacks(framePresets, [pack]);
+    expect(merged).toHaveLength(framePresets.length + 1);
+    expect(merged.slice(0, framePresets.length)).toEqual(framePresets);
     expect(merged[merged.length - 1].id).toBe("neon-nights");
   });
 
   it("resolves a pack by id and falls back to plain", () => {
-    const merged = mergeThemePacks(themePresets, [pack]);
-    expect(themeById("neon-nights", merged).name).toBe("Neon Nights");
-    expect(themeById("missing", merged).id).toBe("plain");
-    expect(themeById("missing")).toEqual({
+    const merged = mergeFramePacks(framePresets, [pack]);
+    expect(frameById("neon-nights", merged).name).toBe("Neon Nights");
+    expect(frameById("missing", merged).id).toBe("plain");
+    expect(frameById("missing")).toEqual({
       id: "plain",
       name: "Plain",
       background: { type: "color", value: "#ffffff", preview: "#ffffff" },
@@ -88,11 +88,11 @@ describe("theme pack catalog", () => {
   });
 
   it("marks a pack active only while captions still match", () => {
-    const merged = mergeThemePacks(themePresets, [pack]);
-    const applied = applyTheme(composition, merged[merged.length - 1]);
-    expect(activeTheme(applied, merged)?.id).toBe("neon-nights");
+    const merged = mergeFramePacks(framePresets, [pack]);
+    const applied = applyFrame(composition, merged[merged.length - 1]);
+    expect(activeFrame(applied, merged)?.id).toBe("neon-nights");
     expect(
-      activeTheme(
+      activeFrame(
         {
           ...applied,
           texts: [
@@ -118,7 +118,7 @@ describe("theme pack catalog", () => {
   });
 
   it("applies a pack id, text color and font to the composition", () => {
-    const result = applyTheme(
+    const result = applyFrame(
       {
         ...composition,
         texts: [
@@ -138,9 +138,9 @@ describe("theme pack catalog", () => {
           },
         ],
       },
-      packToThemePreset(pack),
+      packToFramePreset(pack),
     );
-    expect(result.themeId).toBe("neon-nights");
+    expect(result.frameId).toBe("neon-nights");
     expect(result.texts[0].color).toBe("#f8fafc");
     expect(result.texts[0].fontId).toBe("display");
   });

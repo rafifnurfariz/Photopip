@@ -2103,12 +2103,12 @@ option {
   font-weight: 700;
   white-space: nowrap;
 }
-.theme-grid {
+.frame-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
-.theme-card {
+.frame-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2120,11 +2120,11 @@ option {
   min-height: 0;
   box-shadow: none;
 }
-.theme-card[aria-pressed="true"] {
+.frame-card[aria-pressed="true"] {
   outline: 3px solid var(--secondary);
   outline-offset: 1px;
 }
-.theme-preview {
+.frame-preview {
   position: relative;
   display: block;
   flex: none;
@@ -2133,8 +2133,8 @@ option {
   overflow: hidden;
   box-shadow: none;
 }
-.theme-preview-frame,
-.theme-preview-artwork {
+.frame-preview-frame,
+.frame-preview-artwork {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -2142,10 +2142,10 @@ option {
   object-fit: fill;
   pointer-events: none;
 }
-.theme-preview-artwork {
+.frame-preview-artwork {
   z-index: 1;
 }
-.theme-preview-slot {
+.frame-preview-slot {
   position: absolute;
   border: 1px solid transparent;
   /* Placeholder slot: an ink hatch, not a fake photo. */
@@ -2155,12 +2155,12 @@ option {
     transparent 2px 6px
   );
 }
-.theme-preview-slot--artwork {
+.frame-preview-slot--artwork {
   position: absolute;
   border: 1px solid transparent;
   background: transparent;
 }
-.theme-preview-text {
+.frame-preview-text {
   position: absolute;
   transform: translate(-50%, -50%);
   font-size: 0.5rem;
@@ -2168,7 +2168,7 @@ option {
   line-height: 1;
   white-space: nowrap;
 }
-.theme-name {
+.frame-name {
   font-size: 0.75rem;
   font-weight: 700;
   text-align: center;
