@@ -6,6 +6,7 @@
 
 import { open, readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
+import defaultFrameDates from "@/shared-tools/catalog/frame-dates.json";
 import type { TemplateId } from "@/shared-tools/catalog/templates";
 import {
   createFramePackFrame,
@@ -64,6 +65,7 @@ function failure(
 async function scanFrameFolder(
   root: string,
   folder: string,
+  dates: Record<string, number>,
 ): Promise<FolderResult> {
   const diagnostics: FramePackDiagnostic[] = [];
   const directory = path.join(root, folder);
@@ -164,7 +166,10 @@ async function scanFrameFolder(
   const manifestTime = manifest.createdAt
     ? Date.parse(manifest.createdAt)
     : NaN;
-  const addedAt = !Number.isNaN(manifestTime) ? manifestTime : fsTime;
+  const recordedTime = dates[folder];
+  const addedAt = !Number.isNaN(manifestTime)
+    ? manifestTime
+    : (recordedTime ?? fsTime);
 
   return {
     folder,
@@ -184,6 +189,7 @@ async function scanFrameFolder(
  */
 export async function scanFrameDirectory(
   root: string,
+  dates: Record<string, number> = defaultFrameDates,
 ): Promise<FramePackResponse> {
   const entries = await readdir(root, { withFileTypes: true }).catch(
     () => [] as import("node:fs").Dirent[],
@@ -194,7 +200,7 @@ export async function scanFrameDirectory(
     .map((entry) => entry.name);
 
   const results = await Promise.all(
-    folders.map((folder) => scanFrameFolder(root, folder)),
+    folders.map((folder) => scanFrameFolder(root, folder, dates)),
   );
 
   const validResults = results

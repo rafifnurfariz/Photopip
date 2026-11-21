@@ -2,8 +2,9 @@
   "name": "photopip",
   "version": "1.0.0",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build && node scripts/package-standalone.mjs",
+    "dev": "node scripts/sync-frame-dates.mjs && next dev",
+    "prebuild": "node scripts/sync-frame-dates.mjs",
+    "build": "node scripts/sync-frame-dates.mjs && next build && node scripts/package-standalone.mjs",
     "start": "node .next/standalone/server.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

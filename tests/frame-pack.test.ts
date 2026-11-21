@@ -223,6 +223,18 @@ describe("frame directory scanner", () => {
     ]);
   });
 
+  it("sorts packs using dates index map", async () => {
+    const root = await makeRoot();
+    await writePack(root, "alpha");
+    await writePack(root, "beta");
+
+    const result = await scanFrameDirectory(root, {
+      alpha: 1000,
+      beta: 2000,
+    });
+    expect(result.frames.map((frame) => frame.id)).toEqual(["beta", "alpha"]);
+  });
+
   it("ignores underscore folders and missing roots", async () => {
     const root = await makeRoot();
     await writePack(root, "_starter");
