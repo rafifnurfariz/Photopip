@@ -65,7 +65,10 @@ function optionalImage(
   signal?: AbortSignal,
 ): Promise<HTMLImageElement | null> {
   return loadImage(src, signal).catch((error: unknown) => {
-    if (error instanceof DOMException && error.name === "AbortError")
+    if (
+      error instanceof DOMException &&
+      (error.name === "AbortError" || error.name === "TimeoutError")
+    )
       throw error;
     console.warn(`[render] skipped decorative image: ${src}`, error);
     return null;
@@ -86,24 +89,26 @@ function loadImage(
     imageCache.set(src, cached);
     return Promise.resolve(cached);
   }
+  // AbortSignal.any combines user cancellation + 10 s deadline without a manual setTimeout.
+  const combined = signal
+    ? AbortSignal.any([signal, AbortSignal.timeout(10000)])
+    : AbortSignal.timeout(10000);
   return new Promise((resolve, reject) => {
     const image = new Image();
     const cleanup = () => {
-      clearTimeout(timer);
       image.onload = null;
       image.onerror = null;
-      signal?.removeEventListener("abort", abort);
+      combined.removeEventListener("abort", abort);
     };
     const abort = () => {
       cleanup();
       image.src = "";
-      reject(new DOMException("Cancelled", "AbortError"));
+      reject(
+        combined.reason instanceof DOMException
+          ? combined.reason
+          : new DOMException("Cancelled", "AbortError"),
+      );
     };
-    const timer = setTimeout(() => {
-      cleanup();
-      image.src = "";
-      reject(new Error("Image load timeout"));
-    }, 10000);
     image.onload = () => {
       cleanup();
       cacheImage(src, image);
@@ -113,7 +118,7 @@ function loadImage(
       cleanup();
       reject(new Error("Image could not load"));
     };
-    signal?.addEventListener("abort", abort, { once: true });
+    combined.addEventListener("abort", abort, { once: true });
     image.src = src;
   });
 }
