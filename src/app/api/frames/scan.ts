@@ -25,8 +25,10 @@ import {
 } from "@/shared-tools/catalog/frame-pack";
 
 interface FolderResult {
+  folder: string;
   frame: FramePackFrame | null;
   diagnostics: FramePackDiagnostic[];
+  addedAt: number;
 }
 
 async function statOrNull(file: string) {
@@ -56,7 +58,7 @@ function failure(
   message: string,
 ): FolderResult {
   diagnostics.push({ folder, level: "error", code, message });
-  return { frame: null, diagnostics };
+  return { folder, frame: null, diagnostics, addedAt: 0 };
 }
 
 async function scanFrameFolder(
@@ -74,6 +76,9 @@ async function scanFrameFolder(
       `folder name must be kebab-case and at most ${MAX_PACK_ID_LENGTH} characters`,
     );
   }
+
+  const dirStat = await statOrNull(directory);
+  const fsTime = dirStat ? dirStat.birthtimeMs || dirStat.mtimeMs : 0;
 
   let manifest: FrameManifest = {};
   const manifestStat = await statOrNull(path.join(directory, "frame.json"));
@@ -156,18 +161,25 @@ async function scanFrameFolder(
     string
   >;
 
+  const manifestTime = manifest.createdAt
+    ? Date.parse(manifest.createdAt)
+    : NaN;
+  const addedAt = !Number.isNaN(manifestTime) ? manifestTime : fsTime;
+
   return {
+    folder,
     frame: createFramePackFrame({
       id: folder,
       manifest,
       artwork,
     }),
     diagnostics,
+    addedAt,
   };
 }
 
 /**
- * Scans a frames directory and returns valid packs sorted alphabetically,
+ * Scans a frames directory and returns valid packs sorted by addition time (newest first),
  * plus diagnostic messages for any broken or non-conforming folders.
  */
 export async function scanFrameDirectory(
@@ -179,18 +191,28 @@ export async function scanFrameDirectory(
 
   const folders = entries
     .filter((entry) => entry.isDirectory() && !entry.name.startsWith("_"))
-    .map((entry) => entry.name)
-    .sort((first, second) => first.localeCompare(second));
+    .map((entry) => entry.name);
 
   const results = await Promise.all(
     folders.map((folder) => scanFrameFolder(root, folder)),
   );
 
-  const frames: FramePackFrame[] = [];
+  const validResults = results
+    .filter(
+      (result): result is FolderResult & { frame: FramePackFrame } =>
+        result.frame !== null,
+    )
+    .sort((a, b) => {
+      if (b.addedAt !== a.addedAt) {
+        return b.addedAt - a.addedAt;
+      }
+      return a.folder.localeCompare(b.folder);
+    });
+
+  const frames = validResults.map((result) => result.frame);
   const diagnostics: FramePackDiagnostic[] = [];
 
   for (const result of results) {
-    if (result.frame) frames.push(result.frame);
     diagnostics.push(...result.diagnostics);
   }
 

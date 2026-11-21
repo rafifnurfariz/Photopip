@@ -126,6 +126,12 @@ describe("frame pack validation", () => {
     expect(parseFrameManifest(JSON.stringify({ fontId: "comic" })).ok).toBe(
       false,
     );
+    expect(
+      parseFrameManifest(JSON.stringify({ createdAt: "2026-11-21" })).ok,
+    ).toBe(true);
+    expect(
+      parseFrameManifest(JSON.stringify({ createdAt: "not-a-date" })).ok,
+    ).toBe(false);
   });
 
   it("builds cache-busted URLs", () => {
@@ -199,6 +205,22 @@ describe("frame directory scanner", () => {
       backgroundColor: "#0b1020",
     });
     expect(result.diagnostics).toEqual([]);
+  });
+
+  it("sorts packs with newest createdAt first", async () => {
+    const root = await makeRoot();
+    await writePack(root, "older-pack", {
+      manifest: JSON.stringify({ createdAt: "2026-01-01" }),
+    });
+    await writePack(root, "newer-pack", {
+      manifest: JSON.stringify({ createdAt: "2026-11-01" }),
+    });
+
+    const result = await scanFrameDirectory(root);
+    expect(result.frames.map((frame) => frame.id)).toEqual([
+      "newer-pack",
+      "older-pack",
+    ]);
   });
 
   it("ignores underscore folders and missing roots", async () => {

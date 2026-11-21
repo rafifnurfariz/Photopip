@@ -32,6 +32,7 @@ export interface FrameManifest {
   textColor?: string;
   fontId?: string;
   backgroundColor?: string;
+  createdAt?: string;
 }
 
 export type ManifestParseResult =
@@ -167,6 +168,19 @@ export function parseFrameManifest(raw: string): ManifestParseResult {
       };
     }
     manifest.fontId = record.fontId;
+  }
+
+  if (record.createdAt !== undefined) {
+    if (
+      typeof record.createdAt !== "string" ||
+      Number.isNaN(Date.parse(record.createdAt))
+    ) {
+      return {
+        ok: false,
+        message: "frame.json createdAt must be a valid date string",
+      };
+    }
+    manifest.createdAt = record.createdAt;
   }
 
   return { ok: true, manifest };
