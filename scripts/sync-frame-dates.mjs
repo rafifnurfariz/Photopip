@@ -2,6 +2,12 @@ import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+// On Vercel / CI environments, git clones are shallow and lack commit history.
+// We preserve the committed frame-dates.json as the single source of truth.
+if (process.env.VERCEL || process.env.CI) {
+  process.exit(0);
+}
+
 const root = path.join(process.cwd(), "public", "assets", "frame-packs");
 const targetFile = path.join(
   process.cwd(),
@@ -31,6 +37,12 @@ try {
 const updated = {};
 
 for (const folder of folders) {
+  // If the folder already has a recorded timestamp, keep it intact.
+  if (existing[folder] && typeof existing[folder] === "number") {
+    updated[folder] = existing[folder];
+    continue;
+  }
+
   const dirPath = `public/assets/frame-packs/${folder}`;
   let time = null;
 
