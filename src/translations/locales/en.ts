@@ -105,6 +105,7 @@ export const en: Messages = {
     search: "Search stickers",
     searchEmpty: "No sticker matches that search.",
     clearSearch: "Clear search",
+    uploadSticker: "Upload sticker",
     horizontal: "Horizontal",
     vertical: "Vertical",
     size: "Size",

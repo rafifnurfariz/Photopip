@@ -106,6 +106,7 @@ export const fr: Messages = {
     search: "Chercher des autocollants",
     searchEmpty: "Aucun autocollant ne correspond à cette recherche.",
     clearSearch: "Effacer la recherche",
+    uploadSticker: "Importer un autocollant",
     horizontal: "Horizontal",
     vertical: "Vertical",
     size: "Taille",

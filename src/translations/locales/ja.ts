@@ -101,6 +101,7 @@ export const ja: Messages = {
     search: "ステッカーを検索",
     searchEmpty: "この検索に合うステッカーはありません。",
     clearSearch: "検索をクリア",
+    uploadSticker: "ステッカーをアップロード",
     horizontal: "横位置",
     vertical: "縦位置",
     size: "サイズ",

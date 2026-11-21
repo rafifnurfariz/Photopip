@@ -1,8 +1,9 @@
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { scanStickersDirectory } from "@/app/api/stickers/scan";
+import { fetchStickerCatalog } from "@/features/editor/hooks/use-sticker-catalog";
 
 const temporaryDirectories: string[] = [];
 
@@ -97,5 +98,34 @@ describe("scanStickersDirectory", () => {
 
     const result = await scanStickersDirectory(root);
     expect(result.stickers).toEqual([]);
+  });
+
+  it("caches sticker catalog responses", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        stickers: [
+          {
+            id: "cute-cat",
+            name: "Cat",
+            category: "cute",
+            src: "/cat.png",
+            tags: ["cute", "cat"],
+          },
+        ],
+        categories: ["cute"],
+      }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const first = await fetchStickerCatalog();
+    expect(first?.stickers).toHaveLength(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const second = await fetchStickerCatalog();
+    expect(second).toEqual(first);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    vi.unstubAllGlobals();
   });
 });

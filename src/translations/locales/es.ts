@@ -101,6 +101,7 @@ export const es: Messages = {
     search: "Buscar pegatinas",
     searchEmpty: "Ninguna pegatina coincide con esa búsqueda.",
     clearSearch: "Borrar búsqueda",
+    uploadSticker: "Subir pegatina",
     horizontal: "Horizontal",
     vertical: "Vertical",
     size: "Tamaño",

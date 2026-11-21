@@ -6,9 +6,10 @@
  * fitur pencarian stiker, tab kategori dinamis, dan tombol hapus semua stiker.
  */
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useLanguage } from "@/translations/use-language";
 import type { Sticker } from "@/shared-tools/catalog/stickers";
+import { readStickerFile } from "@/shared-tools/image-upload";
 import { useStickerCatalog } from "../hooks/use-sticker-catalog";
 
 interface StickerPanelProps {
@@ -26,6 +27,42 @@ export function StickerPanel({
   const { stickers, categories } = useStickerCatalog();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const src = await readStickerFile(file);
+      const baseName = file.name.replace(/\.[^.]+$/, "").trim();
+      const name =
+        baseName
+          .replace(/[-_]+/g, " ")
+          .replace(/\s+/g, " ")
+          .replace(/\b\w/g, (char) => char.toUpperCase()) || "Custom Sticker";
+
+      onAdd({
+        id: `custom-${Date.now()}`,
+        name,
+        src,
+        tags: ["custom"],
+      });
+    } catch {
+      // Ignore invalid files
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const allCategories = useMemo(() => {
     return ["all", ...categories];
@@ -54,7 +91,24 @@ export function StickerPanel({
 
   return (
     <section className="tool-section" aria-labelledby="tool-sticker">
-      <h2 id="tool-sticker">{t.editor.stickers}</h2>
+      <div className="section-head">
+        <h2 id="tool-sticker">{t.editor.stickers}</h2>
+        <button
+          type="button"
+          className="chip-button"
+          disabled={uploading}
+          onClick={handleUploadClick}
+        >
+          {uploading ? t.capture.uploading : `+ ${t.editor.uploadSticker}`}
+        </button>
+      </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={handleFileChange}
+      />
       <label className="search-label">
         <span className="sr-only">{t.editor.search}</span>
         <input

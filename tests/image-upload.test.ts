@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   isSupportedPhotoFile,
   readPhotoFile,
+  readStickerFile,
 } from "@/shared-tools/image-upload";
 
 const MB = 1024 * 1024;
@@ -25,6 +26,20 @@ describe("readPhotoFile", () => {
   it("rejects an oversized file before the browser decodes it", async () => {
     await expect(
       readPhotoFile(withSize(photoFile("huge.png"), 25 * MB + 1)),
+    ).rejects.toThrow("Image file is too large");
+  });
+});
+
+describe("readStickerFile", () => {
+  it("rejects a file that is not an image", async () => {
+    await expect(
+      readStickerFile(photoFile("notes.txt", "text/plain")),
+    ).rejects.toThrow("Unsupported image file");
+  });
+
+  it("rejects an oversized file before the browser decodes it", async () => {
+    await expect(
+      readStickerFile(withSize(photoFile("huge.png"), 25 * MB + 1)),
     ).rejects.toThrow("Image file is too large");
   });
 });

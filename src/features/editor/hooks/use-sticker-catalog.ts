@@ -8,32 +8,55 @@ export interface StickerCatalogData {
   categories: string[];
 }
 
+let cachedCatalog: StickerCatalogData | null = null;
+let activeRequest: Promise<StickerCatalogData | null> | null = null;
+
+export async function fetchStickerCatalog(): Promise<StickerCatalogData | null> {
+  if (cachedCatalog) return cachedCatalog;
+  if (activeRequest) return activeRequest;
+
+  activeRequest = (async () => {
+    try {
+      const response = await fetch("/api/stickers", {
+        cache: "no-store",
+      });
+      if (!response.ok) return null;
+      const result = (await response.json()) as StickerCatalogData;
+      const data: StickerCatalogData = {
+        stickers: Array.isArray(result.stickers) ? result.stickers : [],
+        categories: Array.isArray(result.categories) ? result.categories : [],
+      };
+      cachedCatalog = data;
+      return data;
+    } catch {
+      return null;
+    } finally {
+      activeRequest = null;
+    }
+  })();
+
+  return activeRequest;
+}
+
 export function useStickerCatalog(): StickerCatalogData {
-  const [data, setData] = useState<StickerCatalogData>({
-    stickers: [],
-    categories: [],
-  });
+  const [data, setData] = useState<StickerCatalogData>(
+    () => cachedCatalog ?? { stickers: [], categories: [] },
+  );
 
   useEffect(() => {
-    const controller = new AbortController();
+    if (cachedCatalog) return;
+
+    let unmounted = false;
     void (async () => {
-      try {
-        const response = await fetch("/api/stickers", {
-          signal: controller.signal,
-          cache: "no-store",
-        });
-        if (!response.ok) return;
-        const result = (await response.json()) as StickerCatalogData;
-        if (controller.signal.aborted) return;
-        setData({
-          stickers: Array.isArray(result.stickers) ? result.stickers : [],
-          categories: Array.isArray(result.categories) ? result.categories : [],
-        });
-      } catch {
-        if (controller.signal.aborted) return;
+      const result = await fetchStickerCatalog();
+      if (!unmounted && result) {
+        setData(result);
       }
     })();
-    return () => controller.abort();
+
+    return () => {
+      unmounted = true;
+    };
   }, []);
 
   return data;

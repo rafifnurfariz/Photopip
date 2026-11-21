@@ -106,6 +106,7 @@ export const de: Messages = {
     search: "Sticker suchen",
     searchEmpty: "Kein Sticker passt zu dieser Suche.",
     clearSearch: "Suche löschen",
+    uploadSticker: "Aufkleber hochladen",
     horizontal: "Horizontal",
     vertical: "Vertikal",
     size: "Größe",

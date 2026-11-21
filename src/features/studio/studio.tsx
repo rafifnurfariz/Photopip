@@ -22,6 +22,7 @@ import { TemplateSelector } from "./components/template-selector";
 import { useCaptureSession } from "./hooks/use-capture-session";
 import { useExport } from "./hooks/use-export";
 import { useFrameCatalog } from "./hooks/use-frame-catalog";
+import { fetchStickerCatalog } from "@/features/editor/hooks/use-sticker-catalog";
 import type { StudioMessage } from "./types";
 
 function EditorLoading() {
@@ -73,6 +74,11 @@ export default function Studio() {
     cancel: cancelExport,
   } = useExport(setMessage);
   const frames = useFrameCatalog();
+
+  // Prefetch sticker catalog in background so opening the sticker tab is instant.
+  useEffect(() => {
+    void fetchStickerCatalog();
+  }, []);
 
   // The download toast is an acknowledgement, not state: clear it after 3s.
   useEffect(() => {

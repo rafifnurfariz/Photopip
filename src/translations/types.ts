@@ -115,6 +115,7 @@ export interface Messages {
     search: string;
     searchEmpty: string;
     clearSearch: string;
+    uploadSticker: string;
     horizontal: string;
     vertical: string;
     size: string;

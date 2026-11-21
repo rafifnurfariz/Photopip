@@ -101,6 +101,7 @@ export const id: Messages = {
     search: "Cari stiker",
     searchEmpty: "Tidak ada stiker yang cocok.",
     clearSearch: "Hapus pencarian",
+    uploadSticker: "Unggah stiker",
     horizontal: "Horizontal",
     vertical: "Vertikal",
     size: "Ukuran",

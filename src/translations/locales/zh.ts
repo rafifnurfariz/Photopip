@@ -99,6 +99,7 @@ export const zh: Messages = {
     search: "搜索贴纸",
     searchEmpty: "没有符合该搜索的贴纸。",
     clearSearch: "清除搜索",
+    uploadSticker: "上传贴纸",
     horizontal: "水平位置",
     vertical: "垂直位置",
     size: "大小",
