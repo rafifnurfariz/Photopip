@@ -19,12 +19,13 @@ export function isSupportedPhotoFile(file: File) {
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = () => reject(new Error("Image could not load"));
-    image.src = src;
-  });
+  const { promise, resolve, reject } =
+    Promise.withResolvers<HTMLImageElement>();
+  const image = new Image();
+  image.onload = () => resolve(image);
+  image.onerror = () => reject(new Error("Image could not load"));
+  image.src = src;
+  return promise;
 }
 
 /**

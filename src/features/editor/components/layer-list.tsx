@@ -27,44 +27,38 @@ export function LayerList({
     >
       <h2 id="tool-layers">{t.editor.layer}</h2>
       <div className="layer-list">
-        {composition.texts
-          .slice()
-          .reverse()
-          .map((text) => (
-            <button
-              key={text.id}
-              type="button"
-              aria-pressed={
-                selection?.type === "text" && selection.id === text.id
-              }
-              onClick={() => onSelect({ type: "text", id: text.id })}
-            >
-              <span className="layer-icon" aria-hidden="true">
-                <TextIcon />
-              </span>
-              <span className="layer-name">
-                {text.text || t.editor.textContent}
-              </span>
-            </button>
-          ))}
-        {composition.stickers
-          .slice()
-          .reverse()
-          .map((sticker) => (
-            <button
-              key={sticker.id}
-              type="button"
-              aria-pressed={
-                selection?.type === "sticker" && selection.id === sticker.id
-              }
-              onClick={() => onSelect({ type: "sticker", id: sticker.id })}
-            >
-              <span className="layer-icon layer-thumb" aria-hidden="true">
-                <img src={sticker.src} alt="" />
-              </span>
-              <span className="layer-name">{sticker.name}</span>
-            </button>
-          ))}
+        {composition.texts.toReversed().map((text) => (
+          <button
+            key={text.id}
+            type="button"
+            aria-pressed={
+              selection?.type === "text" && selection.id === text.id
+            }
+            onClick={() => onSelect({ type: "text", id: text.id })}
+          >
+            <span className="layer-icon" aria-hidden="true">
+              <TextIcon />
+            </span>
+            <span className="layer-name">
+              {text.text || t.editor.textContent}
+            </span>
+          </button>
+        ))}
+        {composition.stickers.toReversed().map((sticker) => (
+          <button
+            key={sticker.id}
+            type="button"
+            aria-pressed={
+              selection?.type === "sticker" && selection.id === sticker.id
+            }
+            onClick={() => onSelect({ type: "sticker", id: sticker.id })}
+          >
+            <span className="layer-icon layer-thumb" aria-hidden="true">
+              <img src={sticker.src} alt="" />
+            </span>
+            <span className="layer-name">{sticker.name}</span>
+          </button>
+        ))}
       </div>
     </section>
   );
