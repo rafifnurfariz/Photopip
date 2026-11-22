@@ -15,6 +15,7 @@ import {
   templateGeometry,
 } from "@/shared-tools/composition/geometry";
 import { normalizeText } from "@/shared-tools/composition/text";
+import { resolveTextFont } from "@/shared-tools/catalog/fonts";
 import {
   clearImageCache,
   renderComposition,
@@ -240,6 +241,91 @@ export function useEditorCanvas(
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    // Fast path: if only a sticker or text's transform/styling changed on an already-rendered
+    // canvas without altering structure, update Fabric object in-place rather than tearing down.
+    if (renderedRef.current && !renderingRef.current) {
+      const prev = latest.current.composition;
+      const isBaseIdentical =
+        prev.template.id === composition.template.id &&
+        prev.frameId === composition.frameId &&
+        prev.photos.length === composition.photos.length &&
+        prev.photos.every((p, i) => p === composition.photos[i]) &&
+        JSON.stringify(prev.photoFilters) ===
+          JSON.stringify(composition.photoFilters) &&
+        prev.stickers.length === composition.stickers.length &&
+        prev.stickers.every(
+          (s, i) =>
+            s.id === composition.stickers[i]?.id &&
+            s.src === composition.stickers[i]?.src,
+        ) &&
+        prev.texts.length === composition.texts.length &&
+        prev.texts.every((t, i) => t.id === composition.texts[i]?.id);
+
+      if (isBaseIdentical) {
+        let updatedAny = false;
+        const geometry = templateGeometry(composition.template);
+
+        for (const placement of composition.stickers) {
+          const target = findObject(canvas, {
+            type: "sticker",
+            id: placement.id,
+          });
+          if (target && "width" in target && typeof target.width === "number") {
+            const sticker = normalizeSticker(
+              placement,
+              geometry.width,
+              geometry.height,
+            );
+            const scale = sticker.size / target.width;
+            target.set({
+              left: sticker.x,
+              top: sticker.y,
+              scaleX: scale,
+              scaleY: scale,
+              angle: sticker.rotation,
+              opacity: placement.opacity ?? 1,
+              flipX: placement.flipX ?? false,
+              flipY: placement.flipY ?? false,
+            });
+            target.setCoords();
+            updatedAny = true;
+          }
+        }
+
+        for (const placement of composition.texts) {
+          const target = findObject(canvas, { type: "text", id: placement.id });
+          if (target) {
+            const text = normalizeText(
+              placement,
+              geometry.width,
+              geometry.height,
+            );
+            target.set({
+              text: text.text,
+              left: text.x,
+              top: text.y,
+              fontSize: text.size,
+              fontFamily: resolveTextFont(text.fontId),
+              fill: text.color,
+              textAlign: text.align,
+              fontWeight: text.bold ? "700" : "400",
+              fontStyle: text.italic ? "italic" : "normal",
+              opacity: text.opacity,
+              angle: text.rotation,
+            });
+            target.setCoords();
+            updatedAny = true;
+          }
+        }
+
+        if (updatedAny) {
+          canvas.requestRenderAll();
+          return;
+        }
+      }
+    }
+
     const controller = new AbortController();
     const id = renderId.current + 1;
     renderId.current = id;
