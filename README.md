@@ -768,6 +768,10 @@ PhotoPip/
 │   │       ├── de.ts           ← Deutsch
 │   │       ├── ja.ts           ← 日本語
 │   │       └── zh.ts           ← 中文
+│   │
+│   └── assets/fonts/
+│       ├── segoe-ui.ttf        ← Font UI aplikasi (reguler)
+│       └── segoe-ui-bold.ttf   ← Font UI aplikasi (bold)
 │
 ├── public/
 │   ├── assets/

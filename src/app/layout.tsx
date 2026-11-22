@@ -1,8 +1,27 @@
 import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/translations/use-language";
+
+const segoeUi = localFont({
+  src: [
+    {
+      path: "../assets/fonts/segoe-ui.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../assets/fonts/segoe-ui-bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-segoe-ui",
+  display: "swap",
+  fallback: ["Segoe UI", "sans-serif"],
+});
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -48,7 +67,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" className={segoeUi.variable} suppressHydrationWarning>
       <body>
         <ThemeProvider
           attribute="class"
