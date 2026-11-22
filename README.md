@@ -1,31 +1,14 @@
 <div align="center">
-  <img src="public/assets/brand/logo.png" alt="Photopip Logo" width="140" />
-
+  <img src="public/assets/brand/logo.png" alt="Logo Photopip" width="120" />
   <h1>Photopip</h1>
+  <p>Aplikasi web <em>photobooth</em> dan editor foto interaktif berbasis Next.js dan Fabric.js dengan dukungan beragam tema bingkai, stiker, font kustom, serta 7 pilihan bahasa.</p>
 
   <p>
-    <strong>Aplikasi Web Photobooth & Editor Foto Interaktif Berbasis Next.js</strong>
-  </p>
-
-  <p>
-    Ambil rangkaian foto langsung dari kamera, pilih <em>frame pack</em> tematik, hias dengan stiker &amp; teks kustom, lalu ekspor hasil komposisi dalam hitungan detik.
-  </p>
-
-  <p>
-    <img src="https://img.shields.io/badge/Next.js-App_Router-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" />
-    <img src="https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-    <img src="https://img.shields.io/badge/React-18+-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
-    <img src="https://img.shields.io/badge/Vitest-Tested-6E9F18?style=for-the-badge&logo=vitest&logoColor=white" alt="Vitest" />
-    <img src="https://img.shields.io/badge/License-MIT-F7DF1E?style=for-the-badge" alt="MIT License" />
-  </p>
-
-  <p>
-    <a href="#-fitur-utama">Fitur Utama</a> •
-    <a href="#-teknologi-yang-digunakan">Teknologi</a> •
-    <a href="#-instalasi--menjalankan-proyek">Instalasi</a> •
-    <a href="#-susunan-project">Susunan Project</a> •
-    <a href="#-contoh-penggunaan">Penggunaan</a> •
-    <a href="#-kontribusi">Kontribusi</a>
+    <img src="https://img.shields.io/badge/Next.js-16.4.5-black?style=for-the-badge&logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/React-19.3.0-20232A?style=for-the-badge&logo=react" alt="React" />
+    <img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Fabric.js-7.4.0-FF6B6B?style=for-the-badge" alt="Fabric.js" />
+    <img src="https://img.shields.io/badge/Sharp-0.35.5-99CC00?style=for-the-badge" alt="Sharp" />
   </p>
 </div>
 
@@ -35,32 +18,31 @@
 
 | Fitur | Deskripsi |
 | :--- | :--- |
-| 📸 **Studio Photobooth Interaktif** | Pengambilan foto langsung via kamera perangkat (`use-camera`, `booth-stage`) lengkap dengan hitung mundur, *film strip* pratinjau, serta opsi unggah foto dari galeri. |
-| 🖼️ **Layout & Frame Pack Tematik** | Mendukung format `single`, `2x2`, `2x3`, `3x1`, dan `4x1` dengan tema bawaan: `default`, `cyber-glow`, `gta-6`, `matcha-latte`, `minecraft`, `monochrome-noir`, `pastel-party`, `retro-night`, dan `sunset-vibes`. |
-| 🎨 **Editor Foto & Manajemen Layer** | Kanvas interaktif dengan riwayat *Undo/Redo*, pengaturan urutan layer (`layer-list`), filter foto (`photo-filters`), stiker (`cute`, `emoji`, `food`, `nature`, `y2k`), dan kustomisasi teks/font. |
-| ⚡ **Auto-Discovery Asset API** | Endpoint `/api/frames`, `/api/stickers`, dan `/api/fonts` memindai aset di folder `public/assets/` secara otomatis tanpa perlu mengubah kode inti. |
+| 📸 **Studio Photobooth Interaktif** | Pengambilan foto langsung via kamera perangkat (`use-camera`, `booth-stage`) menggunakan Web API kamera browser lengkap dengan hitung mundur, *film strip* pratinjau, serta opsi unggah foto dari galeri. |
+| 🖼️ **Layout & Frame Pack Tematik** | Mendukung format `single`, `2x2`, `2x3`, `3x1`, dan `4x1` dengan pack bawaan seperti `default`, `cyber-glow`, `gta-6`, `matcha-latte`, `minecraft`, `monochrome-noir`, `pastel-party`, `retro-night`, dan `sunset-vibes`. |
+| 🎨 **Editor Foto & Manajemen Layer** | Kanvas interaktif berbasis **Fabric.js** dengan riwayat *Undo/Redo*, pengaturan urutan *layer* (`layer-list`), filter foto (`photo-filters`), stiker (`cute`, `emoji`, `food`, `nature`, `y2k`), dan kustomisasi teks/font. |
+| ⚡ **Auto-Discovery Asset API** | Endpoint `/api/frames`, `/api/stickers`, dan `/api/fonts` memindai aset di folder `public/assets/` secara otomatis. |
 | 🌐 **Dukungan Multi-Bahasa (7 Bahasa)** | Antarmuka tersedia dalam bahasa **Indonesia (`id`)**, **Inggris (`en`)**, **Jerman (`de`)**, **Spanyol (`es`)**, **Prancis (`fr`)**, **Jepang (`ja`)**, dan **Mandarin (`zh`)**. |
-| 📱 **PWA Ready & Ekspor Instan** | Dilengkapi `manifest.json` dan ikon aplikasi lengkap agar dapat dipasang layaknya aplikasi native, serta rendering komposisi resolusi penuh via HTML5 Canvas. |
+| 📱 **PWA Ready & Ekspor Instan** | Dilengkapi `manifest.json` dan ikon aplikasi agar dapat dipasang sebagai aplikasi web, serta ekspor hasil komposisi foto ke perangkat. |
 
 ---
 
 ## 🛠️ Teknologi yang Digunakan
 
-* **Framework:** [Next.js](https://nextjs.org/) (App Router & API Routes)
-* **Bahasa & UI:** [TypeScript](https://www.typescriptlang.org/) & [React](https://react.dev/)
-* **Styling:** CSS Modules & Global CSS (`src/app/globals.css`)
-* **Rendering Engine:** HTML5 Canvas API (`src/shared-tools/composition/`)
-* **Testing & Linting:** [Vitest](https://vitest.dev/) & ESLint
+* **Next.js (`^16.4.5`) & React (`^19.3.0`):** Kerangka web utama untuk struktur halaman (`src/app/`), antarmuka pengguna, serta *API routes* (`/api/frames`, `/api/stickers`, `/api/fonts`).
+* **Fabric.js (`7.4.0`):** *Library* kanvas interaktif terpisah di atas Next.js yang digunakan di editor foto untuk mengatur posisi, skala, rotasi, *layer* stiker/teks, dan komposisi visual.
+* **Sharp (`0.35.5`):** *Library* pemrosesan gambar yang terdaftar pada proyek untuk kebutuhan manipulasi dan optimasi gambar.
+* **TypeScript (`5.9.3`) & CSS (`src/app/globals.css` + `next-themes`):** Pengetikan tipe statis, *styling* global, dan pengelolaan tema.
+* **Vitest (`4.1.11`), React Testing Library (`16.3.0`), ESLint, Prettier & Knip:** Pengujian unit/komponen, pengecekan *lint/formatting*, dan audit kode.
 
 ---
 
 ## 📋 Prasyarat Instalasi
 
-Sebelum menjalankan proyek secara lokal, pastikan lingkungan pengembangan Anda memenuhi syarat berikut:
+Sebelum menjalankan proyek secara lokal, siapkan kebutuhan berikut:
 
-* **Node.js** versi `18.18` atau lebih baru *(disarankan LTS `20.x`)*
-* **npm** *(atau package manager kompatibel seperti `pnpm` / `yarn`)*
-* Browser modern dengan dukungan akses kamera (`MediaDevices.getUserMedia`)
+* **Node.js versi `>= 22.0.0`:** Saat kamu menginstal Node.js, **npm** (paket manajer untuk menjalankan perintah seperti `npm install` dan `npm run dev`) sudah otomatis ikut terpasang di dalamnya.
+* **Browser modern:** Mendukung akses kamera (`MediaDevices.getUserMedia`) jika ingin memotret langsung dari webcam atau kamera perangkat.
 
 ---
 
@@ -83,7 +65,7 @@ Sebelum menjalankan proyek secara lokal, pastikan lingkungan pengembangan Anda m
    ```
 
 4. **Buka di browser:**
-   Kunjungi **`http://localhost:3000`** untuk mulai menggunakan Photopip.
+   Akses **`http://localhost:3000`** untuk mulai menggunakan Photopip.
 
 5. **Menjalankan pengujian & build produksi:**
    ```bash
@@ -105,9 +87,9 @@ Photopip/
 │   ├── assets/
 │   │   ├── app-icons/       # Favicon & ikon PWA (16x16 hingga 512x512)
 │   │   ├── brand/           # Logo resmi aplikasi (logo.png)
-│   │   ├── fonts/           # Font publik untuk rendering kanvas
+│   │   ├── fonts/           # File font publik untuk editor/kanvas
 │   │   ├── frame-packs/     # Koleksi bingkai (2x2, 2x3, 3x1, 4x1, single)
-│   │   └── stickers/        # Koleksi stiker (cute, emoji, food, nature, y2k)
+│   │   └── stickers/        # Koleksi stiker per kategori (cute, emoji, food, nature, y2k)
 │   └── manifest.json        # Konfigurasi Web App Manifest
 ├── scripts/                 # Skrip audit produksi, packaging, & sinkronisasi frame
 ├── src/
@@ -116,9 +98,10 @@ Photopip/
 │   │   ├── globals.css      # Styling global
 │   │   ├── layout.tsx       # Root layout aplikasi
 │   │   └── page.tsx         # Halaman utama
+│   ├── assets/              # Aset internal (misal font tambahan)
 │   ├── components/          # Komponen UI umum (header, icons, theme-provider)
 │   ├── features/
-│   │   ├── editor/          # Kanvas editor, panel properti, layer, stiker, teks
+│   │   ├── editor/          # Kanvas editor (Fabric.js), panel properti, layer, stiker, teks
 │   │   └── studio/          # Kamera, sesi capture, film strip, & kontrol ekspor
 │   ├── shared-tools/
 │   │   ├── catalog/         # Definisi template, filter foto, & parser frame pack
@@ -136,82 +119,41 @@ Photopip/
 ## 💡 Contoh Penggunaan
 
 ### 1. Sesi Photobooth & Editing Dasar
-1. Buka `http://localhost:3000` dan izinkan akses kamera pada browser.
-2. Pilih **Layout Template** (misalnya `4x1` atau `2x2`) dan **Frame Pack** favorit Anda (contoh: `cyber-glow` atau `matcha-latte`).
-3. Tekan tombol **Capture** untuk memulai sesi pengambilan foto beruntun.
-4. Masuk ke mode **Editor** untuk menambahkan filter foto, menempelkan stiker dari panel stiker, atau menulis teks kustom.
-5. Klik **Export / Download** untuk mengunduh hasil foto akhir ke perangkat Anda.
 
-### 2. Menambahkan Frame Pack Kustom
-<details>
-<summary><strong>Klik untuk melihat langkah menambah frame pack tanpa mengubah kode</strong></summary>
-<br />
+1. Buka `http://localhost:3000` dan izinkan akses kamera pada browser (atau unggah foto dari perangkat).
+2. Pilih **Layout Template** (misalnya `4x1` atau `2x2`) dan **Frame Pack** pilihanmu (contoh: `cyber-glow` atau `matcha-latte`).
+3. Tekan tombol **Capture** untuk mengambil foto sesuai slot template.
+4. Masuk ke mode **Editor** untuk menerapkan filter foto, menambahkan stiker atau teks, dan mengatur urutan *layer*.
+5. Klik tombol **Export** untuk mengunduh hasil akhir ke perangkat.
 
-1. Salin folder template `public/assets/frame-packs/_starter` dan beri nama sesuai tema baru, misalnya:
+### 2. Cara Menambah Frame Pack Baru
+
+1. Buat folder baru di dalam `public/assets/frame-packs/`, misalnya:
    ```text
    public/assets/frame-packs/vintage-film/
    ```
-2. Ganti berkas gambar di dalamnya sesuai dimensi layout masing-masing:
+2. Letakkan file gambar bingkai (`.png`) sesuai format layout yang ingin didukung di dalam folder tersebut:
    * `single.png`
    * `2x2.png`
    * `2x3.png`
    * `3x1.png`
    * `4x1.png`
-3. Muat ulang halaman aplikasi—endpoint `/api/frames` akan otomatis mendeteksi dan menampilkan *frame pack* baru Anda di katalog studio.
+3. Muat ulang halaman aplikasi, maka endpoint `/api/frames` akan otomatis membaca folder *frame pack* baru di `public/assets/frame-packs/`.
 
-</details>
+### 3. Cara Menambah Stiker Baru
 
----
-
-## 🤝 Kontribusi
-
-Kontribusi sangat diterima untuk mengembangkan **Photopip**, baik berupa penambahan *frame pack*, stiker baru, terjemahan bahasa, maupun perbaikan *bug*:
-
-1. **Fork** repositori ini.
-2. Buat *branch* fitur baru:
-   ```bash
-   git checkout -b fitur/nama-fitur
+1. Pilih folder kategori stiker yang sudah ada di `public/assets/stickers/` (seperti `cute/`, `emoji/`, `food/`, `nature/`, atau `y2k/`), atau buat folder kategori baru di dalamnya:
+   ```text
+   public/assets/stickers/cute/
    ```
-3. Lakukan perubahan dan pastikan semua tes lulus:
-   ```bash
-   npm test
+2. Masukkan file gambar stiker (disarankan PNG berlatar transparan), misalnya `star_sparkle.png`.
+3. Muat ulang halaman aplikasi, maka endpoint `/api/stickers` akan otomatis memindai file stiker dari folder tersebut agar muncul di panel stiker editor.
+
+### 4. Cara Menambah Font Baru
+
+1. Masukkan file font (seperti `.ttf` atau format font yang didukung) ke folder:
+   ```text
+   public/assets/fonts/
    ```
-4. **Commit** perubahan Anda:
-   ```bash
-   git commit -m "feat: menambahkan fitur ..."
-   ```
-5. **Push** ke *branch* Anda:
-   ```bash
-   git push origin fitur/nama-fitur
-   ```
-6. Buka **Pull Request** dengan penjelasan perubahan yang jelas.
-
----
-
-## 📄 Lisensi
-
-Proyek ini dirilis di bawah lisensi **MIT**.
-
-```text
-MIT License
-
-Copyright (c) 2026 rafifnurfariz
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+   *(Contoh: `public/assets/fonts/Poppins-Bold.ttf`)*
+2. Muat ulang halaman aplikasi, maka endpoint `/api/fonts` akan otomatis mendeteksi font di `public/assets/fonts/` sehingga bisa langsung dipilih pada panel teks di editor.
