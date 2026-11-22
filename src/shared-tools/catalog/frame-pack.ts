@@ -45,7 +45,7 @@ export interface TemplateArtworkSpec {
   height: number;
 }
 
-export const MAX_PACK_ID_LENGTH = 40;
+const MAX_PACK_ID_LENGTH = 60;
 export const PNG_HEADER_BYTES = 24;
 export const LARGE_ARTWORK_BYTES = 8 * 1024 * 1024;
 
@@ -64,7 +64,6 @@ export const DEFAULT_THEME: FrameTheme = {
   backgroundColor: DEFAULT_BACKGROUND_COLOR,
 };
 
-const packIdPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
 /**
@@ -84,13 +83,21 @@ export const templateArtworkSpecs: readonly TemplateArtworkSpec[] =
     };
   });
 
-export function isValidPackId(id: string): boolean {
-  return (
-    id.length > 0 && id.length <= MAX_PACK_ID_LENGTH && packIdPattern.test(id)
-  );
+/**
+ * Turns any folder name into a URL-safe pack id. Returns null when nothing
+ * usable remains or the result would be longer than `MAX_PACK_ID_LENGTH`.
+ */
+export function packIdFromFolder(name: string): string | null {
+  const id = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  if (id.length === 0 || id.length > MAX_PACK_ID_LENGTH) return null;
+  return id;
 }
 
-/** Humanizes a folder id into a display name. */
+/** Humanizes a pack id into a display name. */
 export function nameFromPackId(id: string): string {
   return id
     .split("-")

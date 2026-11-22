@@ -4,7 +4,8 @@ This folder is a guide, not a frame: the scanner ignores folders that start with
 
 To make a frame:
 
-1. Copy this folder to `public/assets/frame-packs/my-frame`.
+1. Copy this folder to `public/assets/frame-packs/` and name it however you like
+   (`my-frame`, `My Frame`, `GTA 6` all work). The app tidies the name for display.
 2. Replace the five artwork PNGs. Keep their exact print sizes and leave the photo areas
    transparent.
 3. Optionally replace `preview.png` with a square cover (240 × 240 recommended). The frame

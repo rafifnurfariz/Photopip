@@ -12,10 +12,9 @@ import {
   createFramePackFrame,
   DEFAULT_THEME,
   deriveFrameTheme,
-  isValidPackId,
   LARGE_ARTWORK_BYTES,
-  MAX_PACK_ID_LENGTH,
   packFileUrl,
+  packIdFromFolder,
   PNG_HEADER_BYTES,
   readPngSize,
   templateArtworkSpecs,
@@ -69,13 +68,14 @@ async function scanFrameFolder(
 ): Promise<FolderResult> {
   const diagnostics: FramePackDiagnostic[] = [];
   const directory = path.join(root, folder);
+  const id = packIdFromFolder(folder);
 
-  if (!isValidPackId(folder)) {
+  if (!id) {
     return failure(
       folder,
       diagnostics,
       "bad-folder-name",
-      `folder name must be kebab-case and at most ${MAX_PACK_ID_LENGTH} characters`,
+      "folder name has no usable letters or numbers",
     );
   }
 
@@ -127,7 +127,7 @@ async function scanFrameFolder(
         message: `${spec.file} is larger than ${LARGE_ARTWORK_BYTES} bytes`,
       });
     }
-    artworkEntries.push([spec.id, packFileUrl(folder, spec.file, fileStat)]);
+    artworkEntries.push([spec.id, packFileUrl(id, spec.file, fileStat)]);
   }
 
   const artwork = Object.fromEntries(artworkEntries) as Record<
@@ -150,12 +150,12 @@ async function scanFrameFolder(
     });
   }
 
-  const addedAt = dates[folder] ?? fsTime;
+  const addedAt = dates[id] ?? fsTime;
 
   return {
     folder,
     frame: createFramePackFrame({
-      id: folder,
+      id,
       theme,
       artwork,
     }),
@@ -178,11 +178,29 @@ export async function scanFrameDirectory(
 
   const folders = entries
     .filter((entry) => entry.isDirectory() && !entry.name.startsWith("_"))
-    .map((entry) => entry.name);
+    .map((entry) => entry.name)
+    .sort((a, b) => a.localeCompare(b));
 
   const results = await Promise.all(
     folders.map((folder) => scanFrameFolder(root, folder, dates)),
   );
+
+  const seenIds = new Set<string>();
+  for (const result of results) {
+    const id = result.frame?.id;
+    if (!id) continue;
+    if (seenIds.has(id)) {
+      result.diagnostics.push({
+        folder: result.folder,
+        level: "error",
+        code: "duplicate-pack-id",
+        message: `folder name maps to "${id}", which another pack already uses`,
+      });
+      result.frame = null;
+      continue;
+    }
+    seenIds.add(id);
+  }
 
   const validResults = results
     .filter(

@@ -806,14 +806,14 @@ Tidak perlu menulis kode. Tidak perlu mendaftarkan apa pun.
 
 ### 1. Buat folder bingkai
 
-Buat folder baru di `public/assets/frame-packs/`. Namanya harus memenuhi syarat ini:
+Buat folder baru di `public/assets/frame-packs/`. Namanya bebas: huruf besar, spasi, dan simbol boleh. Yang tampil di web dirapikan otomatis, misalnya folder `My Cool Frame` menjadi **My Cool Frame**.
 
-- Hanya huruf kecil (`a-z`), angka (`0-9`), dan tanda hubung (`-`)
-- Tidak diawali atau diakhiri tanda hubung
-- Maksimal 40 karakter
-- Tidak diawali `_` atau `.` (folder seperti itu dilewati)
+Dua batasan:
 
-Contoh yang valid: `cherry-blossom`, `retro80s`, `pastel-pink`.
+- Jangan diawali `_` atau `.` (folder seperti itu dilewati, contohnya `_starter`).
+- Setelah dibersihkan harus tersisa huruf atau angka. Folder yang isinya cuma simbol (misalnya `!!!`) ditolak.
+
+Dua folder yang setelah dibersihkan jadi nama yang sama (misalnya `GTA 6` dan `gta-6`) bentrok, dan yang kedua ditolak.
 
 ### 2. Siapkan 5 file PNG artwork
 
@@ -895,13 +895,13 @@ meleset; hasil selalu aman terbaca, tapi bisa kurang sesuai tema.
 
 ### Batas validasi yang diterapkan scanner
 
-| Aturan               | Nilai                                                                                 |
-| -------------------- | ------------------------------------------------------------------------------------- |
-| Panjang nama folder  | maksimal 40 karakter, pola `kata-kata-kata` (huruf kecil/angka, tanda hubung tunggal) |
-| Ukuran tiap artwork  | maksimal 8 MB (lebih dari itu hanya warning)                                          |
-| Ukuran `preview.png` | maksimal 1 MB (lebih dari itu hanya warning)                                          |
-| Dimensi artwork      | harus **tepat** sama dengan tabel di atas, selisih 1 piksel = folder ditolak          |
-| Dimensi preview      | 64–2048 px per sisi                                                                   |
+| Aturan               | Nilai                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| Panjang nama folder  | maksimal 60 karakter setelah dibersihkan jadi huruf kecil, angka, dan tanda hubung |
+| Ukuran tiap artwork  | maksimal 8 MB (lebih dari itu hanya warning)                                       |
+| Ukuran `preview.png` | maksimal 1 MB (lebih dari itu hanya warning)                                       |
+| Dimensi artwork      | harus **tepat** sama dengan tabel di atas, selisih 1 piksel = folder ditolak       |
+| Dimensi preview      | 64–2048 px per sisi                                                                |
 
 Artwork selalu diskalakan penuh ke ukuran kanvas template. Jadi desainlah di ukuran cetak aslinya, bukan ukuran yang lebih kecil, supaya tidak blur.
 
@@ -1010,18 +1010,18 @@ npx vitest --watch                          # watch mode, tes ulang saat file be
 
 Semua tes ada di folder `tests/` dan memakai Vitest, Testing Library, serta jsdom.
 
-| File tes                   | Yang diuji                                                    |
-| -------------------------- | ------------------------------------------------------------- |
-| `camera.test.tsx`          | Status kamera, penanganan error, abort, cleanup stream        |
-| `capture-session.test.tsx` | `sessionReducer`: capture, retake, reset, batas slot          |
-| `composition.test.ts`      | Geometri slot, cover-crop, clamp posisi stiker dan teks       |
-| `editor-tabs.test.ts`      | Navigasi keyboard Arrow/Home/End di tablist editor            |
-| `image-upload.test.ts`     | Validasi file upload, batas ukuran, resize                    |
-| `sticker-catalog.test.ts`  | Pemindaian folder stiker: format nama, id, kategori, tag      |
-| `frame-catalog.test.ts`    | `mergeFramePacks`, hook `useFrameCatalog`                     |
-| `frame-pack.test.ts`       | Validasi folder bingkai: ukuran PNG, format JSON, nama folder |
-| `frame-preview.test.tsx`   | Render komponen `FramePreview`                                |
-| `translations.test.ts`     | Kelengkapan key di ketujuh locale                             |
+| File tes                   | Yang diuji                                                   |
+| -------------------------- | ------------------------------------------------------------ |
+| `camera.test.tsx`          | Status kamera, penanganan error, abort, cleanup stream       |
+| `capture-session.test.tsx` | `sessionReducer`: capture, retake, reset, batas slot         |
+| `composition.test.ts`      | Geometri slot, cover-crop, clamp posisi stiker dan teks      |
+| `editor-tabs.test.ts`      | Navigasi keyboard Arrow/Home/End di tablist editor           |
+| `image-upload.test.ts`     | Validasi file upload, batas ukuran, resize                   |
+| `sticker-catalog.test.ts`  | Pemindaian folder stiker: format nama, id, kategori, tag     |
+| `frame-catalog.test.ts`    | `mergeFramePacks`, hook `useFrameCatalog`                    |
+| `frame-pack.test.ts`       | Validasi folder bingkai: ukuran PNG, nama folder, warna tema |
+| `frame-preview.test.tsx`   | Render komponen `FramePreview`                               |
+| `translations.test.ts`     | Kelengkapan key di ketujuh locale                            |
 
 Yang tidak dicakup tes: hasil visual, kualitas cetak, dan perilaku kamera di hardware nyata. Tiga hal itu harus dicek manual.
 
@@ -1068,7 +1068,7 @@ Next.js 16 memblokir resource dev (HMR, chunk internal) dari origin yang tidak d
 
 1. Buka `http://localhost:3000/api/frames`, lalu lihat bagian `diagnostics`.
 2. Pastikan kelima file PNG ada dan ukurannya tepat.
-3. Pastikan nama folder hanya berisi huruf kecil, angka, dan tanda hubung, serta tidak diawali `_` atau `.`.
+3. Pastikan nama folder menyisakan huruf atau angka, serta tidak diawali `_` atau `.`.
 4. Muat ulang halaman setelah menambah atau mengubah paket.
 
 ### `npm install` gagal

@@ -7,8 +7,8 @@ import { scanFrameDirectory } from "@/app/api/frames/scan";
 import {
   DEFAULT_THEME,
   deriveFrameTheme,
-  isValidPackId,
   nameFromPackId,
+  packIdFromFolder,
   packFileUrl,
   PNG_HEADER_BYTES,
   readPngSize,
@@ -97,13 +97,14 @@ describe("frame pack validation", () => {
     expect(readPngSize(pngHeader(0, 1800))).toBeNull();
   });
 
-  it("accepts lowercase hyphenated folder ids only", () => {
-    expect(isValidPackId("neon-nights")).toBe(true);
-    expect(isValidPackId("frame2")).toBe(true);
-    for (const value of ["Neon", "-neon", "neon--nights", "neon_nights", ""]) {
-      expect(isValidPackId(value)).toBe(false);
-    }
-    expect(isValidPackId("a".repeat(41))).toBe(false);
+  it("turns any folder name into a url-safe id", () => {
+    expect(packIdFromFolder("neon-nights")).toBe("neon-nights");
+    expect(packIdFromFolder("GTA 6")).toBe("gta-6");
+    expect(packIdFromFolder("  My Cool Frame!!! ")).toBe("my-cool-frame");
+    expect(packIdFromFolder("frame_baru")).toBe("frame-baru");
+    expect(packIdFromFolder("!!!")).toBeNull();
+    expect(packIdFromFolder("   ")).toBeNull();
+    expect(packIdFromFolder("a".repeat(61))).toBeNull();
   });
 
   it("humanizes folder ids", () => {
@@ -291,19 +292,44 @@ describe("frame directory scanner", () => {
     );
   });
 
-  it("rejects invalid folder names", async () => {
+  it("accepts a free-form folder name and keeps the url safe", async () => {
     const root = await makeRoot();
-    await writePack(root, "Bad Frame");
+    await writePack(root, "Neon Nights");
+
+    const result = await scanFrameDirectory(root);
+    expect(result.diagnostics).toEqual([]);
+    expect(result.frames[0]).toMatchObject({
+      id: "neon-nights",
+      name: "Neon Nights",
+    });
+    expect(result.frames[0].artwork["4x1"]).toMatch(
+      /^\/assets\/frame-packs\/neon-nights\/4x1\.png\?v=\d+-\d+$/,
+    );
+  });
+
+  it("rejects a folder name with nothing usable", async () => {
+    const root = await makeRoot();
+    await writePack(root, "!!!");
 
     const result = await scanFrameDirectory(root);
     expect(result.frames).toEqual([]);
     expect(result.diagnostics).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({
-          folder: "Bad Frame",
-          code: "bad-folder-name",
-        }),
+        expect.objectContaining({ folder: "!!!", code: "bad-folder-name" }),
       ]),
     );
+  });
+
+  it("rejects a second folder that maps to the same id", async () => {
+    const root = await makeRoot();
+    await writePack(root, "GTA 6");
+    await writePack(root, "gta-6");
+
+    const result = await scanFrameDirectory(root);
+    expect(result.frames).toHaveLength(1);
+    expect(result.frames[0].id).toBe("gta-6");
+    expect(result.diagnostics).toEqual([
+      expect.objectContaining({ code: "duplicate-pack-id" }),
+    ]);
   });
 });
