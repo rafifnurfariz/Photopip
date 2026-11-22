@@ -130,7 +130,7 @@ Ada dua cara. Pilih salah satu.
 Kalau [Git](https://git-scm.com) sudah terpasang:
 
 ```bash
-git clone <url-repositori-ini>
+git clone https://github.com/rafifnurfariz/Photopip.git
 cd PhotoPip
 ```
 
@@ -225,13 +225,13 @@ PhotoPip tidak punya tempat untuk menyimpan foto, dan itu disengaja.
 
 `next.config.mjs` memasang header keamanan untuk semua route. Tidak ada konfigurasi tambahan yang perlu kamu lakukan saat deploy.
 
-| Header                    | Nilai                                                                                                      | Fungsi                                                                                                                                              |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Content-Security-Policy` | `default-src 'self'`, `img-src 'self' data: blob:`, `font-src 'self'`, `script-src 'self' 'unsafe-inline'` | Hanya izinkan aset dari origin sendiri, plus data URL/blob untuk foto di kanvas. Di mode dev, `'unsafe-eval'` dan `ws:` ditambahkan agar HMR jalan. |
-| `Permissions-Policy`      | `camera=(self), microphone=(), geolocation=()`                                                             | Kamera hanya untuk origin ini; mikrofon dan lokasi diblokir total.                                                                                  |
-| `X-Content-Type-Options`  | `nosniff`                                                                                                  | Browser tidak menebak tipe file.                                                                                                                    |
-| `X-Frame-Options`         | `DENY`                                                                                                     | Halaman tidak bisa di-embed di iframe (anti clickjacking).                                                                                          |
-| `Referrer-Policy`         | `strict-origin-when-cross-origin`                                                                          | Referrer tidak membocorkan path.                                                                                                                    |
+| Header                    | Nilai                                                                                                                                          | Fungsi                                                                                                                                                                                                                         |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Content-Security-Policy` | `default-src 'self'`, `img-src 'self' data: blob:`, `font-src 'self'`, `style-src 'self' 'unsafe-inline'`, `script-src 'self' 'unsafe-inline'` | Hanya izinkan aset dari origin sendiri, plus data URL/blob untuk foto di kanvas. Style inline tetap diizinkan karena Fabric menulis style di elemen kanvas. Di mode dev, `'unsafe-eval'` dan `ws:` ditambahkan agar HMR jalan. |
+| `Permissions-Policy`      | `camera=(self), microphone=(), geolocation=()`                                                                                                 | Kamera hanya untuk origin ini; mikrofon dan lokasi diblokir total.                                                                                                                                                             |
+| `X-Content-Type-Options`  | `nosniff`                                                                                                                                      | Browser tidak menebak tipe file.                                                                                                                                                                                               |
+| `X-Frame-Options`         | `DENY`                                                                                                                                         | Halaman tidak bisa di-embed di iframe (anti clickjacking).                                                                                                                                                                     |
+| `Referrer-Policy`         | `strict-origin-when-cross-origin`                                                                                                              | Referrer tidak membocorkan path.                                                                                                                                                                                               |
 
 Tiga catatan tambahan:
 
@@ -311,6 +311,8 @@ Stiker dibaca otomatis dari folder `public/assets/stickers/`. Sekarang ada 24 st
 Kategori dibuat dari nama subfolder, jadi menambah folder baru otomatis menambah tab baru. Stiker bisa dicari lewat kolom pencarian atau difilter per tab.
 
 Setelah masuk ke kanvas, stiker bisa digeser, diubah ukuran, diputar, dibalik horizontal atau vertikal, dan diatur opacity-nya. Bisa juga digandakan, dibawa ke depan, atau dikirim ke belakang.
+
+Stiker dari perangkat juga bisa diunggah lewat tombol di panel stiker. File itu tidak masuk folder `public/assets/stickers/` dan tidak dikirim ke server. Hasilnya data URL PNG di memori sesi, sama seperti foto. Batasnya 25 MB per file, sisi terpanjang dikecilkan ke 1200 px, dan transparansi PNG tetap utuh. File yang ditolak diabaikan tanpa pesan. Stiker unggahan hilang saat halaman di-refresh.
 
 ### Teks
 
@@ -661,6 +663,7 @@ Kalau scan stiker gagal, endpoint mengembalikan daftar kosong, bukan halaman err
 | **ESLint**      | 9      | Mencegah pola kode bermasalah                            |
 | **Prettier**    | 3.6    | Formatter kode dan Markdown                              |
 | **Knip**        | 6      | Deteksi file dan export yang tidak terpakai              |
+| **sharp**       | 0.35.5 | Baca warna dominan artwork bingkai saat scan folder      |
 | **Node.js**     | ≥ 22   | Runtime minimum untuk dev server dan build               |
 
 ---
@@ -725,7 +728,10 @@ PhotoPip/
 │   │           ├── property-panel.tsx   ← Properti objek terpilih
 │   │           ├── sticker-inspector.tsx ← Kontrol stiker: posisi, ukuran, rotasi
 │   │           ├── text-inspector.tsx   ← Kontrol teks: font, warna, align
-│   │           └── layer-list.tsx       ← Daftar semua layer stiker dan teks
+│   │           ├── layer-list.tsx       ← Daftar semua layer stiker dan teks
+│   │           ├── tool-rail.tsx        ← Rail ikon tab editor
+│   │           ├── number-field.tsx     ← Input angka di inspector
+│   │           └── frame-preview.tsx    ← Kartu bingkai: slot + artwork, tanpa preview.png
 │   │
 │   ├── shared-tools/
 │   │   ├── catalog/
@@ -733,9 +739,10 @@ PhotoPip/
 │   │   │   ├── frames.ts       ← FramePreset, frameById(), applyFrame()
 │   │   │   ├── frame-pack.ts   ← Kontrak folder bingkai: parsing, validasi PNG
 │   │   │   ├── frame-packs.ts  ← packToFramePreset(), mergeFramePacks()
-│   │   │   ├── stickers.ts     ← Tipe data Sticker & array stiker bawaan
+│   │   │   ├── stickers.ts     ← Tipe data Sticker (katalog datang dari scan folder)
 │   │   │   ├── photo-filters.ts ← Definisi 6 filter
-│   │   │   └── fonts.ts        ← 5 font stack + resolveTextFont()
+│   │   │   ├── fonts.ts        ← 5 font stack + resolveTextFont()
+│   │   │   └── frame-dates.json ← Waktu tiap paket bingkai, untuk urutan di panel
 │   │   ├── composition/
 │   │   │   ├── types.ts        ← Composition, StickerPlacement, TextPlacement
 │   │   │   ├── geometry.ts     ← Hitung posisi slot, crop, clamp
@@ -787,7 +794,8 @@ PhotoPip/
 │
 ├── scripts/
 │   ├── audit-production.mjs    ← npm audit hanya untuk dependency produksi
-│   └── package-standalone.mjs  ← Menyalin public/ ke .next/standalone/ setelah build
+│   ├── package-standalone.mjs  ← Menyalin public/ ke .next/standalone/ setelah build
+│   └── sync-frame-dates.mjs    ← Isi frame-dates.json untuk folder bingkai baru
 │
 ├── next.config.mjs             ← Header keamanan (CSP, Permissions-Policy), output standalone
 ├── vitest.config.mts           ← Konfigurasi Vitest (jsdom)
@@ -873,39 +881,35 @@ Format: `x, y, lebar, tinggi` (dalam piksel)
 
 </details>
 
-### 3. Tambahkan file opsional (kalau mau)
+### 3. Kartu di panel tidak butuh file cover
 
-**`preview.png`** adalah gambar cover untuk kartu bingkai di panel editor.
+Tidak ada `preview.png` dan tidak ada `frame.json`. Kartu di panel editor digambar
+oleh `FramePreview`: kotak slot ditambah artwork template yang sedang aktif.
 
-- Ukuran 64 × 64 px sampai 2048 × 2048 px.
-- Sebaiknya persegi dan di bawah 1 MB. Kalau tidak persegi, scanner memberi warning dan cover-nya di-crop.
-- File ini opsional. Tanpa `preview.png`, kartu memakai warna latar plus artwork template.
-
-**Tema otomatis.** Tidak ada file konfigurasi per bingkai. Scanner menurunkan tema
-dari `single.png`:
+**Tema otomatis.** Scanner menurunkan tema dari `single.png`:
 
 - **Warna latar** — warna opaque yang paling dominan di artwork.
 - **Warna teks** — `#20231f` kalau latar terang, `#ffffff` kalau latar gelap.
 - **Font** — selalu `app` (font tidak bisa ditebak dari gambar).
 - **Nama bingkai** — dari nama folder, misal `neon-nights` menjadi "Neon Nights".
 
-Jadi untuk menambah bingkai cukup taruh lima PNG artwork (dan opsional `preview.png`).
+Jadi untuk menambah bingkai cukup taruh lima PNG artwork.
 Kalau artwork punya area dekorasi yang lebih luas daripada bingkainya, warna latar bisa
 meleset; hasil selalu aman terbaca, tapi bisa kurang sesuai tema.
 
 ### Batas validasi yang diterapkan scanner
 
-| Aturan               | Nilai                                                                              |
-| -------------------- | ---------------------------------------------------------------------------------- |
-| Panjang nama folder  | maksimal 60 karakter setelah dibersihkan jadi huruf kecil, angka, dan tanda hubung |
-| Ukuran tiap artwork  | maksimal 8 MB (lebih dari itu hanya warning)                                       |
-| Ukuran `preview.png` | maksimal 1 MB (lebih dari itu hanya warning)                                       |
-| Dimensi artwork      | harus **tepat** sama dengan tabel di atas, selisih 1 piksel = folder ditolak       |
-| Dimensi preview      | 64–2048 px per sisi                                                                |
+| Aturan              | Nilai                                                                              |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| Panjang nama folder | maksimal 60 karakter setelah dibersihkan jadi huruf kecil, angka, dan tanda hubung |
+| Ukuran tiap artwork | maksimal 8 MB (lebih dari itu hanya warning)                                       |
+| Dimensi artwork     | harus **tepat** sama dengan tabel di atas, selisih 1 piksel = folder ditolak       |
 
 Artwork selalu diskalakan penuh ke ukuran kanvas template. Jadi desainlah di ukuran cetak aslinya, bukan ukuran yang lebih kecil, supaya tidak blur.
 
 Folder yang ditolak tidak muncul di katalog dan tidak merusak paket lain. Semua masalahnya dicatat di `diagnostics`.
+
+Paket yang lolos diurutkan dari yang paling baru. Waktunya disimpan di `src/shared-tools/catalog/frame-dates.json`. `npm run dev` dan `npm run build` menjalankan `scripts/sync-frame-dates.mjs` dulu: folder yang sudah punya waktu tidak diubah, folder baru dapat waktu dari commit git yang menambahkannya (atau waktu file kalau git tidak ada). Di Vercel dan CI (`VERCEL` atau `CI`) skrip langsung keluar, jadi file yang sudah di-commit yang dipakai. Kalau skrip menulis file, diff itu perlu di-commit bersama paket barunya.
 
 ### 4. Muat ulang halaman
 
@@ -918,7 +922,7 @@ Buka `http://localhost:3000/api/frames` di browser. Response-nya punya dua bagia
 - `frames`: daftar bingkai yang berhasil dimuat
 - `diagnostics`: daftar error dan warning per folder. Bagian ini hanya muncul saat development; di produksi array-nya selalu kosong.
 
-Kode diagnostic yang mungkin muncul: `invalid-id`, `manifest-not-file`, `manifest-too-large`, `bad-manifest`, `preview-not-file`, `bad-png`, `bad-preview-size`, `non-square-preview`, `large-preview`, `missing-file`, `wrong-size`, `large-artwork`, `unreadable`.
+Kode diagnostic yang mungkin muncul: `bad-folder-name`, `missing-artwork`, `bad-png`, `bad-dimensions`, `large-artwork` (warning), `theme-fallback` (warning), `duplicate-pack-id`.
 
 ---
 
@@ -1040,7 +1044,7 @@ Yang tidak dicakup tes: hasil visual, kualitas cetak, dan perilaku kamera di har
 
 Next.js 16 memblokir resource dev (HMR, chunk internal) dari origin yang tidak dikenal. Gejalanya: halaman tampil, tapi console penuh pesan `Blocked cross-origin request to Next.js dev resource` dan `WebSocket ... ERR_INVALID_HTTP_RESPONSE`.
 
-1. Tambahkan IP kamu ke `allowedDevOrigins` di `next.config.mjs`:
+1. Tambahkan IP komputermu ke `allowedDevOrigins` di `next.config.mjs` (misalnya mengganti atau menambah daftar array `allowedDevOrigins`):
 
    ```js
    allowedDevOrigins: ["192.168.1.50"],
