@@ -1,28 +1,28 @@
 /**
  * PEMINDAI FOLDER PAKET BINGKAI
- * Memindai public/assets/frame-packs/: memvalidasi manifest frame.json,
+ * Memindai public/assets/frame-packs/: menurunkan tema dari artwork,
  * mengecek dimensi artwork PNG per template, dan menyusun katalog bingkai siap pakai.
  */
 
-import { open, readFile, readdir, stat } from "node:fs/promises";
+import { open, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import defaultFrameDates from "@/shared-tools/catalog/frame-dates.json";
 import type { TemplateId } from "@/shared-tools/catalog/templates";
 import {
   createFramePackFrame,
+  DEFAULT_THEME,
+  deriveFrameTheme,
   isValidPackId,
   LARGE_ARTWORK_BYTES,
-  MAX_MANIFEST_BYTES,
   MAX_PACK_ID_LENGTH,
   packFileUrl,
-  parseFrameManifest,
   PNG_HEADER_BYTES,
   readPngSize,
   templateArtworkSpecs,
-  type FrameManifest,
   type FramePackDiagnostic,
   type FramePackResponse,
   type FramePackFrame,
+  type FrameTheme,
 } from "@/shared-tools/catalog/frame-pack";
 
 interface FolderResult {
@@ -82,34 +82,6 @@ async function scanFrameFolder(
   const dirStat = await statOrNull(directory);
   const fsTime = dirStat ? dirStat.birthtimeMs || dirStat.mtimeMs : 0;
 
-  let manifest: FrameManifest = {};
-  const manifestStat = await statOrNull(path.join(directory, "frame.json"));
-  if (manifestStat) {
-    if (!manifestStat.isFile()) {
-      return failure(
-        folder,
-        diagnostics,
-        "bad-manifest",
-        "frame.json must be a file",
-      );
-    }
-    if (manifestStat.size > MAX_MANIFEST_BYTES) {
-      return failure(
-        folder,
-        diagnostics,
-        "bad-manifest",
-        `frame.json must be at most ${MAX_MANIFEST_BYTES} bytes`,
-      );
-    }
-    const parsed = parseFrameManifest(
-      await readFile(path.join(directory, "frame.json"), "utf8"),
-    );
-    if (!parsed.ok) {
-      return failure(folder, diagnostics, "bad-manifest", parsed.message);
-    }
-    manifest = parsed.manifest;
-  }
-
   const artworkEntries: Array<[TemplateId, string]> = [];
   for (const spec of templateArtworkSpecs) {
     const file = path.join(directory, spec.file);
@@ -163,19 +135,28 @@ async function scanFrameFolder(
     string
   >;
 
-  const manifestTime = manifest.createdAt
-    ? Date.parse(manifest.createdAt)
-    : NaN;
-  const recordedTime = dates[folder];
-  const addedAt = !Number.isNaN(manifestTime)
-    ? manifestTime
-    : (recordedTime ?? fsTime);
+  const themeSpec =
+    templateArtworkSpecs.find((spec) => spec.file === "single.png") ??
+    templateArtworkSpecs[0];
+  let theme: FrameTheme = DEFAULT_THEME;
+  try {
+    theme = await deriveFrameTheme(path.join(directory, themeSpec.file));
+  } catch {
+    diagnostics.push({
+      folder,
+      level: "warning",
+      code: "theme-fallback",
+      message: "could not read artwork colors, using defaults",
+    });
+  }
+
+  const addedAt = dates[folder] ?? fsTime;
 
   return {
     folder,
     frame: createFramePackFrame({
       id: folder,
-      manifest,
+      theme,
       artwork,
     }),
     diagnostics,

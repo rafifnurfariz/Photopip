@@ -1,4 +1,4 @@
-import { textFonts } from "@/shared-tools/catalog/fonts";
+import sharp from "sharp";
 import { templates, type TemplateId } from "@/shared-tools/catalog/templates";
 import { templateGeometry } from "@/shared-tools/composition/geometry";
 
@@ -27,17 +27,11 @@ export interface FramePackResponse {
   diagnostics: FramePackDiagnostic[];
 }
 
-export interface FrameManifest {
-  name?: string;
-  textColor?: string;
-  fontId?: string;
-  backgroundColor?: string;
-  createdAt?: string;
+export interface FrameTheme {
+  textColor: string;
+  fontId: string;
+  backgroundColor: string;
 }
-
-export type ManifestParseResult =
-  | { ok: true; manifest: FrameManifest }
-  | { ok: false; message: string };
 
 export interface PngSize {
   width: number;
@@ -52,16 +46,25 @@ export interface TemplateArtworkSpec {
 }
 
 export const MAX_PACK_ID_LENGTH = 40;
-export const MAX_MANIFEST_BYTES = 16 * 1024;
 export const PNG_HEADER_BYTES = 24;
 export const LARGE_ARTWORK_BYTES = 8 * 1024 * 1024;
+
+const THEME_SAMPLE_SIZE = 32;
+const OPAQUE_ALPHA = 128;
+// WCAG relative luminance above which dark text stays readable.
+const LIGHT_TEXT_LUMINANCE = 0.179;
 
 const DEFAULT_TEXT_COLOR = "#20231f";
 const DEFAULT_BACKGROUND_COLOR = "#ffffff";
 const DEFAULT_FONT_ID = "app";
 
+export const DEFAULT_THEME: FrameTheme = {
+  textColor: DEFAULT_TEXT_COLOR,
+  fontId: DEFAULT_FONT_ID,
+  backgroundColor: DEFAULT_BACKGROUND_COLOR,
+};
+
 const packIdPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const hexColorPattern = /^#[0-9a-f]{6}$/i;
 const pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
 /**
@@ -87,11 +90,7 @@ export function isValidPackId(id: string): boolean {
   );
 }
 
-export function isHexColor(value: string): boolean {
-  return hexColorPattern.test(value);
-}
-
-/** Humanizes a folder id when `frame.json` does not provide a name. */
+/** Humanizes a folder id into a display name. */
 export function nameFromPackId(id: string): string {
   return id
     .split("-")
@@ -100,90 +99,79 @@ export function nameFromPackId(id: string): string {
     .join(" ");
 }
 
-function packDefaults(id: string) {
-  return {
-    name: nameFromPackId(id),
-    textColor: DEFAULT_TEXT_COLOR,
-    fontId: DEFAULT_FONT_ID,
-    backgroundColor: DEFAULT_BACKGROUND_COLOR,
-  };
+function channelToLinear(channel: number): number {
+  const value = channel / 255;
+  return value <= 0.04045
+    ? value / 12.92
+    : Math.pow((value + 0.055) / 1.055, 2.4);
 }
 
-export function parseFrameManifest(raw: string): ManifestParseResult {
-  let value: unknown;
-  try {
-    value = JSON.parse(raw);
-  } catch {
-    return { ok: false, message: "frame.json is not valid JSON" };
-  }
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return { ok: false, message: "frame.json must contain a JSON object" };
-  }
+function relativeLuminance(r: number, g: number, b: number): number {
+  return (
+    0.2126 * channelToLinear(r) +
+    0.7152 * channelToLinear(g) +
+    0.0722 * channelToLinear(b)
+  );
+}
 
-  const record = value as Record<string, unknown>;
-  const manifest: FrameManifest = {};
+function toHex(r: number, g: number, b: number): string {
+  return `#${[r, g, b]
+    .map((value) => Math.round(value).toString(16).padStart(2, "0"))
+    .join("")}`;
+}
 
-  if (record.name !== undefined) {
-    if (typeof record.name !== "string") {
-      return { ok: false, message: "frame.json name must be a string" };
+/**
+ * Derives a pack theme from its artwork: the most common opaque color becomes
+ * the strip background, and footer text flips between dark and white to stay
+ * readable. Packs ship no manifest, so this replaces the old `frame.json`.
+ */
+export async function deriveFrameTheme(file: string): Promise<FrameTheme> {
+  const { data } = await sharp(file)
+    .resize(THEME_SAMPLE_SIZE, THEME_SAMPLE_SIZE, { fit: "inside" })
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  // shortcut: 5-bit buckets merge near-identical shades; enough for solid
+  // frame borders, upgrade to a real palette quantizer if art gets noisy.
+  const buckets = new Map<
+    number,
+    { count: number; r: number; g: number; b: number }
+  >();
+  for (let index = 0; index < data.length; index += 4) {
+    if (data[index + 3] < OPAQUE_ALPHA) continue;
+    const r = data[index];
+    const g = data[index + 1];
+    const b = data[index + 2];
+    const key = ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
+    const bucket = buckets.get(key);
+    if (bucket) {
+      bucket.count += 1;
+      bucket.r += r;
+      bucket.g += g;
+      bucket.b += b;
+    } else {
+      buckets.set(key, { count: 1, r, g, b });
     }
-    const name = record.name.trim();
-    if (name.length === 0 || name.length > 60) {
-      return {
-        ok: false,
-        message: "frame.json name must be 1-60 characters",
-      };
-    }
-    manifest.name = name;
   }
 
-  if (record.textColor !== undefined) {
-    if (typeof record.textColor !== "string" || !isHexColor(record.textColor)) {
-      return { ok: false, message: "frame.json textColor must be #rrggbb" };
-    }
-    manifest.textColor = record.textColor;
+  let best: { count: number; r: number; g: number; b: number } | null = null;
+  for (const bucket of buckets.values()) {
+    if (!best || bucket.count > best.count) best = bucket;
   }
+  if (!best) return DEFAULT_THEME;
 
-  if (record.backgroundColor !== undefined) {
-    if (
-      typeof record.backgroundColor !== "string" ||
-      !isHexColor(record.backgroundColor)
-    ) {
-      return {
-        ok: false,
-        message: "frame.json backgroundColor must be #rrggbb",
-      };
-    }
-    manifest.backgroundColor = record.backgroundColor;
-  }
-
-  if (record.fontId !== undefined) {
-    if (
-      typeof record.fontId !== "string" ||
-      !textFonts.some((font) => font.id === record.fontId)
-    ) {
-      return {
-        ok: false,
-        message: "frame.json fontId must be app, serif, sans, mono or display",
-      };
-    }
-    manifest.fontId = record.fontId;
-  }
-
-  if (record.createdAt !== undefined) {
-    if (
-      typeof record.createdAt !== "string" ||
-      Number.isNaN(Date.parse(record.createdAt))
-    ) {
-      return {
-        ok: false,
-        message: "frame.json createdAt must be a valid date string",
-      };
-    }
-    manifest.createdAt = record.createdAt;
-  }
-
-  return { ok: true, manifest };
+  const r = best.r / best.count;
+  const g = best.g / best.count;
+  const b = best.b / best.count;
+  return {
+    backgroundColor: toHex(r, g, b),
+    textColor:
+      relativeLuminance(r, g, b) > LIGHT_TEXT_LUMINANCE
+        ? DEFAULT_TEXT_COLOR
+        : "#ffffff",
+    fontId: DEFAULT_FONT_ID,
+  };
 }
 
 /** Reads width and height from a PNG IHDR chunk without decoding pixels. */
@@ -218,16 +206,13 @@ export function packFileUrl(
 
 export function createFramePackFrame(input: {
   id: string;
-  manifest: FrameManifest;
+  theme: FrameTheme;
   artwork: Record<TemplateId, string>;
 }): FramePackFrame {
-  const defaults = packDefaults(input.id);
   return {
     id: input.id,
-    name: input.manifest.name ?? defaults.name,
-    textColor: input.manifest.textColor ?? defaults.textColor,
-    fontId: input.manifest.fontId ?? defaults.fontId,
-    backgroundColor: input.manifest.backgroundColor ?? defaults.backgroundColor,
+    name: nameFromPackId(input.id),
+    ...input.theme,
     artwork: input.artwork,
   };
 }

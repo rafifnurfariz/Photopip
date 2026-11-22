@@ -9,8 +9,11 @@ To make a frame:
    transparent.
 3. Optionally replace `preview.png` with a square cover (240 × 240 recommended). The frame
    card layers the artwork over neutral slot placeholders, so this file is not required.
-4. Edit `frame.json` (all fields are optional).
-5. Refresh the app and open the Frame tool.
+4. Refresh the app and open the Frame tool.
+
+There is no `frame.json`: the scanner derives the strip background from the most common
+opaque color in `single.png`, picks dark or white footer text to stay readable, and uses
+the folder name as the frame name.
 
 Artwork is drawn above the photos and slot outlines. Each grey rectangle is a photo slot;
 its interior is transparent, so the photo shows through. Opaque pixels cover the photo, so

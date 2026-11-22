@@ -582,7 +582,7 @@ Karena renderer-nya sama, tidak ada kemungkinan "di editor terlihat bagus tapi h
 4. Logo PhotoPip (di footer bawah)
 3. Artwork paket bingkai (PNG transparan, diskalakan penuh ke kanvas)
 2. Foto (dipotong cover-crop agar memenuhi slot, lalu filter diterapkan)
-1. Latar (satu warna solid dari frame.json)
+1. Latar (satu warna solid, diturunkan dari artwork)
 ```
 
 Beberapa hal yang sering ditanyakan:
@@ -621,7 +621,7 @@ page.tsx
 GET /api/frames
   └── scanFrameDirectory()
         ├── validasi nama folder
-        ├── baca frame.json (opsional)
+        ├── turunkan warna tema dari artwork
         ├── validasi 5 PNG (ukuran piksel harus tepat)
         └── kembalikan data + diagnostics (diagnostics hanya dev)
 Browser
@@ -680,7 +680,7 @@ PhotoPip/
 │   │   └── api/
 │   │       ├── frames/         ← GET /api/frames
 │   │       │   ├── route.ts    ← handler: panggil scanner, log diagnostics, kirim JSON
-│   │       │   └── scan.ts     ← validasi folder, frame.json, ukuran PNG tiap template
+│   │       │   └── scan.ts     ← validasi folder, ukuran PNG, warna tema dari artwork
 │   │       └── stickers/       ← GET /api/stickers
 │   │           ├── route.ts    ← handler: scan, fallback ke daftar kosong saat gagal
 │   │           └── scan.ts     ← pindai subfolder, format nama, id unik, cache-busting
@@ -881,30 +881,23 @@ Format: `x, y, lebar, tinggi` (dalam piksel)
 - Sebaiknya persegi dan di bawah 1 MB. Kalau tidak persegi, scanner memberi warning dan cover-nya di-crop.
 - File ini opsional. Tanpa `preview.png`, kartu memakai warna latar plus artwork template.
 
-**`frame.json`** mengatur tampilan bingkai:
+**Tema otomatis.** Tidak ada file konfigurasi per bingkai. Scanner menurunkan tema
+dari `single.png`:
 
-```json
-{
-  "name": "Nama Bingkaimu",
-  "textColor": "#20231f",
-  "fontId": "app",
-  "backgroundColor": "#ffffff"
-}
-```
+- **Warna latar** — warna opaque yang paling dominan di artwork.
+- **Warna teks** — `#20231f` kalau latar terang, `#ffffff` kalau latar gelap.
+- **Font** — selalu `app` (font tidak bisa ditebak dari gambar).
+- **Nama bingkai** — dari nama folder, misal `neon-nights` menjadi "Neon Nights".
 
-| Field             | Default     | Keterangan                                     |
-| ----------------- | ----------- | ---------------------------------------------- |
-| `name`            | Nama folder | Nama tampilan, 1–60 karakter                   |
-| `textColor`       | `#20231f`   | Warna teks default (`#rrggbb`)                 |
-| `fontId`          | `app`       | `app`, `serif`, `sans`, `mono`, atau `display` |
-| `backgroundColor` | `#ffffff`   | Warna latar solid (`#rrggbb`)                  |
+Jadi untuk menambah bingkai cukup taruh lima PNG artwork (dan opsional `preview.png`).
+Kalau artwork punya area dekorasi yang lebih luas daripada bingkainya, warna latar bisa
+meleset; hasil selalu aman terbaca, tapi bisa kurang sesuai tema.
 
 ### Batas validasi yang diterapkan scanner
 
 | Aturan               | Nilai                                                                                 |
 | -------------------- | ------------------------------------------------------------------------------------- |
 | Panjang nama folder  | maksimal 40 karakter, pola `kata-kata-kata` (huruf kecil/angka, tanda hubung tunggal) |
-| Ukuran `frame.json`  | maksimal 16 KB, harus objek JSON                                                      |
 | Ukuran tiap artwork  | maksimal 8 MB (lebih dari itu hanya warning)                                          |
 | Ukuran `preview.png` | maksimal 1 MB (lebih dari itu hanya warning)                                          |
 | Dimensi artwork      | harus **tepat** sama dengan tabel di atas, selisih 1 piksel = folder ditolak          |
@@ -1076,8 +1069,7 @@ Next.js 16 memblokir resource dev (HMR, chunk internal) dari origin yang tidak d
 1. Buka `http://localhost:3000/api/frames`, lalu lihat bagian `diagnostics`.
 2. Pastikan kelima file PNG ada dan ukurannya tepat.
 3. Pastikan nama folder hanya berisi huruf kecil, angka, dan tanda hubung, serta tidak diawali `_` atau `.`.
-4. Pastikan `frame.json` valid. Periksa tanda kurung, tanda kutip, dan koma.
-5. Muat ulang halaman setelah menambah atau mengubah paket.
+4. Muat ulang halaman setelah menambah atau mengubah paket.
 
 ### `npm install` gagal
 

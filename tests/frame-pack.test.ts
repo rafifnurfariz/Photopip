@@ -1,20 +1,32 @@
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import sharp from "sharp";
 import { afterEach, describe, expect, it } from "vitest";
 import { scanFrameDirectory } from "@/app/api/frames/scan";
 import {
-  isHexColor,
+  DEFAULT_THEME,
+  deriveFrameTheme,
   isValidPackId,
   nameFromPackId,
   packFileUrl,
-  parseFrameManifest,
   PNG_HEADER_BYTES,
   readPngSize,
   templateArtworkSpecs,
 } from "@/shared-tools/catalog/frame-pack";
 
 const temporaryDirectories: string[] = [];
+
+interface PackColor {
+  r: number;
+  g: number;
+  b: number;
+  alpha: number;
+}
+
+const WHITE: PackColor = { r: 255, g: 255, b: 255, alpha: 1 };
+const GREEN: PackColor = { r: 0, g: 255, b: 0, alpha: 1 };
+const DARK: PackColor = { r: 13, g: 6, b: 20, alpha: 1 };
 
 function pngHeader(width: number, height: number): Buffer {
   const buffer = Buffer.alloc(PNG_HEADER_BYTES);
@@ -26,6 +38,17 @@ function pngHeader(width: number, height: number): Buffer {
   return buffer;
 }
 
+async function writePng(
+  file: string,
+  width: number,
+  height: number,
+  color: PackColor,
+) {
+  await sharp({ create: { width, height, channels: 4, background: color } })
+    .png()
+    .toFile(file);
+}
+
 async function makeRoot() {
   const root = await mkdtemp(path.join(tmpdir(), "photopip-frames-"));
   temporaryDirectories.push(root);
@@ -33,25 +56,23 @@ async function makeRoot() {
 }
 
 interface PackOptions {
-  manifest?: string;
   artwork?: Partial<Record<string, [number, number]>>;
   omit?: string[];
+  color?: PackColor;
 }
 
 async function writePack(root: string, id: string, options: PackOptions = {}) {
   const directory = path.join(root, id);
   await mkdir(directory, { recursive: true });
   const omit = new Set(options.omit ?? []);
-  if (options.manifest !== undefined) {
-    await writeFile(path.join(directory, "frame.json"), options.manifest);
-  }
+  const color = options.color ?? WHITE;
   for (const spec of templateArtworkSpecs) {
     if (omit.has(spec.file)) continue;
     const [width, height] = options.artwork?.[spec.id] ?? [
       spec.width,
       spec.height,
     ];
-    await writeFile(path.join(directory, spec.file), pngHeader(width, height));
+    await writePng(path.join(directory, spec.file), width, height, color);
   }
 }
 
@@ -85,53 +106,9 @@ describe("frame pack validation", () => {
     expect(isValidPackId("a".repeat(41))).toBe(false);
   });
 
-  it("humanizes folder ids and validates colors", () => {
+  it("humanizes folder ids", () => {
     expect(nameFromPackId("neon-nights")).toBe("Neon Nights");
     expect(nameFromPackId("plain")).toBe("Plain");
-    expect(isHexColor("#0b1020")).toBe(true);
-    expect(isHexColor("#fff")).toBe(false);
-    expect(isHexColor("blue")).toBe(false);
-  });
-
-  it("parses optional manifest fields and rejects bad values", () => {
-    expect(
-      parseFrameManifest(
-        JSON.stringify({
-          name: "  Neon Nights  ",
-          textColor: "#F8FAFC",
-          fontId: "display",
-          backgroundColor: "#0b1020",
-          ignored: true,
-        }),
-      ),
-    ).toEqual({
-      ok: true,
-      manifest: {
-        name: "Neon Nights",
-        textColor: "#F8FAFC",
-        fontId: "display",
-        backgroundColor: "#0b1020",
-      },
-    });
-    expect(parseFrameManifest("{}")).toEqual({ ok: true, manifest: {} });
-    expect(parseFrameManifest("{").ok).toBe(false);
-    expect(parseFrameManifest("[]").ok).toBe(false);
-    expect(parseFrameManifest(JSON.stringify({ name: "" })).ok).toBe(false);
-    expect(parseFrameManifest(JSON.stringify({ textColor: "red" })).ok).toBe(
-      false,
-    );
-    expect(
-      parseFrameManifest(JSON.stringify({ backgroundColor: "#fff" })).ok,
-    ).toBe(false);
-    expect(parseFrameManifest(JSON.stringify({ fontId: "comic" })).ok).toBe(
-      false,
-    );
-    expect(
-      parseFrameManifest(JSON.stringify({ createdAt: "2026-11-21" })).ok,
-    ).toBe(true);
-    expect(
-      parseFrameManifest(JSON.stringify({ createdAt: "not-a-date" })).ok,
-    ).toBe(false);
   });
 
   it("builds cache-busted URLs", () => {
@@ -159,8 +136,54 @@ describe("frame pack validation", () => {
   });
 });
 
+describe("frame theme derivation", () => {
+  it("uses the dominant opaque color as background", async () => {
+    const root = await makeRoot();
+    const file = path.join(root, "single.png");
+    await writePng(file, 600, 1800, GREEN);
+
+    await expect(deriveFrameTheme(file)).resolves.toEqual({
+      backgroundColor: "#00ff00",
+      textColor: "#20231f",
+      fontId: "app",
+    });
+  });
+
+  it("picks white text on a dark background", async () => {
+    const root = await makeRoot();
+    const file = path.join(root, "single.png");
+    await writePng(file, 600, 1800, DARK);
+
+    await expect(deriveFrameTheme(file)).resolves.toEqual({
+      backgroundColor: "#0d0614",
+      textColor: "#ffffff",
+      fontId: "app",
+    });
+  });
+
+  it("picks dark text on a light background", async () => {
+    const root = await makeRoot();
+    const file = path.join(root, "single.png");
+    await writePng(file, 600, 1800, { r: 245, g: 240, b: 225, alpha: 1 });
+
+    await expect(deriveFrameTheme(file)).resolves.toEqual({
+      backgroundColor: "#f5f0e1",
+      textColor: "#20231f",
+      fontId: "app",
+    });
+  });
+
+  it("falls back to defaults when every pixel is transparent", async () => {
+    const root = await makeRoot();
+    const file = path.join(root, "single.png");
+    await writePng(file, 600, 1800, { r: 0, g: 0, b: 0, alpha: 0 });
+
+    await expect(deriveFrameTheme(file)).resolves.toEqual(DEFAULT_THEME);
+  });
+});
+
 describe("frame directory scanner", () => {
-  it("returns a valid pack with defaults and cache-busted artwork", async () => {
+  it("returns a valid pack with derived theme and cache-busted artwork", async () => {
     const root = await makeRoot();
     await writePack(root, "neon-nights");
 
@@ -186,41 +209,39 @@ describe("frame directory scanner", () => {
     );
   });
 
-  it("applies manifest fields", async () => {
+  it("derives the pack theme from its artwork", async () => {
     const root = await makeRoot();
-    await writePack(root, "neon-nights", {
-      manifest: JSON.stringify({
-        name: "Neon Nights",
-        textColor: "#f8fafc",
-        fontId: "display",
-        backgroundColor: "#0b1020",
-      }),
-    });
+    await writePack(root, "neon-nights", { color: GREEN });
 
     const result = await scanFrameDirectory(root);
     expect(result.frames[0]).toMatchObject({
       name: "Neon Nights",
-      textColor: "#f8fafc",
-      fontId: "display",
-      backgroundColor: "#0b1020",
+      backgroundColor: "#00ff00",
+      textColor: "#20231f",
+      fontId: "app",
     });
     expect(result.diagnostics).toEqual([]);
   });
 
-  it("sorts packs with newest createdAt first", async () => {
+  it("falls back to defaults when artwork colors cannot be read", async () => {
     const root = await makeRoot();
-    await writePack(root, "older-pack", {
-      manifest: JSON.stringify({ createdAt: "2026-01-01" }),
-    });
-    await writePack(root, "newer-pack", {
-      manifest: JSON.stringify({ createdAt: "2026-11-01" }),
-    });
+    await writePack(root, "neon-nights");
+    await writeFile(
+      path.join(root, "neon-nights", "single.png"),
+      Buffer.concat([pngHeader(1200, 1800), Buffer.alloc(32)]),
+    );
 
     const result = await scanFrameDirectory(root);
-    expect(result.frames.map((frame) => frame.id)).toEqual([
-      "newer-pack",
-      "older-pack",
-    ]);
+    expect(result.frames[0]).toMatchObject(DEFAULT_THEME);
+    expect(result.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          folder: "neon-nights",
+          code: "theme-fallback",
+          level: "warning",
+        }),
+      ]),
+    );
   });
 
   it("sorts packs using dates index map", async () => {
@@ -270,12 +291,9 @@ describe("frame directory scanner", () => {
     );
   });
 
-  it("rejects reserved, invalid and badly configured packs", async () => {
+  it("rejects invalid folder names", async () => {
     const root = await makeRoot();
     await writePack(root, "Bad Frame");
-    await writePack(root, "bad-manifest", {
-      manifest: JSON.stringify({ fontId: "comic" }),
-    });
 
     const result = await scanFrameDirectory(root);
     expect(result.frames).toEqual([]);
@@ -284,10 +302,6 @@ describe("frame directory scanner", () => {
         expect.objectContaining({
           folder: "Bad Frame",
           code: "bad-folder-name",
-        }),
-        expect.objectContaining({
-          folder: "bad-manifest",
-          code: "bad-manifest",
         }),
       ]),
     );
