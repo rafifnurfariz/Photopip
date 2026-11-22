@@ -264,6 +264,7 @@ export function useEditorCanvas(
 
       if (isBaseIdentical) {
         let updatedAny = false;
+        let allObjectsExist = true;
         const geometry = templateGeometry(composition.template);
 
         for (const placement of composition.stickers) {
@@ -290,6 +291,8 @@ export function useEditorCanvas(
             });
             target.setCoords();
             updatedAny = true;
+          } else {
+            allObjectsExist = false;
           }
         }
 
@@ -316,10 +319,14 @@ export function useEditorCanvas(
             });
             target.setCoords();
             updatedAny = true;
+          } else {
+            allObjectsExist = false;
           }
         }
 
-        if (updatedAny) {
+        // Fast path only valid when every placement already has a canvas object.
+        // A newly added sticker/text lacks one, so fall through to full render.
+        if (updatedAny && allObjectsExist) {
           canvas.requestRenderAll();
           return;
         }
