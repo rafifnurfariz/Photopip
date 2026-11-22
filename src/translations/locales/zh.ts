@@ -113,13 +113,6 @@ export const zh: Messages = {
       vintage: "复古",
       fade: "褪色",
     },
-    fontNames: {
-      app: "工作室",
-      serif: "衬线",
-      sans: "无衬线",
-      mono: "等宽",
-      display: "展示",
-    },
   },
   export: {
     format: "文件格式",

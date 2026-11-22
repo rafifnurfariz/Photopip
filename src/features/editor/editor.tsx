@@ -32,6 +32,7 @@ import type {
   StickerPlacement,
   TextPlacement,
 } from "@/shared-tools/composition/types";
+import { useFontCatalog } from "./hooks/use-font-catalog";
 import { FramePanel } from "./components/frame-panel";
 import { PhotoPanel } from "./components/photo-panel";
 import { PropertyPanel } from "./components/property-panel";
@@ -81,6 +82,7 @@ export default function Editor({
   const [zoom, setZoom] = useState(1);
   const [fitWhole, setFitWhole] = useState(false);
   const [history, setHistory] = useState<HistoryState>(initialHistory);
+  const { fonts } = useFontCatalog();
   const gesture = useRef<Composition | null>(null);
   const geometry = useMemo(
     () => templateGeometry(composition.template),
@@ -207,6 +209,7 @@ export default function Editor({
 
   const addText = () => {
     const id = newId();
+    const defaultFontId = fonts[0]?.id ?? frame.fontId ?? "default";
     const placement: TextPlacement = {
       id,
       text: t.editor.defaultCaption,
@@ -215,7 +218,7 @@ export default function Editor({
       size: Math.round(geometry.width * 0.06),
       rotation: 0,
       color: frame.textColor,
-      fontId: frame.fontId,
+      fontId: defaultFontId,
       align: "center",
       bold: false,
       italic: false,

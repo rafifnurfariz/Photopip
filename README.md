@@ -35,6 +35,7 @@ Server cuma dipakai untuk dua hal kecil: memberi daftar bingkai dan daftar stike
 - [Peta folder dan file](#peta-folder-dan-file)
 - [Cara membuat paket bingkai sendiri](#cara-membuat-paket-bingkai-sendiri)
 - [Cara menambah stiker sendiri](#cara-menambah-stiker-sendiri)
+- [Cara menambah font sendiri](#cara-menambah-font-sendiri)
 - [Cara menambah atau mengubah bagian kode](#cara-menambah-atau-mengubah-bagian-kode)
 - [Testing: cara menguji kode](#testing-cara-menguji-kode)
 - [Pemecahan masalah umum](#pemecahan-masalah-umum)
@@ -316,7 +317,7 @@ Stiker dari perangkat juga bisa diunggah lewat tombol di panel stiker. File itu 
 
 ### Teks
 
-Tulisan bisa ditambahkan ke foto dengan lima pilihan font: `app` (font halaman), `serif` (Georgia), `sans` (Arial), `mono` (Courier New), dan `display` (Impact). Warna, ukuran, rotasi, opacity, perataan, bold, dan italic semuanya bisa diatur.
+Tulisan bisa ditambahkan ke foto dengan font dinamis dari file `.ttf` di folder `public/assets/fonts/`. Jika belum ada file font `.ttf`, tulisan menggunakan font bawaan sistem. Warna, ukuran, rotasi, opacity, perataan, bold, dan italic semuanya bisa diatur.
 
 Ada batas yang perlu diketahui: maksimal **120 karakter**, ukuran minimal **18 px**, posisi selalu dijepit di dalam kanvas, dan rotasi dinormalisasi ke 0–359°.
 
@@ -741,7 +742,7 @@ PhotoPip/
 │   │   │   ├── frame-packs.ts  ← packToFramePreset(), mergeFramePacks()
 │   │   │   ├── stickers.ts     ← Tipe data Sticker (katalog datang dari scan folder)
 │   │   │   ├── photo-filters.ts ← Definisi 6 filter
-│   │   │   ├── fonts.ts        ← 5 font stack + resolveTextFont()
+│   │   │   ├── fonts.ts        ← Registry font dinamis + resolveTextFont()
 │   │   │   └── frame-dates.json ← Waktu tiap paket bingkai, untuk urutan di panel
 │   │   ├── composition/
 │   │   │   ├── types.ts        ← Composition, StickerPlacement, TextPlacement
@@ -767,14 +768,12 @@ PhotoPip/
 │   │       ├── de.ts           ← Deutsch
 │   │       ├── ja.ts           ← 日本語
 │   │       └── zh.ts           ← 中文
-│   │
-│   └── assets/fonts/
-│       └── google-sans-flex-latin.woff2  ← Font self-hosted (tidak request ke Google)
 │
 ├── public/
 │   ├── assets/
 │   │   ├── app-icons/      ← Favicon, Apple touch icon
 │   │   ├── brand/logo.png  ← Logo di footer strip hasil cetakan
+│   │   ├── fonts/          ← Taruh file .ttf font kustom kamu di sini
 │   │   ├── stickers/       ← Folder stiker PNG (kategori sebagai subfolder)
 │   │   └── frame-packs/    ← Taruh folder bingkai kamu di sini
 │   │       └── _starter/   ← Contoh panduan (folder _ diabaikan scanner)
@@ -785,6 +784,7 @@ PhotoPip/
 │   ├── capture-session.test.tsx
 │   ├── composition.test.ts
 │   ├── editor-tabs.test.ts
+│   ├── font-catalog.test.ts
 │   ├── frame-catalog.test.ts
 │   ├── frame-pack.test.ts
 │   ├── frame-preview.test.tsx
@@ -960,6 +960,22 @@ Setiap URL stiker diberi query `?v=<mtime>-<size>`. Jadi kalau kamu mengganti is
 
 ---
 
+## Cara menambah font sendiri
+
+Font teks di editor dibaca otomatis dari file `.ttf` di folder `public/assets/fonts/`.
+
+1. **Siapkan file `.ttf`**
+   - Gunakan format TrueType (`.ttf`).
+   - Beri nama file yang rapi, misalnya `Bebas_Neue.ttf` atau `Lobster.ttf`.
+2. **Taruh ke folder fonts**
+   - Letakkan file di `public/assets/fonts/`.
+   - File yang diawali `_` atau `.` diabaikan scanner.
+3. **Muat ulang halaman**
+   - Refresh browser di `http://localhost:3000`.
+   - Endpoint `/api/fonts` akan memindai file baru dan menampilkannya di dropdown pilihan font editor.
+
+---
+
 ## Cara menambah atau mengubah bagian kode
 
 ### Menambah tata letak baru
@@ -1020,6 +1036,7 @@ Semua tes ada di folder `tests/` dan memakai Vitest, Testing Library, serta jsdo
 | `capture-session.test.tsx` | `sessionReducer`: capture, retake, reset, batas slot         |
 | `composition.test.ts`      | Geometri slot, cover-crop, clamp posisi stiker dan teks      |
 | `editor-tabs.test.ts`      | Navigasi keyboard Arrow/Home/End di tablist editor           |
+| `font-catalog.test.ts`     | Pemindaian folder font `.ttf` di public/assets/fonts/        |
 | `image-upload.test.ts`     | Validasi file upload, batas ukuran, resize                   |
 | `sticker-catalog.test.ts`  | Pemindaian folder stiker: format nama, id, kategori, tag     |
 | `frame-catalog.test.ts`    | `mergeFramePacks`, hook `useFrameCatalog`                    |
@@ -1124,5 +1141,4 @@ Beberapa hal yang paling sering ditanyakan saat review:
 
 ## Lisensi aset
 
-- **Font Google Sans Flex** memakai [SIL Open Font License (OFL)](https://scripts.sil.org/OFL). File lisensinya ada di `src/assets/fonts/OFL.txt`, dan harus tetap disertakan kalau kamu mendistribusikan ulang.
-- **Stiker dan paket bingkai** di `public/assets/` adalah aset gambar pihak ketiga atau buatan sendiri. Sebelum memakai atau mendistribusikan ulang, pastikan lisensi tiap asetnya jelas. Kalau kamu menambahkan aset baru, sertakan file lisensinya di folder aset tersebut.
+- **Stiker, paket bingkai, dan font kustom** di `public/assets/` adalah aset gambar dan font pihak ketiga atau buatan sendiri. Sebelum memakai atau mendistribusikan ulang, pastikan lisensi tiap asetnya jelas. Kalau kamu menambahkan aset baru, sertakan file lisensinya di folder aset tersebut.

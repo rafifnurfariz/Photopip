@@ -122,13 +122,6 @@ export interface Messages {
     rotation: string;
     remove: string;
     filterNames: Record<PhotoFilterId, string>;
-    fontNames: {
-      app: string;
-      serif: string;
-      sans: string;
-      mono: string;
-      display: string;
-    };
   };
   export: {
     format: string;

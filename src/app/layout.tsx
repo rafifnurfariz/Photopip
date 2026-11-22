@@ -1,18 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/translations/use-language";
-
-const googleSansFlex = localFont({
-  src: "../assets/fonts/google-sans-flex-latin.woff2",
-  weight: "400 700",
-  style: "normal",
-  variable: "--font-sans-flex",
-  display: "swap",
-  fallback: ["system-ui", "Arial", "sans-serif"],
-});
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -58,11 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="id"
-      className={googleSansFlex.variable}
-      suppressHydrationWarning
-    >
+    <html lang="id" suppressHydrationWarning>
       <body>
         <ThemeProvider
           attribute="class"

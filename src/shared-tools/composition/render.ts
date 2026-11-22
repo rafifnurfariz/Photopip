@@ -11,7 +11,7 @@ import {
   filters,
   type FabricObject,
 } from "fabric";
-import { resolveTextFont } from "@/shared-tools/catalog/fonts";
+import { getTextFont, resolveTextFont } from "@/shared-tools/catalog/fonts";
 import type { FramePreset } from "@/shared-tools/catalog/frames";
 import { backgroundFill } from "./background-fill";
 import { coverCrop, normalizeSticker, templateGeometry } from "./geometry";
@@ -175,6 +175,21 @@ export async function renderComposition(
   ]);
   if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
   if (typeof document !== "undefined" && document.fonts) {
+    // If dynamic custom fonts are used in texts, ensure they are loaded
+    const fontPromises = (composition.texts ?? [])
+      .map((text) => getTextFont(text.fontId))
+      .filter((font): font is NonNullable<typeof font> => Boolean(font))
+      .map((font) => {
+        try {
+          const fontFace = new FontFace(font.family, `url(${font.src})`);
+          return fontFace.load().then((loaded) => {
+            document.fonts.add(loaded);
+          });
+        } catch {
+          return Promise.resolve();
+        }
+      });
+    await Promise.allSettled(fontPromises);
     await document.fonts.ready;
     if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
   }

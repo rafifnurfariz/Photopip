@@ -120,13 +120,6 @@ export const fr: Messages = {
       vintage: "Vintage",
       fade: "Délavé",
     },
-    fontNames: {
-      app: "Studio",
-      serif: "Serif",
-      sans: "Sans",
-      mono: "Mono",
-      display: "Display",
-    },
   },
   export: {
     format: "Format du fichier",

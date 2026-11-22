@@ -1,25 +1,32 @@
 export interface TextFont {
   id: string;
   name: string;
-  stack: string;
+  src: string;
+  family: string;
 }
 
-export const textFonts: TextFont[] = [
-  { id: "app", name: "Studio", stack: "" },
-  { id: "serif", name: "Serif", stack: "Georgia, 'Times New Roman', serif" },
-  { id: "sans", name: "Sans", stack: "Arial, Helvetica, sans-serif" },
-  { id: "mono", name: "Mono", stack: "'Courier New', Courier, monospace" },
-  {
-    id: "display",
-    name: "Display",
-    stack: "Impact, 'Arial Black', sans-serif",
-  },
-];
+const FALLBACK_FONT_FAMILY = "sans-serif";
 
-/** Resolves the font stack in the browser, where the app font has a generated name. */
-export function resolveTextFont(id: string) {
-  if (id === "app" && typeof document !== "undefined") {
-    return getComputedStyle(document.body).fontFamily || "sans-serif";
+/**
+ * Registry of dynamic fonts discovered or loaded.
+ */
+const registeredFonts = new Map<string, TextFont>();
+
+export function registerTextFonts(fonts: TextFont[]) {
+  for (const font of fonts) {
+    registeredFonts.set(font.id, font);
   }
-  return textFonts.find((font) => font.id === id)?.stack || "sans-serif";
+}
+
+export function getTextFont(id: string): TextFont | undefined {
+  return registeredFonts.get(id);
+}
+
+/** Resolves the CSS font-family name for a given font ID. */
+export function resolveTextFont(id: string): string {
+  const font = registeredFonts.get(id);
+  if (font?.family) {
+    return font.family;
+  }
+  return FALLBACK_FONT_FAMILY;
 }

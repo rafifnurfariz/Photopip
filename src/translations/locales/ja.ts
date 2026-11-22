@@ -115,13 +115,6 @@ export const ja: Messages = {
       vintage: "ヴィンテージ",
       fade: "フェード",
     },
-    fontNames: {
-      app: "スタジオ",
-      serif: "セリフ",
-      sans: "サンズ",
-      mono: "モノ",
-      display: "ディスプレイ",
-    },
   },
   export: {
     format: "ファイル形式",

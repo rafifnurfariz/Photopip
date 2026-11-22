@@ -119,13 +119,6 @@ export const en: Messages = {
       vintage: "Vintage",
       fade: "Faded",
     },
-    fontNames: {
-      app: "Studio",
-      serif: "Serif",
-      sans: "Sans",
-      mono: "Mono",
-      display: "Display",
-    },
   },
   export: {
     format: "File format",

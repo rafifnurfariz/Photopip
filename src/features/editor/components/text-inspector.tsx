@@ -6,7 +6,7 @@ import {
   AlignLeftIcon,
   AlignRightIcon,
 } from "@/components/icons";
-import { textFonts } from "@/shared-tools/catalog/fonts";
+import { useFontCatalog } from "../hooks/use-font-catalog";
 import {
   MAX_TEXT_LENGTH,
   MIN_TEXT_SIZE,
@@ -36,6 +36,7 @@ export function TextInspector({
   onRemove,
 }: TextInspectorProps) {
   const { t } = useLanguage();
+  const { fonts } = useFontCatalog();
   return (
     <section
       className="tool-section property-section"
@@ -64,13 +65,15 @@ export function TextInspector({
             value={text.fontId}
             onChange={(event) => onChange({ fontId: event.target.value }, true)}
           >
-            {textFonts.map((font) => (
-              <option key={font.id} value={font.id}>
-                {t.editor.fontNames[
-                  font.id as keyof typeof t.editor.fontNames
-                ] ?? font.name}
-              </option>
-            ))}
+            {fonts.length === 0 ? (
+              <option value={text.fontId || "system"}>Default</option>
+            ) : (
+              fonts.map((font) => (
+                <option key={font.id} value={font.id}>
+                  {font.name}
+                </option>
+              ))
+            )}
           </select>
         </label>
         <label className="field">
