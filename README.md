@@ -1,86 +1,84 @@
 <div align="center">
   <img src="public/assets/brand/logo.png" alt="Logo Photopip" width="120" />
   <h1>Photopip</h1>
-  <p>Aplikasi web <em>photobooth</em> dan editor foto interaktif berbasis Next.js dan Fabric.js dengan dukungan beragam tema bingkai, stiker, font kustom, serta 7 pilihan bahasa.</p>
+  <p>Aplikasi web photobooth dan editor foto interaktif berbasis Next.js dan Fabric.js dengan dukungan beragam frame custom, stiker custom, font kustom, serta 7 pilihan bahasa</p>
 
   <p>
-    <img src="https://img.shields.io/badge/Next.js-16.4.5-black?style=for-the-badge&logo=next.js" alt="Next.js" />
-    <img src="https://img.shields.io/badge/React-19.3.0-20232A?style=for-the-badge&logo=react" alt="React" />
-    <img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-    <img src="https://img.shields.io/badge/Fabric.js-7.4.0-FF6B6B?style=for-the-badge" alt="Fabric.js" />
-    <img src="https://img.shields.io/badge/Sharp-0.35.5-99CC00?style=for-the-badge" alt="Sharp" />
+    <img src="https://img.shields.io/badge/Next.js-16.4.5-black?logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/React-19.3.0-20232A?logo=react" alt="React" />
+    <img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Fabric.js-7.4.0-FF6B6B" alt="Fabric.js" />
+    <img src="https://img.shields.io/badge/Sharp-0.35.5-99CC00" alt="Sharp" />
   </p>
 
   <p>
-    <a href="https://photopip.vercel.app/"><strong>🌐 Buka Website</strong></a>
-    &nbsp;•&nbsp;
-    <a href="https://github.com/rafifnurfariz/Photopip"><strong>💻 Repositori GitHub</strong></a>
+    <a href="https://photopip.vercel.app/">Buka Website</a>
+    &nbsp;|&nbsp;
+    <a href="https://github.com/rafifnurfariz/Photopip">Repositori GitHub</a>
   </p>
 </div>
 
 ---
 
-## ✨ Fitur Utama
+## 📌 Fitur
 
-| Fitur                                   | Deskripsi                                                                                                                                                                                                                   |
-| :-------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 📸 **Studio Photobooth Interaktif**     | Pengambilan foto langsung via kamera perangkat (`use-camera`, `booth-stage`) menggunakan Web API kamera browser lengkap dengan hitung mundur, _film strip_ pratinjau, serta opsi unggah foto dari galeri.                   |
-| 🖼️ **Layout & Frame Pack Tematik**      | Mendukung format `single`, `2x2`, `2x3`, `3x1`, dan `4x1` dengan pack bawaan seperti `default`, `cyber-glow`, `gta-6`, `matcha-latte`, `minecraft`, `monochrome-noir`, `pastel-party`, `retro-night`, dan `sunset-vibes`.   |
-| 🎨 **Editor Foto & Manajemen Layer**    | Kanvas interaktif berbasis **Fabric.js** dengan riwayat _Undo/Redo_, pengaturan urutan _layer_ (`layer-list`), filter foto (`photo-filters`), stiker (`cute`, `emoji`, `food`, `nature`, `y2k`), dan kustomisasi teks/font. |
-| ⚡ **Auto-Discovery Asset API**         | Endpoint `/api/frames`, `/api/stickers`, dan `/api/fonts` memindai aset di folder `public/assets/` secara otomatis.                                                                                                         |
-| 🌐 **Dukungan Multi-Bahasa (7 Bahasa)** | Antarmuka tersedia dalam bahasa **Indonesia (`id`)**, **Inggris (`en`)**, **Jerman (`de`)**, **Spanyol (`es`)**, **Prancis (`fr`)**, **Jepang (`ja`)**, dan **Mandarin (`zh`)**.                                            |
-| 📱 **PWA Ready & Ekspor Instan**        | Dilengkapi `manifest.json` dan ikon aplikasi agar dapat dipasang sebagai aplikasi web, serta ekspor hasil komposisi foto ke perangkat.                                                                                      |
-
----
-
-## 🛠️ Teknologi yang Digunakan
-
-- **Next.js (`^16.4.5`) & React (`^19.3.0`):** Kerangka web utama untuk struktur halaman (`src/app/`), antarmuka pengguna, serta _API routes_ (`/api/frames`, `/api/stickers`, `/api/fonts`).
-- **Fabric.js (`7.4.0`):** _Library_ kanvas interaktif terpisah di atas Next.js yang digunakan di editor foto untuk mengatur posisi, skala, rotasi, _layer_ stiker/teks, dan komposisi visual.
-- **Sharp (`0.35.5`):** Pemrosesan gambar di sisi server. Dipakai `src/shared-tools/catalog/frame-pack.ts` untuk membaca artwork PNG dan menurunkan warna tema bingkai (latar strip serta warna teks footer).
-- **TypeScript (`5.9.3`) & CSS (`src/app/globals.css` + `next-themes`):** Pengetikan tipe statis, _styling_ global, dan pengelolaan tema.
-- **Vitest (`4.1.11`), React Testing Library (`16.3.0`), ESLint, Prettier & Knip:** Pengujian unit/komponen, pengecekan _lint/formatting_, dan audit kode.
+| Fitur                | Keterangan                                                                                                                                                              |
+| :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Photobooth           | Foto diambil langsung dari kamera browser (`use-camera`, `booth-stage`). Ada hitung mundur dan pratinjau film strip. Bisa juga upload foto dari galeri.                 |
+| Layout dan frame     | Ada 5 layout: `single`, `2x2`, `2x3`, `3x1`, dan `4x1`. Frame pack yang tersedia: `default`, `cyber-glow`, `gta-6`, `matcha-latte`, `minecraft`, `monochrome-noir`, `pastel-party`, `retro-night`, dan `sunset-vibes`. |
+| Editor foto          | Canvas pakai Fabric.js. Ada undo/redo, daftar layer (`layer-list`), filter foto (`photo-filters`), stiker (`cute`, `emoji`, `food`, `nature`, `y2k`), serta teks dan font sendiri. |
+| Scan asset otomatis  | `/api/frames`, `/api/stickers`, dan `/api/fonts` membaca isi folder `public/assets/` sendiri.                                                                           |
+| 7 bahasa             | Indonesia (`id`), Inggris (`en`), Jerman (`de`), Spanyol (`es`), Prancis (`fr`), Jepang (`ja`), dan Mandarin (`zh`).                                                    |
+| PWA dan ekspor       | Ada `manifest.json` dan ikon, jadi bisa dipasang seperti aplikasi. Hasil foto bisa diekspor ke perangkat.                                                               |
 
 ---
 
-## 📋 Prasyarat Instalasi
+## ⚙️ Teknologi yang Dipakai
 
-Sebelum menjalankan proyek secara lokal, siapkan kebutuhan berikut:
-
-- **Node.js versi `>= 22.0.0`:** Saat kamu menginstal Node.js, **npm** (paket manajer untuk menjalankan perintah seperti `npm install` dan `npm run dev`) sudah otomatis ikut terpasang di dalamnya.
-- **Browser modern:** Mendukung akses kamera (`MediaDevices.getUserMedia`) jika ingin memotret langsung dari webcam atau kamera perangkat.
-- **Secure context untuk kamera:** Browser hanya mengizinkan kamera di `localhost` atau HTTPS. Membuka `http://192.168.x.x:3000` dari HP di jaringan lokal akan ditolak browser; gunakan tunnel HTTPS bila perlu menguji kamera dari perangkat lain.
+- **Next.js (`^16.4.5`) dan React (`^19.3.0`):** Dipakai untuk halaman (`src/app/`), tampilan, dan API route (`/api/frames`, `/api/stickers`, `/api/fonts`).
+- **Fabric.js (`7.4.0`):** Dipakai di editor untuk mengatur posisi, ukuran, rotasi, dan layer stiker atau teks di canvas.
+- **Sharp (`0.35.5`):** Memproses gambar di sisi server. File `src/shared-tools/catalog/frame-pack.ts` memakainya untuk membaca PNG frame, lalu mengambil warna tema (warna latar strip dan warna teks footer).
+- **TypeScript (`5.9.3`) dan CSS (`src/app/globals.css` + `next-themes`):** TypeScript untuk tipe data, CSS untuk tampilan dan tema.
+- **Vitest (`4.1.11`), React Testing Library (`16.3.0`), ESLint, Prettier, dan Knip:** Untuk testing, cek lint dan format, serta cari kode yang tidak terpakai.
 
 ---
 
-## 🚀 Instalasi & Menjalankan Proyek
+## 📝 Yang Perlu Disiapkan
 
-1. **Clone repositori ini:**
+- **Node.js versi `>= 22.0.0`.**
+- **Browser modern** yang mendukung kamera (`MediaDevices.getUserMedia`)
+- **Secure context untuk kamera.** Browser cuma mengizinkan kamera di `localhost` atau HTTPS. Kalau buka `http://192.168.x.x:3000` dari HP lewat jaringan lokal, kamera akan ditolak. Untuk tes dari perangkat lain, pakai tunnel HTTPS.
+
+---
+
+## 🛠️ Cara Install dan Menjalankan
+
+1. **Clone repositori:**
 
    ```bash
    git clone https://github.com/rafifnurfariz/Photopip.git
    cd Photopip
    ```
 
-2. **Instal seluruh dependensi:**
+2. **Install dependensi:**
 
    ```bash
    npm install
    ```
 
-3. **Jalankan server pengembangan (_development_):**
+3. **Jalankan server development:**
 
    ```bash
    npm run dev
    ```
 
 4. **Buka di browser:**
-   Akses **`http://localhost:3000`** untuk mulai menggunakan Photopip.
+   Buka **`http://localhost:3000`**.
 
-5. **Menjalankan pengujian & build produksi:**
+5. **Jalankan test dan build produksi:**
 
    ```bash
-   # Menjalankan unit & component test dengan Vitest
+   # Menjalankan unit test dan component test dengan Vitest
    npm test
 
    # Membuat build produksi
@@ -90,34 +88,34 @@ Sebelum menjalankan proyek secara lokal, siapkan kebutuhan berikut:
 
 ---
 
-## ⚙️ Perintah npm
+## 💻 Perintah npm
 
-| Perintah                              | Fungsi                                                                           |
-| :------------------------------------ | :------------------------------------------------------------------------------- |
-| `npm run dev`                         | Dev server (menyinkronkan `frame-dates.json` lebih dulu).                        |
-| `npm run build`                       | Build produksi, lalu menyalin `public/` dan `.next/static` ke output standalone. |
-| `npm start`                           | Menjalankan hasil build dari `.next/standalone/server.js`.                       |
-| `npm test`                            | Seluruh tes Vitest.                                                              |
-| `npx vitest run tests/<file>.test.ts` | Menjalankan satu file tes.                                                       |
-| `npx vitest`                          | Mode watch.                                                                      |
-| `npm run lint`                        | ESLint; gagal bila ada warning.                                                  |
-| `npm run type-check`                  | `tsc --noEmit`.                                                                  |
-| `npm run format` / `format:check`     | Prettier menulis ulang / hanya memeriksa format.                                 |
-| `npm run deadcode`                    | Knip, mendeteksi file dan ekspor yang tidak terpakai.                            |
-| `npm run audit:production`            | `npm audit --omit=dev` untuk dependensi produksi.                                |
-| `npm run verify`                      | Format check → type check → lint → test → deadcode → audit → build.              |
+| Perintah                              | Fungsi                                                                              |
+| :------------------------------------ | :---------------------------------------------------------------------------------- |
+| `npm run dev`                         | Menjalankan dev server. Sebelumnya `frame-dates.json` disinkronkan dulu.            |
+| `npm run build`                       | Build produksi, lalu menyalin `public/` dan `.next/static` ke output standalone.    |
+| `npm start`                           | Menjalankan hasil build dari `.next/standalone/server.js`.                          |
+| `npm test`                            | Menjalankan semua test Vitest.                                                      |
+| `npx vitest run tests/<file>.test.ts` | Menjalankan satu file test saja.                                                    |
+| `npx vitest`                          | Mode watch.                                                                         |
+| `npm run lint`                        | ESLint. Akan gagal kalau ada warning.                                               |
+| `npm run type-check`                  | `tsc --noEmit`.                                                                     |
+| `npm run format` / `format:check`     | Prettier. `format` menulis ulang file, `format:check` hanya memeriksa.              |
+| `npm run deadcode`                    | Knip, untuk mencari file dan ekspor yang tidak dipakai.                             |
+| `npm run audit:production`            | `npm audit --omit=dev` untuk dependensi produksi.                                   |
+| `npm run verify`                      | Menjalankan format check, type check, lint, test, deadcode, audit, lalu build.      |
 
-Jalankan `npm run verify` sebelum commit atau membuka pull request.
+Jalankan `npm run verify` sebelum commit atau bikin pull request.
 
 ---
 
 ## 🔒 Privasi
 
-Semua pengolahan foto berjalan di browser: kamera, filter, komposisi, sampai ekspor PNG/JPEG. Foto tidak pernah diunggah ke server; server hanya memindai nama file aset di `public/assets/`. `next.config.mjs` memasang CSP `default-src 'self'`, `script-src 'self'`, `font-src 'self'`, `connect-src 'self'`, dan `Permissions-Policy` yang hanya mengizinkan kamera, sehingga tidak ada script, font, atau analytics dari domain luar.
+Semua proses foto dilakukan di browser, mulai dari kamera, filter, komposisi, sampai ekspor PNG/JPEG. Foto tidak pernah dikirim ke server. Server hanya membaca nama file asset di `public/assets/`. `next.config.mjs` memasang CSP `default-src 'self'`, `script-src 'self'`, `font-src 'self'`, dan `connect-src 'self'`. `Permissions-Policy` juga hanya mengizinkan kamera. Jadi tidak ada script, font, atau analytics dari domain luar.
 
 ---
 
-## 📂 Susunan Project
+## 📁 Struktur Project
 
 ```text
 Photopip/
@@ -156,26 +154,26 @@ Photopip/
 
 ---
 
-## 💡 Contoh Penggunaan
+## 🚀 Contoh Penggunaan
 
-### 1. Sesi Photobooth & Editing Dasar
+### 1. Sesi Photobooth dan Edit Dasar
 
-1. Buka `http://localhost:3000` dan izinkan akses kamera pada browser (atau unggah foto dari perangkat).
-2. Pilih **Layout Template** (misalnya `4x1` atau `2x2`) dan **Frame Pack** pilihanmu (contoh: `cyber-glow` atau `matcha-latte`).
-3. Tekan tombol **Capture** untuk mengambil foto sesuai slot template.
-4. Masuk ke mode **Editor** untuk menerapkan filter foto, menambahkan stiker atau teks, dan mengatur urutan _layer_.
-5. Klik tombol **Export** untuk mengunduh hasil akhir ke perangkat.
+1. Buka `http://localhost:3000`, lalu izinkan akses kamera di browser (atau upload foto dari perangkat).
+2. Pilih **Layout Template** (misalnya `4x1` atau `2x2`) dan **Frame Pack** (misalnya `cyber-glow` atau `matcha-latte`).
+3. Klik tombol **Capture** untuk memotret sesuai jumlah slot di template.
+4. Masuk ke mode **Editor**. Di sini kamu bisa kasih filter, tambah stiker atau teks, dan atur urutan layer.
+5. Klik **Export** untuk mengunduh hasil akhirnya.
 
 ### 2. Cara Menambah Frame Pack Baru
 
-Scanner memakai kontrak tetap (`src/app/api/frames/scan.ts`):
+Scanner memakai aturan tetap (`src/app/api/frames/scan.ts`):
 
-1. Salin folder `public/assets/frame-packs/_starter/` (bukan `default/`) menjadi folder baru, misalnya:
+1. Salin folder `public/assets/frame-packs/_starter/` (jangan `default/`) jadi folder baru, contohnya:
    ```text
    public/assets/frame-packs/vintage-film/
    ```
-   Nama folder menjadi nama bingkai. Folder berawalan `_` — termasuk `_starter` — dilewati scanner.
-2. Ganti kelima PNG di dalamnya. Ukuran piksel harus **persis** seperti tabel; bila beda, pack ditolak dan dilewati:
+   Nama folder jadi nama bingkainya. Folder yang namanya diawali `_`, termasuk `_starter`, akan dilewati scanner.
+2. Ganti kelima file PNG di dalamnya. Ukuran pikselnya harus **persis** sama dengan tabel di bawah. Kalau beda, pack ditolak dan dilewati.
 
    | File         | Ukuran      |
    | :----------- | :---------- |
@@ -185,26 +183,26 @@ Scanner memakai kontrak tetap (`src/app/api/frames/scan.ts`):
    | `3x1.png`    | 600 × 1350  |
    | `4x1.png`    | 600 × 1800  |
 
-3. Biarkan area slot foto transparan. Artwork digambar di atas foto, jadi piksel opaque akan menutupi foto; 12% bagian bawah kanvas dicadangkan untuk logo PhotoPip.
-4. Tidak ada `frame.json`. Warna latar strip diambil dari warna opaque paling dominan di `single.png`, dan warna teks footer dipilih otomatis (gelap atau putih) agar tetap terbaca.
-5. Muat ulang halaman; `/api/frames` memindai folder dan menampilkan pack baru. Pack yang rusak dilewati, dan alasannya muncul di `diagnostics` saat `npm run dev`.
+3. Area slot foto harus dibiarkan transparan. Artwork digambar di atas foto, jadi piksel yang tidak transparan akan menutupi foto. Selain itu, 12% bagian bawah canvas disiapkan untuk logo PhotoPip.
+4. Tidak perlu `frame.json`. Warna latar strip diambil dari warna opaque yang paling banyak di `single.png`. Warna teks footer dipilih otomatis (gelap atau putih) supaya tetap kebaca.
+5. Refresh halaman, lalu `/api/frames` akan memindai folder dan menampilkan pack baru. Kalau ada pack yang rusak, pack itu dilewati dan alasannya muncul di `diagnostics` saat `npm run dev`.
 
-Kontrak di atas adalah yang dibaca scanner; perhitungan posisi dan ukuran slot ada di `src/shared-tools/composition/geometry.ts`.
+Aturan di atas adalah yang dibaca scanner. Untuk hitungan posisi dan ukuran slot, lihat `src/shared-tools/composition/geometry.ts`.
 
 ### 3. Cara Menambah Stiker Baru
 
-1. Pilih folder kategori stiker yang sudah ada di `public/assets/stickers/` (seperti `cute/`, `emoji/`, `food/`, `nature/`, atau `y2k/`), atau buat folder kategori baru di dalamnya:
+1. Pilih folder kategori yang sudah ada di `public/assets/stickers/` (`cute/`, `emoji/`, `food/`, `nature/`, atau `y2k/`), atau bikin folder kategori baru di situ:
    ```text
    public/assets/stickers/cute/
    ```
-2. Masukkan file gambar stiker (disarankan PNG berlatar transparan), misalnya `star_sparkle.png`. Ekstensi yang dibaca: `.png`, `.webp`, `.jpg`, `.jpeg`.
-3. Muat ulang halaman aplikasi, maka endpoint `/api/stickers` akan otomatis memindai file stiker dari folder tersebut agar muncul di panel stiker editor. Nama tampilan diambil dari nama file (`star_sparkle` → "Star Sparkle"); file yang diletakkan langsung di `public/assets/stickers/` masuk kategori `all`.
+2. Taruh file gambar stikernya. Sebaiknya PNG dengan background transparan, misalnya `star_sparkle.png`. Ekstensi yang dibaca: `.png`, `.webp`, `.jpg`, `.jpeg`.
+3. Refresh aplikasi, stiker baru akan muncul di panel stiker editor. Nama yang tampil diambil dari nama file (`star_sparkle` jadi "Star Sparkle"). File yang ditaruh langsung di `public/assets/stickers/` masuk ke kategori `all`.
 
 ### 4. Cara Menambah Font Baru
 
-1. Masukkan file font berekstensi `.ttf` (hanya `.ttf` yang dibaca, dan hanya di level atas folder) ke folder:
+1. Taruh file font `.ttf` di folder berikut. Hanya `.ttf` yang dibaca, dan hanya yang ada di level paling atas folder.
    ```text
    public/assets/fonts/
    ```
    _(Contoh: `public/assets/fonts/Poppins-Bold.ttf`)_
-2. Muat ulang halaman aplikasi, maka endpoint `/api/fonts` akan otomatis mendeteksi font di `public/assets/fonts/` sehingga bisa langsung dipilih pada panel teks di editor. Font UI bawaan (Segoe UI) berada di `src/assets/fonts/` dan dimuat lewat `next/font/local`, bukan dari folder ini.
+2. Refresh aplikasi, font langsung bisa dipilih di panel teks editor. Font UI bawaan (Segoe UI) ada di `src/assets/fonts/` dan dimuat lewat `next/font/local`, bukan dari folder ini.
