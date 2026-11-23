@@ -105,35 +105,6 @@ Jalankan `npm run verify` sebelum commit atau membuka pull request.
 
 ---
 
-## 🔧 Pengaturan Alamat Situs
-
-Saat situs masih dijalankan di komputer sendiri, alamatnya `http://localhost:3000`. Setelah di-upload ke internet, alamatnya berubah, misalnya `https://photopip.com`. Aplikasi perlu tahu alamat barunya supaya tulisan yang muncul ketika link dibagikan (judul, deskripsi, gambar pratinjau) mengarah ke alamat yang benar — bukan ke `localhost`.
-
-| Pengaturan             | Artinya                                                              | Perlu diisi?                                                            |
-| :--------------------- | :------------------------------------------------------------------- | :---------------------------------------------------------------------- |
-| `NEXT_PUBLIC_SITE_URL` | Alamat lengkap situsmu di internet, misalnya `https://photopip.com`. | Hanya kalau situs sudah online. Kalau kosong, dipakai alamat sementara. |
-| `VERCEL_URL`           | Alamat otomatis yang diberikan Vercel (layanan hosting).             | Tidak perlu diisi; dibuat sendiri oleh Vercel.                          |
-
-Kalau situs ini hanya dipakai di komputer sendiri, bagian ini boleh diabaikan.
-
----
-
-## 🔌 Endpoint API
-
-Bayangkan aplikasi ini punya tiga "loket informasi" yang bisa ditanya oleh halaman web. Ketiganya hanya bisa **membaca** — tidak bisa mengubah atau menyimpan apa pun.
-
-| Loket               | Kalau ditanya, jawabannya                                                                               |
-| :------------------ | :------------------------------------------------------------------------------------------------------ |
-| `GET /api/frames`   | "Ini daftar bingkai yang tersedia." Aplikasi mencarinya sendiri di folder `public/assets/frame-packs/`. |
-| `GET /api/stickers` | "Ini daftar stiker beserta kategorinya." Diambil dari `public/assets/stickers/`.                        |
-| `GET /api/fonts`    | "Ini daftar font yang bisa dipakai untuk menulis di foto." Diambil dari `public/assets/fonts/`.         |
-
-Untuk pengguna biasa, bagian ini tidak perlu disentuh. Bagian ini berguna saat kamu menambah bingkai, stiker, atau font lalu ingin memastikan aplikasi benar-benar menemukannya.
-
-Caranya: buka alamatnya langsung di browser, misalnya `http://localhost:3000/api/frames`. Kalau bingkai barumu muncul di sana, aplikasi sudah menemukannya. Kalau tidak muncul, berarti ada yang salah pada foldernya — biasanya nama file tidak sesuai, ukuran gambar tidak tepat, atau formatnya bukan PNG.
-
----
-
 ## 🔒 Privasi
 
 Semua pengolahan foto berjalan di browser: kamera, filter, komposisi, sampai ekspor PNG/JPEG. Foto tidak pernah diunggah ke server; server hanya memindai nama file aset di `public/assets/`. `next.config.mjs` memasang CSP `default-src 'self'`, `script-src 'self'`, `font-src 'self'`, `connect-src 'self'`, dan `Permissions-Policy` yang hanya mengizinkan kamera, sehingga tidak ada script, font, atau analytics dari domain luar.
