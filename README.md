@@ -126,7 +126,7 @@ Server cuma baca daftar file bingkai, stiker, dan font yang ada di `public/asset
 
 | Perintah                              | Kegunaan                                                                               |
 | :------------------------------------ | :------------------------------------------------------------------------------------- |
-| `npm run dev`                         | Nyalain server lokal buat ngoding. Sebelum jalan, `frame-dates.json` disinkronin dulu. |
+| `npm run dev`                         | Nyalain server lokal buat ngoding. |
 | `npm run build`                       | Bikin build produksi, lalu nyalin folder `public/` dan `.next/static` ke standalone.   |
 | `npm start`                           | Jalanin hasil build produksi dari `.next/standalone/server.js`.                        |
 | `npm test`                            | Jalanin semua tes Vitest sekali jalan.                                                 |
