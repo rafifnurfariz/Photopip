@@ -1,5 +1,7 @@
 "use client";
 
+// panel tab Stiker di editor buat cari, filter kategori, unggah stiker sendiri, dan nempelin ke strip
+// daftar stiker diambil otomatis dari /api/stickers lewat hook useStickerCatalog
 import { useMemo, useRef, useState } from "react";
 import { useLanguage } from "@/translations/use-language";
 import type { Sticker } from "@/shared-tools/catalog/stickers";
@@ -19,15 +21,18 @@ export function StickerPanel({
 }: StickerPanelProps) {
   const { t } = useLanguage();
   const { stickers, categories } = useStickerCatalog();
+  // state kata kunci pencarian, kategori aktif, dan status proses unggah stiker kustom
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // buka dialog pilih file gambar dari perangkat
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
+  // baca gambar unggahan user jadi PNG transparan lalu langsung pasang ke canvas sebagai stiker baru
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -58,10 +63,12 @@ export function StickerPanel({
     }
   };
 
+  // tambahin tab "all" di depan daftar kategori hasil scan folder
   const allCategories = useMemo(() => {
     return ["all", ...categories];
   }, [categories]);
 
+  // saring stiker yang cocok sama kata pencarian dan kategori yang dipilih
   const visibleStickers = useMemo(() => {
     const query = search.trim().toLowerCase();
     return stickers.filter((sticker) => {
@@ -76,6 +83,7 @@ export function StickerPanel({
     });
   }, [stickers, selectedCategory, search]);
 
+  // rapihin nama folder kategori jadi label tombol yang enak dibaca
   const getCategoryLabel = (id: string) => {
     if (id === "all") return t.editor.allCategories;
     return id
@@ -85,6 +93,7 @@ export function StickerPanel({
 
   return (
     <section className="tool-section" aria-labelledby="tool-sticker">
+      {/* judul panel stiker dan tombol upload stiker kustom */}
       <div className="section-head">
         <h2 id="tool-sticker">{t.editor.stickers}</h2>
         <button
@@ -103,6 +112,7 @@ export function StickerPanel({
         hidden
         onChange={handleFileChange}
       />
+      {/* kolom cari stiker berdasarkan nama atau tag */}
       <label className="search-label">
         <span className="sr-only">{t.editor.search}</span>
         <input
@@ -112,6 +122,7 @@ export function StickerPanel({
           placeholder={t.editor.search}
         />
       </label>
+      {/* deretan tombol filter kategori stiker */}
       <div className="category-row" role="group" aria-label={t.editor.stickers}>
         {allCategories.map((id) => (
           <button
@@ -125,6 +136,7 @@ export function StickerPanel({
           </button>
         ))}
       </div>
+      {/* grid pilihan stiker yang bisa diklik buat langsung ditempel ke tengah strip */}
       <div className="sticker-options">
         {visibleStickers.map((sticker) => (
           <button
@@ -139,6 +151,7 @@ export function StickerPanel({
           </button>
         ))}
       </div>
+      {/* tampilkan catatan kosong + tombol reset pencarian kalau gak ada stiker yang cocok */}
       {visibleStickers.length === 0 && (
         <div className="empty-note" role="status">
           <p>{t.editor.searchEmpty}</p>
@@ -154,6 +167,7 @@ export function StickerPanel({
           </button>
         </div>
       )}
+      {/* info jumlah stiker terpasang dan tombol hapus semua stiker sekaligus */}
       {stickerCount > 0 && (
         <div className="sticker-controls">
           <span className="panel-progress">

@@ -1,5 +1,7 @@
 "use client";
 
+// daftar semua layer teks dan stiker yang lagi nempel di canvas, ditampilin di tab Properti
+// diurutin dari lapisan paling atas ke bawah biar gampang milih objek yang ketumpuk
 import { useLanguage } from "@/translations/use-language";
 import { TextIcon } from "@/components/icons";
 import type { Composition } from "@/shared-tools/composition/types";
@@ -17,6 +19,7 @@ export function LayerList({
   onSelect,
 }: LayerListProps) {
   const { t } = useLanguage();
+  // jangan render section kalau belum ada stiker maupun teks sama sekali
   if (composition.stickers.length === 0 && composition.texts.length === 0) {
     return null;
   }
@@ -27,6 +30,7 @@ export function LayerList({
     >
       <h2 id="tool-layers">{t.editor.layer}</h2>
       <div className="layer-list">
+        {/* daftar teks dibalik urutannya karena teks paling akhir di array ada di lapisan teratas */}
         {composition.texts.toReversed().map((text) => (
           <button
             key={text.id}
@@ -44,6 +48,7 @@ export function LayerList({
             </span>
           </button>
         ))}
+        {/* daftar stiker juga dibalik biar sesuai urutan tumpukan dari depan ke belakang */}
         {composition.stickers.toReversed().map((sticker) => (
           <button
             key={sticker.id}

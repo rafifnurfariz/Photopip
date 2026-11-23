@@ -1,3 +1,5 @@
+// layout utama Next.js yang ngebungkus semua halaman PhotoPip
+// muat font bawaan, metadata SEO, provider tema dark/light, bahasa, sama header
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -5,6 +7,7 @@ import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/translations/use-language";
 
+// muat font Segoe UI lokal biar tampilan teks sama di semua OS
 const segoeUi = localFont({
   src: [
     {
@@ -23,12 +26,14 @@ const segoeUi = localFont({
   fallback: ["Segoe UI", "sans-serif"],
 });
 
+// tentuin URL dasar website buat tag Open Graph dan metadata
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
     : "http://localhost:3000");
 
+// info judul tab, deskripsi, favicon, sama manifest PWA
 export const metadata: Metadata = {
   title: {
     default: "PhotoPip",
@@ -51,6 +56,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
 };
 
+// atur skala layar mobile dan warna status bar browser sesuai mode tema
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -61,6 +67,7 @@ export const viewport: Viewport = {
   ],
 };
 
+// kerangka HTML utama yang dipasangin provider tema dan bahasa
 export default function RootLayout({
   children,
 }: {
@@ -69,12 +76,14 @@ export default function RootLayout({
   return (
     <html lang="id" className={segoeUi.variable} suppressHydrationWarning>
       <body>
+        {/* bungkus pakai ThemeProvider buat ganti dark/light mode */}
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
+          {/* bungkus pakai LanguageProvider biar semua komponen bisa akses terjemahan */}
           <LanguageProvider>
             <Header />
             <main id="main-content">{children}</main>

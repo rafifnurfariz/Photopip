@@ -1,3 +1,5 @@
+// unit test buat scanner folder stiker (/api/stickers/scan.ts) dan cache fetchStickerCatalog
+// ngecek scan subfolder kategori, abaikan svg/dotfile, id unik, sama caching respon API
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -7,12 +9,14 @@ import { fetchStickerCatalog } from "@/features/editor/hooks/use-sticker-catalog
 
 const temporaryDirectories: string[] = [];
 
+// bikin direktori sementara di temp OS buat bahan uji scanner
 async function makeRoot() {
   const root = await mkdtemp(path.join(tmpdir(), "photopip-stickers-"));
   temporaryDirectories.push(root);
   return root;
 }
 
+// hapus semua folder sementara tiap selesai satu kasus tes
 afterEach(async () => {
   while (temporaryDirectories.length > 0) {
     const dir = temporaryDirectories.pop();
@@ -27,6 +31,7 @@ describe("scanStickersDirectory", () => {
     expect(result.categories).toEqual([]);
   });
 
+  // cek subfolder dibaca jadi kategori, nama file dirapihin, dan tag otomatis terisi
   it("scans category folders and formats sticker names", async () => {
     const root = await makeRoot();
     const cuteDir = path.join(root, "cute");
@@ -49,6 +54,7 @@ describe("scanStickersDirectory", () => {
     expect(bear?.src).toContain("/assets/stickers/cute/teddy-bear.png?v=");
   });
 
+  // lewati folder yang depannya titik atau underscore
   it("skips folders starting with dot or underscore", async () => {
     const root = await makeRoot();
     const hiddenDir = path.join(root, ".hidden");
@@ -63,6 +69,7 @@ describe("scanStickersDirectory", () => {
     expect(result.categories).toEqual([]);
   });
 
+  // gambar yang langsung di folder root stiker masuk kategori "all"
   it("handles stickers placed directly in root directory", async () => {
     const root = await makeRoot();
     await writeFile(path.join(root, "sparkle-star.png"), "dummy");
@@ -77,6 +84,7 @@ describe("scanStickersDirectory", () => {
     );
   });
 
+  // cek dua file berbeda yang slug-nya jadi kembar tetap dikasih id berbeda
   it("keeps ids unique when two file names sanitize alike", async () => {
     const root = await makeRoot();
     const y2k = path.join(root, "y2k");
@@ -90,6 +98,7 @@ describe("scanStickersDirectory", () => {
     expect(new Set(ids).size).toBe(2);
   });
 
+  // pastikan file .svg tidak ikut masuk katalog stiker
   it("ignores svg files", async () => {
     const root = await makeRoot();
     const cute = path.join(root, "cute");
@@ -100,6 +109,7 @@ describe("scanStickersDirectory", () => {
     expect(result.stickers).toEqual([]);
   });
 
+  // cek pemanggilan fetchStickerCatalog kedua kali langsung pakai cache tanpa fetch ulang
   it("caches sticker catalog responses", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,

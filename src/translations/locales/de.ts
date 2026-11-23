@@ -1,6 +1,9 @@
+// terjemahan bahasa Jerman (Deutsch) buat semua teks di PhotoPip
+// isinya ngikutin struktur Messages biar lengkap sama bahasa lainnya
 import type { Messages } from "../types";
 
 export const de: Messages = {
+  // teks umum aplikasi dan tombol tema
   app: {
     studio: "Fotostudio",
     language: "Sprache",
@@ -12,6 +15,7 @@ export const de: Messages = {
     downloadStarted: "Download läuft.",
     dismiss: "Schließen",
   },
+  // teks status dan pengaturan kamera
   camera: {
     label: "Kamera",
     off: "Kamera aus",
@@ -25,6 +29,7 @@ export const de: Messages = {
     noDelay: "Ohne Countdown",
     auto: "Automatisch (5 s zwischen Fotos)",
   },
+  // teks panel studio dan konfirmasi sesi baru
   capture: {
     layoutLabel: "Layout",
     chooseLayout: "Layout wählen",
@@ -53,6 +58,7 @@ export const de: Messages = {
     resetBody:
       "Alle Fotos dieser Sitzung werden gelöscht. Lade den Streifen vorher herunter, wenn du ihn behalten willst.",
   },
+  // teks menu dan kontrol di editor strip
   editor: {
     title: "Streifen bearbeiten",
     subtitle: "Mach ihn zu deinem und lade ihn druckfertig herunter.",
@@ -121,10 +127,12 @@ export const de: Messages = {
       fade: "Verblasst",
     },
   },
+  // teks pilihan format dan tombol unduh
   export: {
     format: "Dateiformat",
     download: "Herunterladen",
   },
+  // pesan error pas kamera, upload, atau download bermasalah
   errors: {
     camera: {
       denied:
@@ -143,6 +151,7 @@ export const de: Messages = {
     export:
       "Der Streifen wurde nicht heruntergeladen. Deine Änderungen sind noch da. Versuch es nochmal.",
   },
+  // nama pilihan tata letak foto
   layoutNames: {
     "4x1": "Klassischer Streifen",
     "3x1": "Dreierstreifen",

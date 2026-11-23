@@ -1,5 +1,7 @@
 "use client";
 
+// panel tab Properti yang nampilin pengaturan detail buat stiker atau teks yang lagi dipilih
+// di bagian bawahnya selalu ikut nampilin daftar semua layer biar gampang pindah seleksi
 import { useLanguage } from "@/translations/use-language";
 import { templateGeometry } from "@/shared-tools/composition/geometry";
 import type {
@@ -47,6 +49,7 @@ export function PropertyPanel({
 }: PropertyPanelProps) {
   const { t } = useLanguage();
   const geometry = templateGeometry(composition.template);
+  // cari data stiker atau teks yang cocok sama objek terseleksi sekarang
   const sticker =
     selection?.type === "sticker"
       ? composition.stickers.find((item) => item.id === selection.id)
@@ -58,6 +61,7 @@ export function PropertyPanel({
 
   return (
     <>
+      {/* tampilkan inspektor stiker, inspektor teks, atau petunjuk kalau belum ada yang diklik */}
       {sticker && (
         <StickerInspector
           sticker={sticker}

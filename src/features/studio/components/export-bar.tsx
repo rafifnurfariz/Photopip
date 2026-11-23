@@ -1,5 +1,7 @@
 "use client";
 
+// bar bagian bawah editor buat pilih format file (PNG atau JPEG) dan tombol unduh strip
+// dinonaktifkan otomatis waktu proses render ekspor lagi berjalan
 import type { ExportFormat } from "@/shared-tools/composition/export";
 import { FileIcon } from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";
@@ -20,6 +22,7 @@ export function ExportBar({
   const { t } = useLanguage();
   return (
     <div className="export-bar">
+      {/* pemilih format output gambar */}
       <label className="format-control">
         <span aria-hidden="true">
           <FileIcon />
@@ -36,6 +39,7 @@ export function ExportBar({
           <option value="jpeg">JPEG</option>
         </select>
       </label>
+      {/* tombol unduh hasil strip siap cetak */}
       <button
         type="button"
         className="primary"

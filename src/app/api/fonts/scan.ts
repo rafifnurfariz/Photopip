@@ -1,11 +1,15 @@
+// scanner folder font di sisi server buat deteksi file .ttf otomatis
+// dipakai oleh route /api/fonts supaya user cukup taruh file font tanpa edit kode
 import { readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import type { TextFont } from "@/shared-tools/catalog/fonts";
 
+// bentuk data balikan dari hasil scan font
 export interface FontScanResponse {
   fonts: TextFont[];
 }
 
+// rapihin nama file jadi judul font, misal roboto-black.ttf jadi Roboto Black
 function formatFontName(fileName: string): string {
   const baseName = path.parse(fileName).name;
   return baseName
@@ -15,6 +19,7 @@ function formatFontName(fileName: string): string {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+// ubah teks jadi id slug huruf kecil yang aman buat URL dan nama font family
 function sanitizeId(str: string): string {
   return (
     str
@@ -24,6 +29,7 @@ function sanitizeId(str: string): string {
   );
 }
 
+// tambahin angka di belakang kalau id font-nya kebetulan ada yang kembar
 function uniqueId(base: string, used: Set<string>): string {
   let id = base;
   let suffix = 2;
@@ -32,6 +38,7 @@ function uniqueId(base: string, used: Set<string>): string {
   return id;
 }
 
+// baca isi folder font lalu kumpulin semua file .ttf jadi daftar TextFont
 export async function scanFontsDirectory(
   root: string,
 ): Promise<FontScanResponse> {
@@ -39,6 +46,7 @@ export async function scanFontsDirectory(
   try {
     entries = await readdir(root, { withFileTypes: true });
   } catch (error) {
+    // kalau foldernya belum ada, balikin list kosong aja
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
       return { fonts: [] };
     }
@@ -49,12 +57,15 @@ export async function scanFontsDirectory(
   const usedIds = new Set<string>();
 
   for (const entry of entries) {
+    // abaikan file tersembunyi, folder, atau yang diawali underscore
     if (entry.name.startsWith(".") || entry.name.startsWith("_")) continue;
     if (!entry.isFile()) continue;
 
+    // cuma terima file font berekstensi .ttf
     const ext = path.extname(entry.name).toLowerCase();
     if (ext !== ".ttf") continue;
 
+    // ambil metadata file buat bikin query versi biar cache browser ke-refresh pas file diubah
     const filePath = path.join(root, entry.name);
     let fileStat;
     try {
@@ -77,6 +88,7 @@ export async function scanFontsDirectory(
     });
   }
 
+  // urutin daftar font sesuai abjad nama
   fonts.sort((a, b) => a.name.localeCompare(b.name));
   return { fonts };
 }

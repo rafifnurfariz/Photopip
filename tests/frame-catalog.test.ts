@@ -1,3 +1,5 @@
+// unit test buat konversi paket bingkai dari API ke FramePreset dan pencariannya
+// ngecek mergeFramePacks, frameById fallback ke plain, activeFrame, dan applyFrame
 import { describe, expect, it } from "vitest";
 import { templates, type TemplateId } from "@/shared-tools/catalog/templates";
 import {
@@ -16,6 +18,7 @@ import {
 } from "@/shared-tools/catalog/frames";
 import type { Composition } from "@/shared-tools/composition/types";
 
+// contoh paket bingkai buatan buat bahan uji
 const pack: FramePackFrame = {
   id: "neon-nights",
   name: "Neon Nights",
@@ -40,6 +43,7 @@ const composition: Composition = {
 };
 
 describe("frame pack catalog", () => {
+  // cek hasil ubahan FramePackFrame jadi FramePreset lengkap dengan background dan artwork
   it("converts a pack into a frame preset", () => {
     const preset = packToFramePreset(pack);
     expect(preset).toMatchObject({
@@ -56,6 +60,7 @@ describe("frame pack catalog", () => {
     });
   });
 
+  // cek bingkai bawaan tetap di depan dan paket dinamis ditambah di belakangnya
   it("keeps built-in presets first and appends packs", () => {
     const merged = mergeFramePacks(framePresets, [pack]);
     expect(merged).toHaveLength(framePresets.length + 1);
@@ -63,6 +68,7 @@ describe("frame pack catalog", () => {
     expect(merged[merged.length - 1].id).toBe("neon-nights");
   });
 
+  // cek pencarian id bingkai, kalau gak ketemu harus jatuh ke bingkai plain
   it("resolves a pack by id and falls back to plain", () => {
     const merged = mergeFramePacks(framePresets, [pack]);
     expect(frameById("neon-nights", merged).name).toBe("Neon Nights");
@@ -76,6 +82,7 @@ describe("frame pack catalog", () => {
     });
   });
 
+  // cek activeFrame langsung batal kalau warna teks udah diedit beda dari tema bingkai
   it("marks a pack active only while captions still match", () => {
     const merged = mergeFramePacks(framePresets, [pack]);
     const applied = applyFrame(composition, merged[merged.length - 1]);
@@ -106,6 +113,7 @@ describe("frame pack catalog", () => {
     ).toBeNull();
   });
 
+  // cek applyFrame nerapin warna dan font bingkai ke teks di komposisi
   it("applies a pack id, text color and font to the composition", () => {
     const result = applyFrame(
       {

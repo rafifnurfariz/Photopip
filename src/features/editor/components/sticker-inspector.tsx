@@ -1,5 +1,7 @@
 "use client";
 
+// inspektor pengaturan satu stiker yang lagi diklik di canvas
+// punya slider posisi X/Y, ukuran, rotasi, opacity, tombol flip, atur urutan layer, duplikat, dan hapus
 import { useLanguage } from "@/translations/use-language";
 import { MIN_STICKER_SIZE } from "@/shared-tools/composition/geometry";
 import type { StickerPlacement } from "@/shared-tools/composition/types";
@@ -36,6 +38,7 @@ export function StickerInspector({
         <h2 id="tool-property">{sticker.name}</h2>
         <span className="property-kind">{t.editor.stickers}</span>
       </div>
+      {/* slider transformasi dan transparansi stiker */}
       <p className="panel-label">{t.editor.position}</p>
       <div className="range-list">
         <NumberField
@@ -89,6 +92,7 @@ export function StickerInspector({
           onEnd={onEndGesture}
         />
       </div>
+      {/* tombol aksi cepat: balik arah, ubah urutan tumpukan, gandain, dan hapus */}
       <p className="panel-label">{t.editor.layer}</p>
       <div className="property-actions">
         <button

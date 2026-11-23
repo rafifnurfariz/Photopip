@@ -1,5 +1,7 @@
 "use client";
 
+// hook buat ngatur proses ekspor strip jadi PNG/JPEG di bar bawah editor
+// nyimpen format file pilihan, status lagi proses, sama fungsi batalin ekspor
 import { useCallback, useRef, useState } from "react";
 import type { FramePreset } from "@/shared-tools/catalog/frames";
 import type { ExportFormat } from "@/shared-tools/composition/export";
@@ -11,6 +13,7 @@ export function useExport(onMessage: (message: StudioMessage | null) => void) {
   const [exporting, setExporting] = useState(false);
   const work = useRef<AbortController | null>(null);
 
+  // muat modul export secara lazy lalu render dan download hasilnya dengan nama ber-timestamp
   const exportPhoto = useCallback(
     async (composition: Composition, frame: FramePreset) => {
       const controller = new AbortController();
@@ -18,6 +21,7 @@ export function useExport(onMessage: (message: StudioMessage | null) => void) {
       setExporting(true);
       onMessage(null);
       try {
+        // dynamic import biar kode Fabric.js gak ikut ke-load pas user masih di fase kamera
         const { downloadImage, exportComposition } = await import(
           "@/shared-tools/composition/export"
         );
@@ -46,6 +50,7 @@ export function useExport(onMessage: (message: StudioMessage | null) => void) {
     [format, onMessage],
   );
 
+  // hentikan proses ekspor kalau user keburu reset sesi
   const cancel = useCallback(() => {
     work.current?.abort();
     work.current = null;

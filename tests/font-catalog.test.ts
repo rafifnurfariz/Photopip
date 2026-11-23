@@ -1,16 +1,21 @@
+// unit test buat scanner folder font di /api/fonts/scan.ts
+// nguji baca file .ttf, abaikan file non-ttf/tersembunyi, dan bikin id unik kalau nama kembar
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { scanFontsDirectory } from "@/app/api/fonts/scan";
 
+// folder sementara khusus buat simulasi file font pas tes jalan
 const root = path.join(process.cwd(), "tests", "fixtures", "fonts-scan");
 
 describe("scanFontsDirectory", () => {
+  // siapin folder kosong baru sebelum tiap kasus tes
   beforeEach(async () => {
     await rm(root, { recursive: true, force: true });
     await mkdir(root, { recursive: true });
   });
 
+  // hapus folder sementara setelah tes kelar biar repo tetap bersih
   afterEach(async () => {
     await rm(root, { recursive: true, force: true });
   });
@@ -20,6 +25,7 @@ describe("scanFontsDirectory", () => {
     expect(result.fonts).toEqual([]);
   });
 
+  // cek cuma file .ttf biasa yang diambil, sedangkan .txt, _hidden, dan .dotfile dilewati
   it("scans .ttf files and ignores non-ttf or hidden files", async () => {
     await writeFile(path.join(root, "Bebas_Neue.ttf"), "fake-ttf-content");
     await writeFile(path.join(root, "lobster.ttf"), "fake-ttf-content-2");
@@ -39,6 +45,7 @@ describe("scanFontsDirectory", () => {
     expect(result.fonts[1].id).toBe("lobster");
   });
 
+  // cek dua file berbeda yang slug-nya jadi sama dikasih akhiran angka -2
   it("handles duplicate sanitized names by adding a suffix", async () => {
     await writeFile(path.join(root, "Cool-Font.ttf"), "1");
     await writeFile(path.join(root, "cool_font.ttf"), "2");

@@ -1,5 +1,8 @@
+// hitungan ukuran piksel canvas, koordinat tiap slot foto, crop foto, sama batas posisi stiker
+// semua komponen yang butuh ukuran strip ngambil rumus dari file ini biar sinkron
 import type { Slot } from "./types";
 
+// konstanta lebar dasar piksel dan rasio margin, jarak antar foto, sama ruang logo bawah
 const VERTICAL_WIDTH = 600;
 const GRID_WIDTH = 1200;
 const MARGIN_RATIO = 0.045;
@@ -7,6 +10,7 @@ const GAP_RATIO = 0.025;
 const FOOTER_RATIO = 0.12;
 export const MIN_STICKER_SIZE = 30;
 
+// hitung dimensi total canvas dan posisi kotak-kotak slot foto sesuai template
 export function templateGeometry(template: {
   layout: "vertical" | "grid" | "single";
   aspectRatio: number;
@@ -19,6 +23,7 @@ export function templateGeometry(template: {
   const columns = template.layout === "grid" ? 2 : 1;
   const rows = Math.ceil(template.photoCount / columns);
   const footer = Math.round(width * FOOTER_RATIO);
+  // bagi sisa lebar dan tinggi setelah dikurangi margin, footer, dan jarak antar slot
   const slotWidth = (width - margin * 2 - gap * (columns - 1)) / columns;
   const slotHeight = (height - margin * 2 - footer - gap * (rows - 1)) / rows;
   const slots: Slot[] = Array.from({ length: template.photoCount }, (_, i) => ({
@@ -30,6 +35,7 @@ export function templateGeometry(template: {
   return { width, height, margin, footer, slots };
 }
 
+// hitung ukuran tampilan canvas yang paling pas masuk ke layar tanpa meluber
 export function fitCanvas(
   geometry: { width: number; height: number },
   availableWidth: number,
@@ -51,6 +57,7 @@ export function fitCanvas(
   };
 }
 
+// hitung area potong (crop tengah kayak object-fit: cover) supaya foto penuh di slot tanpa gepeng
 export function coverCrop(imageWidth: number, imageHeight: number, slot: Slot) {
   const scale = Math.max(slot.width / imageWidth, slot.height / imageHeight);
   return {
@@ -62,6 +69,7 @@ export function coverCrop(imageWidth: number, imageHeight: number, slot: Slot) {
   };
 }
 
+// jaga posisi, ukuran, dan sudut rotasi stiker tetap di dalam batas wajar canvas
 export function normalizeSticker(
   placement: {
     x: number;

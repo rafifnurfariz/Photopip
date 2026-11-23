@@ -1,5 +1,8 @@
+// katalog daftar filter warna foto buat ditampilin di tab Foto editor
+// tiap item nyimpen gaya CSS preview yang ngedeketin hasil filter Fabric.js di render.ts
 import type { PhotoFilterId } from "@/shared-tools/composition/types";
 
+// properti CSS filter sama lapisan warna tint buat pratinjau kecil di chip
 interface PhotoFilterPreview {
   filter?: string;
   tint?: string;
@@ -10,6 +13,7 @@ export interface PhotoFilter {
   preview: PhotoFilterPreview;
 }
 
+// daftar 6 filter foto yang bisa dipilih user di editor
 // shortcut: the chip preview approximates render.ts, update both together.
 export const photoFilters: PhotoFilter[] = [
   { id: "none", preview: {} },

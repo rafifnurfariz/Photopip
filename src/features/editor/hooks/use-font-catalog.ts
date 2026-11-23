@@ -1,5 +1,7 @@
 "use client";
 
+// hook buat ambil daftar font kustom dari /api/fonts sekaligus preload ke document.fonts
+// hasil fetch di-cache di level modul biar gak request berulang kali pas pindah tab
 import { useEffect, useState } from "react";
 import { registerTextFonts, type TextFont } from "@/shared-tools/catalog/fonts";
 
@@ -7,10 +9,12 @@ export interface FontCatalogData {
   fonts: TextFont[];
 }
 
+// cache global hasil fetch, request yang sedang berjalan, dan daftar font yang sudah dimuat
 let cachedCatalog: FontCatalogData | null = null;
 let activeRequest: Promise<FontCatalogData | null> | null = null;
 const loadedFontFamilies = new Set<string>();
 
+// muat satu file font ke FontFaceSet browser supaya bisa dipakai FabricText di canvas
 async function ensureFontLoaded(font: TextFont): Promise<void> {
   if (typeof document === "undefined" || !("fonts" in document)) return;
   if (loadedFontFamilies.has(font.family)) return;
@@ -25,6 +29,7 @@ async function ensureFontLoaded(font: TextFont): Promise<void> {
   }
 }
 
+// fetch katalog font sekali saja; kalau ada request lain berbarengan, tunggu promise yang sama
 async function fetchFontCatalog(): Promise<FontCatalogData | null> {
   if (cachedCatalog) return cachedCatalog;
   if (activeRequest) return activeRequest;
@@ -39,6 +44,7 @@ async function fetchFontCatalog(): Promise<FontCatalogData | null> {
       const data: FontCatalogData = {
         fonts: Array.isArray(result.fonts) ? result.fonts : [],
       };
+      // daftarin font ke registry dan mulai preload di background
       registerTextFonts(data.fonts);
       cachedCatalog = data;
       for (const font of data.fonts) {
@@ -59,6 +65,7 @@ interface FontScanResponse {
   fonts: TextFont[];
 }
 
+// hook React yang dipakai Editor dan TextInspector buat dapetin daftar font tersedia
 export function useFontCatalog(): FontCatalogData {
   const [data, setData] = useState<FontCatalogData>(
     () => cachedCatalog ?? { fonts: [] },

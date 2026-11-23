@@ -1,5 +1,7 @@
 "use client";
 
+// komponen utama halaman Studio yang nyambungin fase 1 (ambil/upload foto) sama fase 2 (editor)
+// ngatur perpindahan mode, konfirmasi sesi baru, riwayat tombol back HP, sama ekspor hasil strip
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/translations/use-language";
@@ -19,16 +21,19 @@ import { useFrameCatalog } from "./hooks/use-frame-catalog";
 import { fetchStickerCatalog } from "@/features/editor/hooks/use-sticker-catalog";
 import type { StudioMessage } from "./types";
 
+// teks loading singkat pas bundle editor Fabric.js lagi diunduh browser
 function EditorLoading() {
   const { t } = useLanguage();
   return <p role="status">{t.app.processing}</p>;
 }
 
+// muat komponen Editor secara dinamis tanpa SSR biar Fabric.js cuma jalan di browser
 const Editor = dynamic(() => import("@/features/editor/editor"), {
   ssr: false,
   loading: EditorLoading,
 });
 
+// state tahap halaman: lagi di studio ambil foto atau lagi masuk editor
 type Stage =
   | { mode: "capture"; draft: Composition | null }
   | { mode: "edit"; draft: Composition };
@@ -36,15 +41,18 @@ type Stage =
 export default function Studio() {
   const { t } = useLanguage();
   const [videoRef, camera] = useCamera();
+  // pengaturan dasar kamera: mode cermin dan jeda hitung mundur (detik)
   const [mirror, setMirror] = useState(true);
   const [timer, setTimer] = useState(3);
   const [message, setMessage] = useState<StudioMessage | null>(null);
   const [stage, setStage] = useState<Stage>({ mode: "capture", draft: null });
+  // nyimpen permintaan reset sementara sampai user klik konfirmasi di modal
   const [pendingReset, setPendingReset] = useState<{
     templateId?: TemplateId;
   } | null>(null);
   const confirmRef = useRef<HTMLDialogElement>(null);
   const uploadInput = useRef<HTMLInputElement>(null);
+  // penanda apakah masuk editor tadi nambahin entry ke history browser (buat tombol Back HP)
   const historyEntry = useRef(false);
   const {
     session,
@@ -69,16 +77,19 @@ export default function Studio() {
   } = useExport(setMessage);
   const frames = useFrameCatalog();
 
+  // preload daftar stiker dari awal biar pas masuk editor gak nunggu lama
   useEffect(() => {
     void fetchStickerCatalog();
   }, []);
 
+  // tutup otomatis toast "unduhan dimulai" setelah 3 detik
   useEffect(() => {
     if (message !== "downloaded") return;
     const id = setTimeout(() => setMessage(null), 3000);
     return () => clearTimeout(id);
   }, [message]);
 
+  // dengerin tombol Back browser di HP supaya balik ke fase studio, bukan keluar website
   useEffect(() => {
     const onPopState = () => {
       if (!historyEntry.current) return;
@@ -94,6 +105,7 @@ export default function Studio() {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
+  // bersihin semua foto, batalin ekspor, dan balik ke awal studio
   const performReset = useCallback(
     (templateId?: TemplateId) => {
       resetSession(templateId);
@@ -108,6 +120,7 @@ export default function Studio() {
     [cancelExport, resetSession],
   );
 
+  // kalau belum ada foto langsung reset aja, kalau sudah ada tampilkan dialog konfirmasi dulu
   const requestReset = useCallback(
     (templateId?: TemplateId) => {
       if (session.photos.length === 0) {
@@ -119,6 +132,7 @@ export default function Studio() {
     [performReset, session.photos.length],
   );
 
+  // buka atau tutup tag <dialog> native sesuai state pendingReset
   useEffect(() => {
     const dialog = confirmRef.current;
     if (!dialog) return;
@@ -126,6 +140,7 @@ export default function Studio() {
     else if (!pendingReset && dialog.open) dialog.close();
   }, [pendingReset]);
 
+  // pindah dari fase ambil foto ke fase editor, sambil pertahanin editan lama kalau user habis retake
   const edit = () => {
     if (!complete) return;
     cancelCapture();
@@ -153,6 +168,7 @@ export default function Studio() {
           },
     }));
     setMessage(null);
+    // di layar kecil tambahin state history biar tombol Back HP nutup editor
     if (
       !historyEntry.current &&
       window.matchMedia("(max-width: 899px)").matches
@@ -165,6 +181,7 @@ export default function Studio() {
     }
   };
 
+  // keluar dari editor balik ke tampilan studio
   const leaveEdit = () => {
     setMessage(null);
     if (historyEntry.current) {
@@ -174,17 +191,20 @@ export default function Studio() {
     setStage((previous) => ({ mode: "capture", draft: previous.draft }));
   };
 
+  // tandain satu slot foto buat dijepret ulang lalu balik ke studio
   const retakePhoto = (index: number) => {
     retake(index);
     leaveEdit();
   };
 
+  // nyalain kamera, atau batalin permintaan kalau masih loading izin
   const toggleCamera = () => {
     setMessage(null);
     if (camera.status === "requesting") camera.stopCamera();
     else void camera.startCamera();
   };
 
+  // tentuin label teks status kamera dan nomor shot aktif
   const status =
     camera.status === "ready"
       ? t.camera.ready
@@ -200,6 +220,7 @@ export default function Studio() {
     <div className={`studio-shell phase-${stage.mode}`}>
       <Feedback message={message} onDismiss={() => setMessage(null)} />
       {stage.mode === "capture" && <h1 className="sr-only">{t.app.studio}</h1>}
+      {/* modal konfirmasi sebelum ngapus foto dan mulai sesi baru */}
       <dialog
         ref={confirmRef}
         className="confirm-dialog"
@@ -226,6 +247,7 @@ export default function Studio() {
           </button>
         </div>
       </dialog>
+      {/* fase 1: panggung kamera di kiri dan panel kontrol studio di kanan */}
       {stage.mode === "capture" && (
         <section className="booth" aria-label={t.camera.label}>
           <BoothStage
@@ -311,6 +333,7 @@ export default function Studio() {
           </aside>
         </section>
       )}
+      {/* fase 2: editor canvas lengkap sama bar ekspor PNG/JPEG di bawah */}
       {stage.mode === "edit" && (
         <div className="edit-shell">
           <Editor

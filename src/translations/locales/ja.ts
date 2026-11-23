@@ -1,6 +1,9 @@
+// kamus teks bahasa Jepang (日本語) buat seluruh tampilan PhotoPip
+// dimuat lewat LanguageProvider kalau user pilih bahasa Jepang
 import type { Messages } from "../types";
 
 export const ja: Messages = {
+  // label dasar aplikasi dan status proses
   app: {
     studio: "フォトスタジオ",
     language: "言語",
@@ -12,6 +15,7 @@ export const ja: Messages = {
     downloadStarted: "ダウンロードを開始しました。",
     dismiss: "閉じる",
   },
+  // status kamera dan kontrol jepret otomatis
   camera: {
     label: "カメラ",
     off: "カメラはオフ",
@@ -25,6 +29,7 @@ export const ja: Messages = {
     noDelay: "カウントダウンなし",
     auto: "自動撮影（5秒間隔）",
   },
+  // teks halaman studio fase 1
   capture: {
     layoutLabel: "レイアウト",
     chooseLayout: "レイアウトを選ぶ",
@@ -49,6 +54,7 @@ export const ja: Messages = {
     resetBody:
       "このセッションの写真はすべて消えます。残したいときは先にストリップをダウンロードしてね。",
   },
+  // label fitur dan panel pengaturan di halaman editor
   editor: {
     title: "ストリップを編集",
     subtitle: "好きに仕上げて、印刷できる形でダウンロード。",
@@ -116,10 +122,12 @@ export const ja: Messages = {
       fade: "フェード",
     },
   },
+  // teks bar download hasil
   export: {
     format: "ファイル形式",
     download: "ストリップをダウンロード",
   },
+  // pesan error kamera, upload, dan ekspor
   errors: {
     camera: {
       denied:
@@ -138,6 +146,7 @@ export const ja: Messages = {
     export:
       "ストリップをダウンロードできませんでした。編集内容は残っています。もう一度試してください。",
   },
+  // nama 5 template layout
   layoutNames: {
     "4x1": "クラシックストリップ",
     "3x1": "3枚ストリップ",

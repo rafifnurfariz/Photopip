@@ -1,3 +1,5 @@
+// renderer utama Fabric.js yang nggambar seluruh strip foto di editor maupun pas ekspor
+// urutan lapisannya: background -> foto (plus filter) -> bingkai PNG -> logo bawah -> stiker -> teks
 import {
   Canvas,
   FabricImage,
@@ -13,11 +15,13 @@ import { coverCrop, normalizeSticker, templateGeometry } from "./geometry";
 import { normalizeText } from "./text";
 import type { Composition, PhotoFilterId } from "./types";
 
+// objek Fabric yang ditempelin id dan tipe biar bisa dilacak pas digeser atau dihapus
 export type EditorObject = FabricObject & {
   placementId?: string;
   objectType?: "sticker" | "text";
 };
 
+// preset origin koordinat, objek statis yang gak bisa diklik, sama gaya handle seleksi
 const TOP_LEFT = { originX: "left", originY: "top" } as const;
 const CENTER = { originX: "center", originY: "center" } as const;
 const STATIC_OBJECT = { selectable: false, evented: false } as const;
@@ -30,13 +34,16 @@ const EDIT_HANDLES = {
   lockScalingFlip: true,
 } as const;
 
+// cache LRU sederhana maksimal 24 gambar supaya gak fetch ulang tiap kali re-render
 const IMAGE_CACHE_LIMIT = 24;
 const imageCache = new Map<string, HTMLImageElement>();
 
+// kosongin cache gambar (dipakai juga di unit test biar gak bocor antar test)
 export function clearImageCache() {
   imageCache.clear();
 }
 
+// simpan gambar ke cache, buang yang paling lama dipakai kalau sudah penuh
 function cacheImage(src: string, image: HTMLImageElement) {
   if (imageCache.size >= IMAGE_CACHE_LIMIT) {
     const oldest = imageCache.keys().next().value;
@@ -45,6 +52,7 @@ function cacheImage(src: string, image: HTMLImageElement) {
   imageCache.set(src, image);
 }
 
+// muat gambar dekoratif kayak artwork bingkai; kalau gagal, skip aja asal bukan karena cancel/timeout
 function optionalImage(
   src: string,
   signal?: AbortSignal,
@@ -60,6 +68,7 @@ function optionalImage(
   });
 }
 
+// muat HTMLImageElement pakai cache, timeout 10 detik, dan dukungan pembatalan AbortSignal
 function loadImage(
   src: string,
   signal?: AbortSignal,
@@ -67,12 +76,14 @@ function loadImage(
   if (signal?.aborted) {
     return Promise.reject(new DOMException("Cancelled", "AbortError"));
   }
+  // kalau sudah ada di cache, pindahin ke urutan terbaru lalu langsung balikin
   const cached = imageCache.get(src);
   if (cached) {
     imageCache.delete(src);
     imageCache.set(src, cached);
     return Promise.resolve(cached);
   }
+  // gabungin signal pembatalan dari luar sama timeout otomatis 10 detik
   const combined = signal
     ? AbortSignal.any([signal, AbortSignal.timeout(10000)])
     : AbortSignal.timeout(10000);
@@ -106,6 +117,7 @@ function loadImage(
   });
 }
 
+// pasang filter warna Fabric.js ke satu foto sesuai pilihan user
 function applyPhotoFilter(image: FabricImage, id: PhotoFilterId) {
   const list: FabricImage["filters"] = [];
   switch (id) {
@@ -137,6 +149,7 @@ function applyPhotoFilter(image: FabricImage, id: PhotoFilterId) {
   image.applyFilters();
 }
 
+// gambar ulang seluruh komposisi strip ke canvas Fabric (interaktif di editor, statis saat ekspor)
 export async function renderComposition(
   canvas: Canvas | StaticCanvas,
   composition: Composition,
@@ -147,6 +160,7 @@ export async function renderComposition(
   const geometry = templateGeometry(composition.template);
   if (composition.photos.length !== composition.template.photoCount)
     throw new Error("Incomplete composition");
+  // muat semua gambar (foto, stiker, artwork bingkai, dan logo brand) barengan biar cepat
   const artworkSrc = frame.artwork?.[composition.template.id];
   const [photos, stickerImages, artworkImage, logoImage] = await Promise.all([
     Promise.all(composition.photos.map((src) => loadImage(src, signal))),
@@ -157,6 +171,7 @@ export async function renderComposition(
     loadImage("/assets/brand/logo.png", signal),
   ]);
   if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
+  // muat font kustom yang dipakai teks sebelum nggambar biar hurufnya gak jatuh ke font default
   if (typeof document !== "undefined" && document.fonts) {
     const fontPromises = (composition.texts ?? [])
       .map((text) => getTextFont(text.fontId))
@@ -175,10 +190,12 @@ export async function renderComposition(
     await document.fonts.ready;
     if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
   }
+  // bersihin canvas lama, set ukuran sesuai template, dan isi warna dasar bingkai
   canvas.clear();
   canvas.setDimensions({ width: geometry.width, height: geometry.height });
   canvas.backgroundImage = undefined;
   canvas.backgroundColor = backgroundFill(frame.background);
+  // lapisan 1: taruh tiap foto ke slot masing-masing sambil di-crop tengah dan diberi filter
   photos.forEach((image, index) => {
     const slot = geometry.slots[index];
     const crop = coverCrop(image.width, image.height, slot);
@@ -197,6 +214,7 @@ export async function renderComposition(
     applyPhotoFilter(photo, composition.photoFilters?.[index] ?? "none");
     canvas.add(photo);
   });
+  // lapisan 2: pasang gambar bingkai PNG di atas foto supaya nutup pinggirannya
   if (artworkImage) {
     const artwork = new FabricImage(artworkImage, {
       ...TOP_LEFT,
@@ -208,6 +226,7 @@ export async function renderComposition(
     artwork.scaleY = geometry.height / artworkImage.height;
     canvas.add(artwork);
   }
+  // lapisan 3: taruh logo PhotoPip di area footer bagian bawah strip
   const logoScale = (geometry.footer * 1.2) / logoImage.height;
   canvas.add(
     new FabricImage(logoImage, {
@@ -219,6 +238,7 @@ export async function renderComposition(
       ...STATIC_OBJECT,
     }),
   );
+  // lapisan 4: gambar semua stiker yang ditaruh user, aktifin handle kalau mode editor
   stickerImages.forEach((image, index) => {
     const placement = composition.stickers[index];
     const sticker = normalizeSticker(
@@ -244,6 +264,7 @@ export async function renderComposition(
     object.objectType = "sticker";
     canvas.add(object);
   });
+  // lapisan 5: gambar semua teks keterangan di lapisan paling atas
   (composition.texts ?? []).forEach((placement) => {
     if (!placement.text.trim()) return;
     const text = normalizeText(placement, geometry.width, geometry.height);

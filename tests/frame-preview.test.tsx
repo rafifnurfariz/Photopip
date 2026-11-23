@@ -1,3 +1,5 @@
+// unit test buat komponen FramePreview di tab Bingkai editor
+// ngecek urutan tumpukan gambar artwork PNG di atas slot sama fallback teks "Aa" buat bingkai polos
 import { afterEach, describe, expect, it } from "vitest";
 import { cleanup, render } from "@testing-library/react";
 import { FramePreview } from "@/features/editor/components/frame-preview";
@@ -7,6 +9,7 @@ import type { FramePreset } from "@/shared-tools/catalog/frames";
 
 afterEach(cleanup);
 
+// contoh peta URL artwork buat paket bingkai uji
 const artwork = Object.fromEntries(
   templateArtworkSpecs.map((spec) => [
     spec.id,
@@ -32,6 +35,7 @@ const builtin: FramePreset = {
 };
 
 describe("frame preview", () => {
+  // cek gambar PNG bingkai dirender paling akhir biar nutup di atas slot foto
   it("layers pack artwork above the slot placeholders", () => {
     const template = templates[0];
     const { container } = render(
@@ -49,6 +53,7 @@ describe("frame preview", () => {
     expect(preview!.querySelector(".frame-preview-text")).toBeNull();
   });
 
+  // cek bingkai polos nampilin slot ditambah tulisan sampel "Aa" tanpa elemen <img>
   it("keeps built-in cards as slots plus the Aa sample", () => {
     const template = templates[0];
     const { container } = render(

@@ -1,3 +1,5 @@
+// kumpulan unit test buat geometri template, crop foto, normalisasi stiker/teks, history undo-redo, sesi, dan kelengkapan i18n
+// dipakai buat ngejaga logika inti PhotoPip gak melenceng pas ada perubahan
 import { describe, expect, it } from "vitest";
 import { messages } from "@/translations";
 import { delay } from "@/shared-tools/async";
@@ -24,6 +26,7 @@ import {
 } from "@/features/editor/history";
 import { initialSession, sessionReducer } from "@/shared-tools/session";
 
+// ambil struktur key dan tipe nilai objek secara rekursif buat bandingin kelengkapan semua locale
 function shape(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(shape);
   if (value && typeof value === "object") {
@@ -46,6 +49,7 @@ const emptyComposition: Composition = {
 };
 
 describe("composition and capture state", () => {
+  // cek tiap template punya rasio yang pas dan semua slot foto gak keluar batas canvas
   it.each(templates)(
     "keeps $id print size and all slots inside the canvas",
     (template) => {
@@ -62,6 +66,7 @@ describe("composition and capture state", () => {
       }
     },
   );
+  // cek rumus crop tengah buat gambar melebar maupun memanjang
   it("center crops wide and tall sources without stretching them", () => {
     const slot = { x: 0, y: 0, width: 200, height: 100 };
     expect(coverCrop(800, 200, slot)).toEqual({
@@ -79,6 +84,7 @@ describe("composition and capture state", () => {
       height: 100,
     });
   });
+  // cek posisi, ukuran, dan rotasi negatif stiker dirapihin ke rentang valid
   it("bounds transformed stickers and normalizes rotation", () => {
     expect(
       normalizeSticker(
@@ -88,6 +94,7 @@ describe("composition and capture state", () => {
       ),
     ).toEqual({ x: 0, y: 1800, size: 600, rotation: 345 });
   });
+  // cek skala muat canvas gak membesar melebihi ukuran aslinya dan aman pas ruang 0
   it("fits the display canvas inside both measured axes without upscaling", () => {
     const geometry = { width: 600, height: 1800 };
     expect(fitCanvas(geometry, 300, 1000)).toEqual({ width: 300, height: 900 });
@@ -99,6 +106,7 @@ describe("composition and capture state", () => {
     expect(fitCanvas(geometry, 0, 300)).toEqual({ width: 0, height: 0 });
     expect(fitCanvas(geometry, 300, 0)).toEqual({ width: 0, height: 0 });
   });
+  // cek batas panjang karakter teks, koordinat, ukuran font, rotasi, dan opacity
   it("bounds text placements and clamps their length and style values", () => {
     const result = normalizeText(
       {
@@ -125,6 +133,7 @@ describe("composition and capture state", () => {
     expect(result.rotation).toBe(270);
     expect(result.opacity).toBe(1);
   });
+  // cek urutan mundur (undo) dan maju lagi (redo) di riwayat editor
   it("undoes and redoes composition snapshots in order", () => {
     const first = { ...emptyComposition, frameId: "plain" };
     const second = { ...emptyComposition, frameId: "noir" };
@@ -136,6 +145,7 @@ describe("composition and capture state", () => {
     const redone = undone ? redoHistory(undone.state, second) : null;
     expect(redone?.next.frameId).toBe("candy");
   });
+  // cek applyFrame nyamain id bingkai, warna, dan font semua teks yang ada
   it("applies a frame to the strip and existing captions", () => {
     const frame: FramePreset = {
       id: "classic",
@@ -176,6 +186,7 @@ describe("composition and capture state", () => {
       framePresets.length,
     );
   });
+  // cek activeFrame cuma cocok selama warna/font teks belum diubah manual
   it("only marks a preset active while frame and caption style match", () => {
     const frame: FramePreset = {
       id: "plain",
@@ -217,6 +228,7 @@ describe("composition and capture state", () => {
       ),
     ).toBeNull();
   });
+  // cek sessionReducer gak nambah foto melebihi slot dan cuma nimpa slot yang di-retake
   it("prevents more photos than slots and replaces exactly the retaken photo", () => {
     let state = initialSession;
     for (const src of ["a", "b", "c", "d", "duplicate"])
@@ -245,6 +257,7 @@ describe("composition and capture state", () => {
     controller.abort();
     await expect(promise).rejects.toThrow("Cancelled");
   });
+  // cek semua 7 file bahasa punya susunan key yang persis sama dengan bahasa Inggris
   it("has the same message shape and layout names in every language", () => {
     const reference = shape(messages.en);
     for (const value of Object.values(messages)) {

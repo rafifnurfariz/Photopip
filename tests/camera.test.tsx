@@ -1,3 +1,5 @@
+// unit test buat hook useCamera dan helper kamera di camera-utils
+// ngecek mapping error izin, nunggu frame pertama, pembersihan stream/timer, sama opsi mirror pas jepret
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, renderHook } from "@testing-library/react";
 import { useCamera } from "@/features/studio/camera/use-camera";
@@ -7,6 +9,7 @@ import {
   hasUsableFrame,
   waitForVideoFrame,
 } from "@/features/studio/camera/camera-utils";
+// bikin elemen <video> tiruan dengan status siap atau masih kosong
 function video(ready = false) {
   const element = document.createElement("video");
   Object.defineProperties(element, {
@@ -18,6 +21,7 @@ function video(ready = false) {
   element.pause = vi.fn();
   return element;
 }
+// bikin objek MediaStream palsu buat ngecek track.stop() dan event onended
 function stream() {
   const track = { stop: vi.fn(), onended: null as (() => void) | null };
   return {
@@ -28,12 +32,14 @@ function stream() {
     } as unknown as MediaStream,
   };
 }
+// reset DOM, mock, dan timer setelah tiap kasus tes selesai
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
   vi.useRealTimers();
 });
 describe("camera recovery and lifecycle", () => {
+  // cek pemetaan nama DOMException ke kode error kamera
   it.each([
     ["NotAllowedError", "denied"],
     ["NotFoundError", "missing"],
@@ -42,10 +48,12 @@ describe("camera recovery and lifecycle", () => {
   ])("classifies %s", (name, code) =>
     expect(cameraFailure(new DOMException("", name))).toBe(code),
   );
+  // tolak jepretan kalau video belum punya gambar
   it("does not capture before a frame exists", () => {
     expect(hasUsableFrame(video())).toBe(false);
     expect(() => capturePhotoFromVideo(video())).toThrow("No usable");
   });
+  // cek waitForVideoFrame nunggu sampai ukuran video terisi dan event loadeddata masuk
   it("readiness waits for actual dimensions and loaded data", async () => {
     const element = video();
     const signal = new AbortController();
@@ -65,6 +73,7 @@ describe("camera recovery and lifecycle", () => {
     await promise;
     expect(settled).toBe(true);
   });
+  // cek timeout kalau kamera kelamaan gak ngirim gambar dan pastiin timernya bersih
   it("bounds delayed readiness and removes its timer", async () => {
     vi.useFakeTimers();
     const pending = waitForVideoFrame(
@@ -77,6 +86,7 @@ describe("camera recovery and lifecycle", () => {
     await assertion;
     expect(vi.getTimerCount()).toBe(0);
   });
+  // cek pembatalan pakai AbortController ngelepas event listener dan timer
   it("aborts readiness and removes listeners and timers", async () => {
     vi.useFakeTimers();
     const controller = new AbortController();
@@ -89,6 +99,7 @@ describe("camera recovery and lifecycle", () => {
     expect(remove).toHaveBeenCalledWith("loadeddata", expect.any(Function));
     expect(vi.getTimerCount()).toBe(0);
   });
+  // cek kalau stream datang telat setelah stopCamera, stream langsung dimatiin tanpa dipasang
   it("stops a late stream after cancellation, without binding it", async () => {
     let finish!: (value: MediaStream) => void;
     const media = stream();
@@ -119,6 +130,7 @@ describe("camera recovery and lifecycle", () => {
     expect(element.srcObject).toBeNull();
     expect(result.current[1].status).toBe("off");
   });
+  // cek alur izin ditolak -> coba lagi berhasil -> matiin kamera pas unmount
   it("shows denial without inserting a sample, then recovers and cleans up on unmount", async () => {
     const media = stream();
     const getUserMedia = vi
@@ -142,6 +154,7 @@ describe("camera recovery and lifecycle", () => {
     expect(element.srcObject).toBeNull();
     expect(element.pause).toHaveBeenCalled();
   });
+  // cek status berubah jadi error kalau track video tiba-tiba terputus
   it("reports a stream interruption and stops the track", async () => {
     const media = stream();
     Object.defineProperty(navigator, "mediaDevices", {
@@ -156,6 +169,7 @@ describe("camera recovery and lifecycle", () => {
     expect(result.current[1].error).toBe("unavailable");
     expect(media.track.stop).toHaveBeenCalled();
   });
+  // cek flip horizontal cuma kepanggil pas opsi mirror bernilai true
   it("captures the full usable frame and mirrors only when selected", () => {
     const drawImage = vi.fn();
     const translate = vi.fn();

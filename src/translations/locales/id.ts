@@ -1,6 +1,9 @@
+// kamus teks bahasa Indonesia buat seluruh antarmuka PhotoPip
+// ini locale default yang dipakai pertama kali pas web dibuka
 import type { Messages } from "../types";
 
 export const id: Messages = {
+  // teks umum website, tema, dan status unduhan
   app: {
     studio: "Studio foto",
     language: "Bahasa",
@@ -12,6 +15,7 @@ export const id: Messages = {
     downloadStarted: "Unduhan dimulai.",
     dismiss: "Tutup",
   },
+  // status kamera dan opsi timer, mirror, otomatis
   camera: {
     label: "Kamera",
     off: "Kamera mati",
@@ -25,6 +29,7 @@ export const id: Messages = {
     noDelay: "Tanpa hitung mundur",
     auto: "Otomatis (jeda 5 detik)",
   },
+  // label fase ambil foto di studio dan modal reset
   capture: {
     layoutLabel: "Tata letak",
     chooseLayout: "Pilih tata letak",
@@ -49,6 +54,7 @@ export const id: Messages = {
     resetBody:
       "Semua foto di sesi ini bakal hilang. Unduh stripnya dulu kalau mau disimpan.",
   },
+  // teks toolbar, tab, filter, stiker, teks, dan properti di editor
   editor: {
     title: "Edit strip kamu",
     subtitle: "Atur sesukamu, lalu unduh siap cetak.",
@@ -116,10 +122,12 @@ export const id: Messages = {
       fade: "Pudar",
     },
   },
+  // label pilihan format file dan tombol download
   export: {
     format: "Format file",
     download: "Unduh strip",
   },
+  // pesan gagal kalau izin kamera ditolak, upload gagal, atau ekspor error
   errors: {
     camera: {
       denied:
@@ -135,6 +143,7 @@ export const id: Messages = {
     upload: "Fotonya gagal diunggah. Pilih file gambar lain, lalu coba lagi.",
     export: "Strip gagal diunduh. Editanmu masih aman. Coba lagi.",
   },
+  // nama 5 pilihan layout strip/grid
   layoutNames: {
     "4x1": "Strip klasik",
     "3x1": "Strip tiga foto",

@@ -1,5 +1,7 @@
 "use client";
 
+// bar deretan 5 tab alat editor: Bingkai, Foto, Stiker, Teks, dan Properti
+// dukung pindah tab pakai tombol panah kiri/kanan, Home, dan End di keyboard
 import { useRef } from "react";
 import type { ComponentType, KeyboardEvent } from "react";
 import {
@@ -20,6 +22,7 @@ interface ToolRailProps {
 
 export function ToolRail({ tab, onChange }: ToolRailProps) {
   const { t } = useLanguage();
+  // simpan ref tiap tombol tab biar fokus keyboard ikut pindah pas pencet panah
   const refs = useRef<Partial<Record<ToolTab, HTMLButtonElement | null>>>({});
   const tools: {
     id: ToolTab;
@@ -34,6 +37,7 @@ export function ToolRail({ tab, onChange }: ToolRailProps) {
   ];
   const activeIndex = tools.findIndex((item) => item.id === tab);
 
+  // tangani navigasi keyboard antar tab lewat helper nextTabIndex
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const next = nextTabIndex(tools.length, activeIndex, event.key);
     if (next === null) return;

@@ -1,3 +1,5 @@
+// unit test buat validasi file unggahan foto dan stiker di image-upload.ts
+// ngecek penolakan file non-gambar dan file yang ukurannya melebihi batas 25MB
 import { describe, expect, it } from "vitest";
 import {
   isSupportedPhotoFile,
@@ -7,10 +9,12 @@ import {
 
 const MB = 1024 * 1024;
 
+// bikin objek File tiruan buat pengujian
 function photoFile(name: string, type = "image/png") {
   return new File(["x"], name, { type });
 }
 
+// pasang ukuran byte palsu di objek File tanpa bikin buffer gede beneran
 function withSize<T extends File>(file: T, size: number): T {
   Object.defineProperty(file, "size", { value: size });
   return file;

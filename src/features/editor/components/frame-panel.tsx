@@ -1,3 +1,5 @@
+// panel tab Bingkai di sidebar editor buat milih paket bingkai atau pilih bingkai acak
+// nampilin grid kartu pratinjau bingkai yang pas sama template aktif
 import { useLanguage } from "@/translations/use-language";
 import {
   activeFrame,
@@ -21,9 +23,11 @@ export function FramePanel({
   onSurprise,
 }: FramePanelProps) {
   const { t } = useLanguage();
+  // cek bingkai mana yang lagi dipakai biar kartunya dikasih highlight
   const active = activeFrame(composition, frames);
   return (
     <section className="tool-section" aria-labelledby="tool-frame">
+      {/* judul tab bingkai sama tombol pilih acak */}
       <div className="section-head">
         <h2 id="tool-frame">{t.editor.framePresets}</h2>
         <button type="button" className="chip-button" onClick={onSurprise}>
@@ -31,6 +35,7 @@ export function FramePanel({
         </button>
       </div>
       <p className="tool-help">{t.editor.frameHint}</p>
+      {/* grid daftar pilihan bingkai */}
       <div className="frame-grid">
         {frames.map((frame) => {
           const selected = active?.id === frame.id;

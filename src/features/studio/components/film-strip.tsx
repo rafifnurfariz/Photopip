@@ -1,5 +1,7 @@
 "use client";
 
+// deretan kotak thumbnail foto di panel studio (filmstrip)
+// nampilin slot kosong bernomor urut atau foto yang sudah terambil lengkap sama tombol retake
 import type { CSSProperties } from "react";
 import { RetakeIcon } from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";
@@ -25,6 +27,7 @@ export function FilmStrip({
       className="film-grid"
       style={
         {
+          // kalau jumlah foto lebih dari 4 (kayak grid 2x3), susun jadi 3 kolom biar rapi
           "--film-columns": photoCount > 4 ? 3 : photoCount,
         } as CSSProperties
       }
@@ -35,6 +38,7 @@ export function FilmStrip({
           key={index}
           className={`photo-slot ${retakeIndex === index ? "retaking" : ""}`}
         >
+          {/* kalau slot sudah ada fotonya tampilkan gambar + tombol ambil ulang, kalau belum tampilkan nomor 01, 02... */}
           {photos[index] ? (
             <>
               <img

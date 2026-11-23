@@ -1,5 +1,8 @@
+// kumpulan komponen ikon SVG yang dipakai di header, studio, dan editor
+// semua ikon dibikin seragam pakai garis 2px biar cocok sama gaya desain website
 import type { SVGProps } from "react";
 
+// pembungkus SVG dasar supaya semua ikon punya ukuran dan ketebalan garis sama
 function Icon({ children, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -20,6 +23,7 @@ function Icon({ children, ...props }: SVGProps<SVGSVGElement>) {
   );
 }
 
+// ikon matahari buat tombol ganti ke mode terang
 export function SunIcon() {
   return (
     <Icon>
@@ -29,6 +33,7 @@ export function SunIcon() {
   );
 }
 
+// ikon bulan buat tombol ganti ke mode gelap
 export function MoonIcon() {
   return (
     <Icon>
@@ -37,6 +42,7 @@ export function MoonIcon() {
   );
 }
 
+// ikon tab bingkai di tool rail editor
 export function FrameIcon() {
   return (
     <Icon>
@@ -46,6 +52,7 @@ export function FrameIcon() {
   );
 }
 
+// ikon tab foto buat atur filter dan urutan foto
 export function PhotoIcon() {
   return (
     <Icon>
@@ -56,6 +63,7 @@ export function PhotoIcon() {
   );
 }
 
+// ikon tab stiker berbentuk kertas ketekuk pojoknya
 export function StickerIcon() {
   return (
     <Icon>
@@ -65,6 +73,7 @@ export function StickerIcon() {
   );
 }
 
+// ikon huruf T buat tab tambah dan edit teks
 export function TextIcon() {
   return (
     <Icon>
@@ -73,6 +82,7 @@ export function TextIcon() {
   );
 }
 
+// ikon slider buat tab pengaturan properti objek yang dipilih
 export function SlidersIcon() {
   return (
     <Icon>
@@ -82,6 +92,7 @@ export function SlidersIcon() {
   );
 }
 
+// ikon panah balik kiri buat tombol undo
 export function UndoIcon() {
   return (
     <Icon>
@@ -91,6 +102,7 @@ export function UndoIcon() {
   );
 }
 
+// ikon panah balik kanan buat tombol redo
 export function RedoIcon() {
   return (
     <Icon>
@@ -100,6 +112,7 @@ export function RedoIcon() {
   );
 }
 
+// ikon panah melingkar buat tombol reset
 export function ResetIcon() {
   return (
     <Icon>
@@ -109,6 +122,7 @@ export function ResetIcon() {
   );
 }
 
+// ikon panah kiri buat tombol kembali ke studio
 export function BackIcon() {
   return (
     <Icon>
@@ -117,6 +131,7 @@ export function BackIcon() {
   );
 }
 
+// ikon panah bawah buat dropdown atau buka tutup panel
 export function ChevronIcon() {
   return (
     <Icon>
@@ -125,6 +140,7 @@ export function ChevronIcon() {
   );
 }
 
+// ikon centang buat penanda item aktif
 export function CheckIcon() {
   return (
     <Icon>
@@ -133,6 +149,7 @@ export function CheckIcon() {
   );
 }
 
+// ikon silang buat tombol tutup notifikasi atau hapus
 export function CloseIcon() {
   return (
     <Icon>
@@ -141,6 +158,7 @@ export function CloseIcon() {
   );
 }
 
+// ikon stopwatch buat pilihan timer hitung mundur kamera
 export function TimerIcon() {
   return (
     <Icon>
@@ -150,6 +168,7 @@ export function TimerIcon() {
   );
 }
 
+// ikon cermin buat tombol flip kamera depan
 export function MirrorIcon() {
   return (
     <Icon>
@@ -159,6 +178,7 @@ export function MirrorIcon() {
   );
 }
 
+// ikon fast-forward buat mode foto otomatis beruntun
 export function AutoIcon() {
   return (
     <Icon>
@@ -168,6 +188,7 @@ export function AutoIcon() {
   );
 }
 
+// ikon panah putar buat foto ulang di slot tertentu
 export function RetakeIcon() {
   return (
     <Icon>
@@ -177,6 +198,7 @@ export function RetakeIcon() {
   );
 }
 
+// ikon dokumen buat tombol upload foto dari perangkat
 export function FileIcon() {
   return (
     <Icon>
@@ -186,6 +208,7 @@ export function FileIcon() {
   );
 }
 
+// ikon rata kiri buat pengaturan teks
 export function AlignLeftIcon() {
   return (
     <Icon>
@@ -194,6 +217,7 @@ export function AlignLeftIcon() {
   );
 }
 
+// ikon rata tengah buat pengaturan teks
 export function AlignCenterIcon() {
   return (
     <Icon>
@@ -202,6 +226,7 @@ export function AlignCenterIcon() {
   );
 }
 
+// ikon rata kanan buat pengaturan teks
 export function AlignRightIcon() {
   return (
     <Icon>
@@ -210,6 +235,7 @@ export function AlignRightIcon() {
   );
 }
 
+// ikon kotak sudut buat tombol pas-in zoom canvas ke layar
 export function FitIcon() {
   return (
     <Icon>

@@ -1,10 +1,13 @@
 "use client";
 
+// pratinjau miniatur satu bingkai di dalam kartu tab Bingkai
+// ukurannya diskalain otomatis dari templateGeometry biar proporsi lubang fotonya sesuai aslinya
 import { resolveTextFont } from "@/shared-tools/catalog/fonts";
 import type { FramePreset } from "@/shared-tools/catalog/frames";
 import { templateGeometry } from "@/shared-tools/composition/geometry";
 import type { Composition } from "@/shared-tools/composition/types";
 
+// batas lebar dan tinggi kotak miniatur di kartu bingkai
 const MAX_WIDTH = 104;
 const MAX_HEIGHT = 128;
 
@@ -14,6 +17,7 @@ interface FramePreviewProps {
 }
 
 export function FramePreview({ template, frame }: FramePreviewProps) {
+  // hitung skala pengecilan dari dimensi piksel template ke ukuran kartu preview
   const geometry = templateGeometry(template);
   const scale = Math.min(
     MAX_WIDTH / geometry.width,
@@ -23,6 +27,7 @@ export function FramePreview({ template, frame }: FramePreviewProps) {
   const height = Math.max(1, Math.round(geometry.height * scale));
   const artwork = frame.artwork?.[template.id];
 
+  // susun kotak-kotak slot kecil sesuai koordinat asli template
   const makeSlots = (className: string) =>
     geometry.slots.map((slot, index) => (
       <span
@@ -37,6 +42,7 @@ export function FramePreview({ template, frame }: FramePreviewProps) {
       />
     ));
 
+  // kalau bingkai punya file PNG artwork, tampilkan langsung gambar PNG-nya di atas slot
   if (artwork) {
     const slots = makeSlots("frame-preview-slot frame-preview-slot--artwork");
     return (
@@ -58,6 +64,7 @@ export function FramePreview({ template, frame }: FramePreviewProps) {
     );
   }
 
+  // kalau bingkai polos tanpa gambar PNG, tampilkan warna dasar + contoh teks "Aa" di bawah
   const slots = makeSlots("frame-preview-slot");
   return (
     <span

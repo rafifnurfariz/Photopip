@@ -1,6 +1,9 @@
+// pengubah data bingkai dari API (/api/frames) jadi format FramePreset buat editor
+// dipakai di useFrameCatalog biar paket bingkai dinamis bisa digabung sama bingkai bawaan
 import type { FramePackFrame } from "./frame-pack";
 import type { FramePreset } from "./frames";
 
+// ubah satu item FramePackFrame jadi bentuk FramePreset yang dipakai renderer
 export function packToFramePreset(pack: FramePackFrame): FramePreset {
   return {
     id: pack.id,
@@ -16,6 +19,7 @@ export function packToFramePreset(pack: FramePackFrame): FramePreset {
   };
 }
 
+// gabungin daftar bingkai bawaan sama paket bingkai hasil scan API
 export function mergeFramePacks(
   builtins: readonly FramePreset[],
   packs: readonly FramePackFrame[],

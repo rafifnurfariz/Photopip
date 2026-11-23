@@ -1,3 +1,7 @@
+/* stylesheet utama buat seluruh halaman PhotoPip, gak pakai Tailwind atau library CSS lain */
+/* isinya variabel warna tema terang/gelap, gaya tombol comic/stamp, layout studio, editor, sama responsive HP */
+
+/* variabel warna, bayangan, dan durasi animasi buat mode terang */
 :root {
   color-scheme: light;
   --surface: #fffdf7;
@@ -31,6 +35,7 @@
   --dur: 200ms;
   --dur-slow: 420ms;
 }
+/* timpa variabel warna pas class .dark aktif buat mode gelap */
 .dark {
   color-scheme: dark;
   --surface: #111110;
@@ -55,6 +60,7 @@
   --shadow-color: #000000;
   --burst-opacity: 0.85;
 }
+/* reset dasar box-sizing, font, dan layout halaman penuh */
 * {
   box-sizing: border-box;
 }
@@ -104,6 +110,7 @@ a {
   color: inherit;
   text-underline-offset: 4px;
 }
+/* warna blok teks saat diseleksi dan garis fokus keyboard */
 ::selection {
   background: var(--on-surface);
   color: var(--surface);
@@ -113,6 +120,7 @@ a {
   outline-offset: 3px;
   border-radius: 0;
 }
+/* gaya dasar tombol kotak dengan border tegas, tanpa sudut melengkung */
 button,
 input,
 select,
@@ -152,6 +160,7 @@ button:disabled {
   opacity: 0.45;
   box-shadow: none;
 }
+/* tombol aksi utama warna biru dengan bayangan offset ala komik */
 button.primary {
   background: var(--accent);
   border-color: var(--outline);
@@ -174,6 +183,7 @@ button.primary:active:not(:disabled) {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0 var(--shadow-color);
 }
+/* variasi tombol sekunder, transparan (ghost), dan tombol ikon */
 button.secondary {
   background: var(--surface-1);
   border-color: var(--outline);
@@ -224,6 +234,7 @@ button.secondary:hover:not(:disabled) {
   transform: none;
   box-shadow: none;
 }
+/* gaya elemen form seperti input, dropdown, dan textarea */
 input,
 select,
 textarea {
@@ -247,6 +258,7 @@ label {
   gap: 6px;
   font-size: 0.875rem;
 }
+/* helper aksesibilitas buat teks screen reader sama tombol skip ke konten */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -274,6 +286,7 @@ label {
 .skip-link:focus {
   transform: none;
 }
+/* bar header atas yang nempel di atas layar */
 .site-header {
   position: sticky;
   top: 0;
@@ -296,6 +309,7 @@ label {
   background: var(--surface-1);
   box-shadow: var(--shadow-1);
 }
+/* area logo dan teks PhotoPip di sisi kiri header */
 .brand {
   display: flex;
   align-items: center;
@@ -320,6 +334,7 @@ label {
   font-weight: 700;
   letter-spacing: -0.04em;
 }
+/* tombol ganti bahasa dan tema gelap/terang di sisi kanan header */
 .header-controls {
   display: flex;
   align-items: center;
@@ -363,6 +378,7 @@ option {
   background-color: var(--surface);
   color: var(--on-surface);
 }
+/* wadah utama studio dan notifikasi toast yang melayang di atas */
 .studio-shell {
   max-width: 1560px;
   margin: 0 auto;
@@ -429,6 +445,7 @@ option {
     transform: translate(-50%, 0);
   }
 }
+/* layout grid fase 1 studio: kiri layar kamera, kanan panel kontrol */
 .booth {
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(300px, 22vw, 336px);
@@ -437,6 +454,7 @@ option {
   height: auto;
   min-height: 540px;
 }
+/* kotak panggung kamera dengan bingkai titik halftone di tepinya */
 .booth-stage {
   position: relative;
   height: 100%;
@@ -456,6 +474,7 @@ option {
   place-items: center;
   container-type: size;
 }
+/* jaga rasio kotak kamera sesuai rasio slot template yang dipilih */
 .booth-frame {
   position: relative;
   width: min(100cqw, calc(100cqh * var(--shot-ratio)));
@@ -492,6 +511,7 @@ option {
   height: 100%;
   object-fit: cover;
 }
+/* overlay vignette tipis biar teks di atas panggung gampang kebaca */
 .booth-wash {
   position: absolute;
   inset: 0;
@@ -511,6 +531,7 @@ option {
       rgba(0, 0, 0, 0.34)
     );
 }
+/* tampilan saat kamera belum nyala atau saat semua foto sudah selesai diambil */
 .camera-empty {
   position: absolute;
   inset: 0;
@@ -537,6 +558,7 @@ option {
   );
   mask-image: radial-gradient(circle at 100% 0, #000 0, transparent 62%);
 }
+/* efek sinar kuning komik di belakang preview strip pas foto lengkap */
 .camera-empty.is-complete {
   display: flex;
   flex-direction: column;
@@ -582,6 +604,7 @@ option {
     transform: none;
   }
 }
+/* pratinjau hasil strip foto setelah semua slot terisi */
 .completion-strip-wrap {
   position: relative;
   z-index: 1;
@@ -649,6 +672,7 @@ option {
     opacity: 1;
   }
 }
+/* isi teks dan daftar 3 langkah pas kamera belum dinyalakan */
 .camera-empty-content {
   position: relative;
   z-index: 1;
@@ -720,6 +744,7 @@ option {
   font-weight: 700;
   color: #fff;
 }
+/* angka hitung mundur gede dan efek kilatan flash pas jepret foto */
 .countdown {
   position: absolute;
   inset: 0;
@@ -768,6 +793,7 @@ option {
     opacity: 0;
   }
 }
+/* panel kontrol di sisi kanan studio buat status kamera, layout, filmstrip, sama tombol jepret */
 .booth-panel {
   display: flex;
   flex-direction: column;
@@ -792,6 +818,7 @@ option {
   border-radius: 0;
   background: var(--outline-variant);
 }
+/* bagian atas panel: badge status kamera dan jumlah foto terambil */
 .panel-head {
   display: flex;
   align-items: center;
@@ -883,6 +910,7 @@ option {
   font-variant-numeric: tabular-nums;
   color: var(--on-surface-variant);
 }
+/* tombol dan popover pemilih template layout strip/grid */
 .layout-menu {
   position: relative;
   min-width: 0;
@@ -910,6 +938,7 @@ option {
 .layout-trigger:active:not(:disabled) {
   background: var(--surface-3);
 }
+/* ikon kecil miniatur susunan kotak foto di dalam menu layout */
 .layout-miniature {
   flex: none;
   display: grid;
@@ -970,6 +999,7 @@ option {
 .layout-trigger[aria-expanded="true"] .layout-caret {
   transform: rotate(180deg);
 }
+/* kotak dropdown melayang yang isinya semua opsi template */
 .layout-popover {
   position: fixed;
   z-index: 130;
@@ -1063,6 +1093,7 @@ option {
   font-size: 0.75rem;
   font-weight: 700;
 }
+/* deretan kotak thumbnail foto (filmstrip) sama tombol retake per slot */
 .film-grid {
   display: grid;
   grid-template-columns: repeat(var(--film-columns, 4), var(--film-slot, 62px));
@@ -1136,6 +1167,7 @@ option {
 .retake-badge {
   display: contents;
 }
+/* deretan opsi kamera (timer, mirror, auto) dan tombol jepret utama di bawah panel */
 .panel-actions {
   display: flex;
   flex-direction: column;
@@ -1214,6 +1246,7 @@ option {
   background-repeat: no-repeat;
   cursor: pointer;
 }
+/* checkbox tersembunyi buat tombol toggle mirror dan mode otomatis */
 .toggle-option {
   position: relative;
   cursor: pointer;
@@ -1247,6 +1280,7 @@ option {
   flex: 1;
   width: auto;
 }
+/* tombol shutter gede buat jepret foto */
 .shutter-button {
   display: flex;
   align-items: center;
@@ -1290,6 +1324,7 @@ option {
 .shutter-button:hover:not(:disabled) .shutter-dot {
   transform: scale(1.06);
 }
+/* tombol teks pelan kayak upload dari galeri atau mulai ulang */
 .quiet-button {
   align-self: center;
   min-height: 44px;
@@ -1307,6 +1342,7 @@ option {
   background: transparent;
   color: var(--on-surface);
 }
+/* kotak catatan garis putus-putus kalau daftar kosong */
 .empty-note {
   display: grid;
   justify-items: start;
@@ -1318,6 +1354,7 @@ option {
   font-size: 0.75rem;
   color: var(--on-surface-variant);
 }
+/* gaya dasar ruang kerja editor, panel stiker, dan bar ekspor bawah */
 .edit-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 0 minmax(64px, auto);
@@ -1399,6 +1436,7 @@ option {
 .search-label {
   margin-bottom: 12px;
 }
+/* grid 4 kolom pilihan stiker di tab stiker */
 .sticker-options {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1439,6 +1477,7 @@ option {
   min-height: 42px;
   border-radius: 0;
 }
+/* bar bawah buat pilih format PNG/JPEG dan tombol unduh */
 .export-bar {
   position: static;
   flex: none;
@@ -1490,6 +1529,7 @@ option {
   padding: 0 22px;
   white-space: nowrap;
 }
+/* penyesuaian layout buat tablet dan layar HP */
 @media (max-width: 899px) {
   .booth-stage {
     border-radius: 0;
@@ -1533,11 +1573,13 @@ option {
     background: var(--outline-variant);
   }
 }
+/* sembunyiin daftar panduan kalau layar HP pendek */
 @media (max-width: 899px) and (max-height: 720px) {
   .empty-steps {
     display: none;
   }
 }
+/* rapetin jarak kontrol studio di layar HP yang sangat pendek */
 @media (max-width: 899px) and (max-height: 640px) {
   .booth {
     grid-template-rows: minmax(150px, 40dvh) auto;
@@ -1582,6 +1624,7 @@ option {
     height: 52px;
   }
 }
+/* layout samping-sampingan buat layar landscape pendek */
 @media (max-height: 560px) and (min-width: 700px) {
   .booth {
     grid-template-columns: minmax(0, 1fr) 300px;
@@ -1625,6 +1668,7 @@ option {
     display: none;
   }
 }
+/* penyesuaian ukuran header, studio, dan editor di HP <= 640px */
 @media (max-width: 640px) {
   .site-header {
     padding: 10px;
@@ -1715,6 +1759,7 @@ option {
     padding-left: 8px;
   }
 }
+/* layar super sempit di bawah 360px */
 @media (max-width: 359px) {
   .brand img {
     width: 30px;
@@ -1728,6 +1773,7 @@ option {
     font-size: 0.75rem;
   }
 }
+/* kerangka utama halaman editor fase 2: bar atas, area canvas, dan panel alat */
 .edit-shell {
   display: flex;
   flex-direction: column;
@@ -1736,6 +1782,7 @@ option {
   height: calc(100dvh - 128px);
   min-height: 0;
 }
+/* bar judul editor, tombol balik, undo/redo, reset, sama kontrol zoom */
 .edit-topline {
   display: flex;
   flex-wrap: wrap;
@@ -1813,6 +1860,7 @@ option {
   transform: none;
   box-shadow: none;
 }
+/* pembagian kolom editor desktop: kiri canvas, kanan sidebar alat */
 .edit-workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
@@ -1825,6 +1873,7 @@ option {
   box-shadow: var(--shadow-2);
   overflow: hidden;
 }
+/* panggung tempat Fabric.js canvas dirender beserta info ukuran cetak */
 .composition-stage {
   grid-area: stage;
   position: relative;
@@ -1917,6 +1966,7 @@ option {
 .stage-status button {
   margin-top: 10px;
 }
+/* sidebar kanan editor dengan tab bingkai, foto, stiker, teks, dan properti */
 .editor-tools {
   grid-area: tools;
   position: static;
@@ -1989,6 +2039,7 @@ option {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* area isi tab yang bisa di-scroll di dalam sidebar editor */
 .editor-panel {
   flex: 1 1 auto;
   min-height: 0;
@@ -2048,6 +2099,7 @@ option {
   font-weight: 700;
   white-space: nowrap;
 }
+/* kartu pilihan bingkai dan pratinjau mininya di tab bingkai */
 .frame-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2122,6 +2174,7 @@ option {
   white-space: nowrap;
   max-width: 100%;
 }
+/* daftar thumbnail foto dan chip filter warna di tab foto */
 .photo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
@@ -2204,6 +2257,7 @@ option {
   font-size: 0.8125rem;
   font-weight: 700;
 }
+/* panel inspektor properti: slider angka, tombol aksi, input teks, dan color picker */
 .property-section {
   padding-bottom: 4px;
 }
@@ -2325,6 +2379,7 @@ option {
   gap: 4px;
   margin-bottom: 10px;
 }
+/* daftar item teks dan daftar layer objek di canvas */
 .text-list {
   display: grid;
   gap: 6px;
@@ -2409,6 +2464,7 @@ option {
   flex: 1 1 0;
   min-width: 0;
 }
+/* aturan responsive editor buat tablet dan layar kecil */
 @media (max-width: 1099px) {
   .edit-workspace {
     grid-template-columns: minmax(0, 1fr) minmax(280px, 320px);
@@ -2477,6 +2533,7 @@ option {
     font-size: 1rem;
   }
 }
+/* kurangi animasi kalau user ngaktifin pengaturan reduced motion di OS */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -2497,6 +2554,7 @@ option {
     animation: none;
   }
 }
+/* popup dialog konfirmasi sebelum reset atau keluar dari editor */
 .confirm-dialog {
   width: min(420px, calc(100vw - 32px));
   padding: 20px;
@@ -2534,6 +2592,7 @@ option {
 .reset-glyph {
   display: none;
 }
+/* susunan vertikal studio dan editor khusus layar mobile di bawah 900px */
 @media (max-width: 899px) {
   :root {
     --mobile-header: 58px;
@@ -2856,6 +2915,7 @@ option {
     font-size: 0.8125rem;
   }
 }
+/* ringkas tombol balik/reset jadi ikon aja dan pindahin tombol zoom di HP */
 @media (max-width: 640px) {
   .back-label,
   .reset-label {
@@ -2881,6 +2941,7 @@ option {
     min-height: 44px;
   }
 }
+/* sembunyiin filmstrip kosong kalau tinggi layar HP gak cukup */
 @media (max-width: 899px) and (max-height: 700px) {
   .film-grid:not(:has(img)) {
     display: none;
@@ -2889,6 +2950,7 @@ option {
     display: none;
   }
 }
+/* mode landscape di HP: balikin panel ke samping kanan lagi */
 @media (min-width: 560px) and (max-width: 899px) and (max-height: 560px) {
   .booth {
     grid-template-columns: minmax(0, 1fr) 290px;
@@ -2914,6 +2976,7 @@ option {
     border-left: 1px solid var(--panel-border);
   }
 }
+/* warna kuning highlight buat tab, chip, layer, dan toggle yang lagi aktif */
 .editor-tab[aria-selected="true"],
 .editor-tab[aria-selected="true"]:hover:not(:disabled),
 .chip-button[aria-pressed="true"],
@@ -2937,6 +3000,7 @@ option {
   outline: 1px solid var(--secondary);
   outline-offset: 1px;
 }
+/* gedein area sentuh jadi minimal 44px buat perangkat layar sentuh */
 @media (pointer: coarse) {
   .chip-button,
   .filter-chip,
@@ -2948,6 +3012,7 @@ option {
     min-width: 44px;
   }
 }
+/* tombol fit-to-screen dan gaya bottom sheet pemilih layout di HP */
 .fit-button {
   display: none;
 }
@@ -3001,6 +3066,7 @@ option {
     transform: translate(-50%, 0);
   }
 }
+/* penyesuaian safe-area notch/home-bar dan ukuran tap target mobile terakhir */
 @media (max-width: 899px) {
   :root {
     --mobile-header: calc(58px + env(safe-area-inset-top));
@@ -3123,6 +3189,7 @@ option {
     animation-name: toast-up;
   }
 }
+/* posisi tombol zoom di pojok kiri bawah canvas pas mode HP */
 @media (max-width: 640px) {
   .zoom-group {
     top: auto;

@@ -1,5 +1,7 @@
 "use client";
 
+// komponen utama Editor fase 2 tempat user nghias strip foto pakai bingkai, filter, stiker, dan teks
+// nyatuin canvas Fabric.js, riwayat undo/redo, kontrol zoom, sama 5 tab alat di sidebar kanan
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   BackIcon,
@@ -55,9 +57,11 @@ interface EditorProps {
   onRetakePhoto: (index: number) => void;
 }
 
+// batas zoom paling kecil (50%) dan paling gede (400%)
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 4;
 
+// jepit nilai transparansi biar tetap antara 0 sampai 1
 function clampOpacity(value: number) {
   return Math.min(1, Math.max(0, value));
 }
@@ -71,12 +75,14 @@ export default function Editor({
   onRetakePhoto,
 }: EditorProps) {
   const { t } = useLanguage();
+  // state tab aktif, objek terpilih di canvas, tingkat zoom, mode fit HP, dan stack undo/redo
   const [tab, setTab] = useState<ToolTab>("frame");
   const [selection, setSelection] = useState<CanvasSelection | null>(null);
   const [zoom, setZoom] = useState(1);
   const [fitWhole, setFitWhole] = useState(false);
   const [history, setHistory] = useState<HistoryState>(initialHistory);
   const { fonts } = useFontCatalog();
+  // nyimpen snapshot sebelum geser slider biar satu tarikan slider cuma jadi 1 langkah undo
   const gesture = useRef<Composition | null>(null);
   const geometry = useMemo(
     () => templateGeometry(composition.template),
@@ -84,6 +90,7 @@ export default function Editor({
   );
   const frame = frameById(composition.frameId, frames);
 
+  // simpan perubahan ke riwayat undo lalu perbarui state komposisi
   const commit = useCallback(
     (next: Composition) => {
       gesture.current = null;
@@ -93,15 +100,18 @@ export default function Editor({
     [composition, onChange],
   );
 
+  // ubah pratinjau langsung tanpa nambah history (dipakai waktu lagi geser slider)
   const preview = useCallback(
     (next: Composition) => onChange(next),
     [onChange],
   );
 
+  // mulai nyatet gesture pas slider ditekan atau input teks mulai difokusin
   const beginGesture = useCallback(() => {
     if (!gesture.current) gesture.current = composition;
   }, [composition]);
 
+  // selesaikan gesture lalu masukin snapshot awal ke stack undo kalau ada perubahan
   const endGesture = useCallback(() => {
     const snapshot = gesture.current;
     gesture.current = null;
@@ -110,6 +120,7 @@ export default function Editor({
     }
   }, [composition]);
 
+  // tiap kali user ngeklik stiker atau teks di canvas, otomatis pindah ke tab properti
   const handleSelect = useCallback((next: CanvasSelection | null) => {
     setSelection(next);
     if (next) setTab("properties");
@@ -125,6 +136,7 @@ export default function Editor({
     fitWhole,
   );
 
+  // balik ke perubahan sebelumnya dari stack history
   const undo = () => {
     const result = undoHistory(history, composition);
     if (!result) return;
@@ -133,6 +145,7 @@ export default function Editor({
     onChange(result.next);
   };
 
+  // ulangin perubahan yang baru aja di-undo
   const redo = () => {
     const result = redoHistory(history, composition);
     if (!result) return;
@@ -141,6 +154,7 @@ export default function Editor({
     onChange(result.next);
   };
 
+  // ubah properti satu stiker (posisi, ukuran, rotasi, flip, atau opacity)
   const updateSticker = (
     id: string,
     patch: Partial<StickerPlacement>,
@@ -160,6 +174,7 @@ export default function Editor({
     else preview(next);
   };
 
+  // ubah properti satu objek teks (isi, warna, font, posisi, ukuran, gaya)
   const updateText = (
     id: string,
     patch: Partial<TextPlacement>,
@@ -175,6 +190,7 @@ export default function Editor({
     else preview(next);
   };
 
+  // taruh stiker baru tepat di tengah canvas lalu langsung pilih stikernya
   const addSticker = (sticker: Sticker) => {
     const id = newId();
     const placement: StickerPlacement = {
@@ -198,6 +214,7 @@ export default function Editor({
     setTab("properties");
   };
 
+  // tambahin teks baru di tengah strip pakai warna dan font bawaan bingkai aktif
   const addText = () => {
     const id = newId();
     const defaultFontId = fonts[0]?.id ?? frame.fontId ?? "default";
@@ -220,6 +237,7 @@ export default function Editor({
     setTab("properties");
   };
 
+  // hapus stiker atau teks yang lagi terseleksi
   const removeSelection = () => {
     if (!selection) return;
     if (selection.type === "sticker") {
@@ -238,6 +256,7 @@ export default function Editor({
     setSelection(null);
   };
 
+  // hapus satu item teks langsung dari daftar di tab Teks
   const removeText = (id: string) => {
     commit({
       ...composition,
@@ -246,6 +265,7 @@ export default function Editor({
     if (selection?.type === "text" && selection.id === id) setSelection(null);
   };
 
+  // gandain stiker atau teks terpilih sambil digeser 24px biar kelihatan gak numpuk persis
   const duplicateSelection = () => {
     if (!selection) return;
     if (selection.type === "sticker") {
@@ -280,6 +300,7 @@ export default function Editor({
     setSelection({ type: "text", id });
   };
 
+  // ubah urutan tumpukan objek ke paling depan (ujung array) atau paling belakang (awal array)
   const layerSelection = (direction: "front" | "back") => {
     if (!selection) return;
     if (selection.type === "sticker") {
@@ -305,6 +326,7 @@ export default function Editor({
     });
   };
 
+  // pilihin bingkai acak selain yang lagi dipakai sekarang
   const surprise = () => {
     const pool = frames.filter((item) => item.id !== composition.frameId);
     const next =
@@ -314,6 +336,7 @@ export default function Editor({
     commit(applyFrame(composition, next));
   };
 
+  // tambah atau kurangi zoom per 25% sambil matiin mode fitWhole
   const changeZoom = (direction: 1 | -1) => {
     setFitWhole(false);
     setZoom((value) => {
@@ -324,6 +347,7 @@ export default function Editor({
 
   return (
     <>
+      {/* header editor: tombol kembali, judul, undo/redo, reset, dan kontrol zoom */}
       <header className="edit-topline">
         <div className="edit-heading">
           <button
@@ -425,6 +449,7 @@ export default function Editor({
           </div>
         </div>
       </header>
+      {/* ruang kerja editor: panggung canvas di kiri dan panel alat ber-tab di kanan */}
       <div className="edit-workspace">
         <div className="composition-stage">
           <div
@@ -465,6 +490,7 @@ export default function Editor({
             tabIndex={0}
             aria-label={t.editor.tabs[tab]}
           >
+            {/* tampilkan isi panel sesuai tab yang lagi dipilih */}
             {tab === "frame" && (
               <FramePanel
                 composition={composition}

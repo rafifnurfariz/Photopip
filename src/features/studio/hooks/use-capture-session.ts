@@ -1,5 +1,7 @@
 "use client";
 
+// hook buat ngatur jalannya sesi pengambilan foto di studio: hitung mundur, flash, auto, upload, sama retake
+// nyambungin sessionReducer dengan kontrol kamera biar komponen Studio tetap ringkas
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { delay } from "@/shared-tools/async";
 import {
@@ -28,6 +30,7 @@ export function useCaptureSession({
   onMessage,
 }: CaptureSessionOptions) {
   const [session, dispatch] = useReducer(sessionReducer, initialSession);
+  // state sibuk saat countdown jalan, angka sisa detik, efek flash, dan status upload file
   const [busy, setBusy] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(null);
   const [flash, setFlash] = useState(false);
@@ -35,14 +38,17 @@ export function useCaptureSession({
   const work = useRef<AbortController | null>(null);
   const cameraRef = useRef(camera);
   const template = findTemplate(session.templateId);
+  // sesi dianggap lengkap kalau jumlah foto pas sama template dan gak lagi retake
   const complete =
     session.photos.length === template.photoCount &&
     session.retakeIndex === null;
 
+  // selalu simpan objek kamera terbaru ke ref biar fungsi async gak baca nilai lama
   useEffect(() => {
     cameraRef.current = camera;
   });
 
+  // batalin proses hitung mundur atau auto capture yang lagi berjalan
   const cancelCapture = useCallback(() => {
     work.current?.abort();
     work.current = null;
@@ -51,6 +57,7 @@ export function useCaptureSession({
     setFlash(false);
   }, []);
 
+  // stop countdown otomatis kalau user pindah tab browser
   useEffect(() => {
     const leave = () => {
       if (document.hidden) cancelCapture();
@@ -62,6 +69,7 @@ export function useCaptureSession({
     };
   }, [cancelCapture]);
 
+  // kosongin foto sesi sekarang dan ganti template kalau dikasih templateId baru
   const resetSession = useCallback(
     (templateId?: TemplateId) => {
       cancelCapture();
@@ -70,6 +78,7 @@ export function useCaptureSession({
     [cancelCapture],
   );
 
+  // masuk ke mode ambil ulang buat slot foto tertentu
   const retake = useCallback(
     (index: number) => {
       cancelCapture();
@@ -80,6 +89,7 @@ export function useCaptureSession({
     [cancelCapture, onMessage],
   );
 
+  // jalanin hitung mundur lalu jepret satu foto (atau beruntun sisa slot kalau automatic = true)
   const capture = useCallback(
     async (automatic: boolean) => {
       if (
@@ -94,6 +104,7 @@ export function useCaptureSession({
       const signal = controller.signal;
       setBusy(true);
       onMessage(null);
+      // tentuin mau jepret berapa kali dalam satu klik
       const count =
         session.retakeIndex !== null
           ? 1
@@ -102,6 +113,7 @@ export function useCaptureSession({
             : 1;
       try {
         for (let i = 0; i < count; i++) {
+          // jepretan pertama pakai timer pilihan user, jepretan otomatis berikutnya jeda 5 detik
           const seconds = i === 0 ? timer : 5;
           for (let second = seconds; second > 0; second--) {
             setRemaining(second);
@@ -119,10 +131,12 @@ export function useCaptureSession({
             src: photo,
             count: template.photoCount,
           });
+          // nyalain efek kilatan flash sebentar tiap habis jepret
           setFlash(true);
           await delay(140, signal);
           setFlash(false);
         }
+        // matiin kamera otomatis kalau semua slot foto sudah terisi
         if (automatic || session.photos.length + count >= template.photoCount)
           cameraRef.current.stopCamera();
       } catch {
@@ -148,6 +162,7 @@ export function useCaptureSession({
     ],
   );
 
+  // terima file gambar dari galeri, validasi, ubah ke JPEG, lalu masukin ke sisa slot sesi
   const uploadPhotos = useCallback(
     async (files: File[]) => {
       if (!files.length || uploading || complete || work.current) return;
@@ -156,6 +171,7 @@ export function useCaptureSession({
           ? 1
           : template.photoCount - session.photos.length;
       if (slots <= 0) return;
+      // ambil maksimal sebanyak slot yang masih kosong aja
       const selected = files.slice(0, slots);
       if (!selected.every(isSupportedPhotoFile)) {
         onMessage("upload");

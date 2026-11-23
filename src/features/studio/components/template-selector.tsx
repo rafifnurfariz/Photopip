@@ -1,5 +1,7 @@
 "use client";
 
+// menu pemilih template tata letak foto (4x1, 3x1, 2x3, 2x2, 1x1) di panel studio
+// di desktop muncul sebagai popover melayang, di HP muncul sebagai bottom sheet lewat React portal
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CheckIcon, ChevronIcon } from "@/components/icons";
@@ -11,6 +13,7 @@ import {
   type TemplateId,
 } from "@/shared-tools/catalog/templates";
 
+// posisi menu: mode sheet penuh di bawah layar HP, atau koordinat melayang di desktop
 type MenuPosition =
   | { sheet: true }
   | { sheet: false; top: number; left: number; width: number };
@@ -18,6 +21,7 @@ type MenuPosition =
 const MENU_WIDTH = 300;
 const MENU_ESTIMATE = 380;
 
+// gambar miniatur kotak-kotak slot kecil biar user langsung kebayang bentuk stripnya
 function LayoutMiniature({ template }: { template: Template }) {
   return (
     <span
@@ -52,11 +56,13 @@ export function TemplateSelector({
   const popoverId = useId();
   const selected = findTemplate(selectedTemplate);
 
+  // tutup popover dan balikin fokus keyboard ke tombol pemicu kalau perlu
   const close = useCallback((restoreFocus = true) => {
     setOpen(false);
     if (restoreFocus) triggerRef.current?.focus();
   }, []);
 
+  // hitung posisi popover biar gak kepotong ujung layar, atau pakai mode bottom sheet di HP
   const place = useCallback(() => {
     const trigger = triggerRef.current;
     if (!trigger) return;
@@ -72,6 +78,7 @@ export function TemplateSelector({
     const room = Math.min(vh - 24, MENU_ESTIMATE);
     const below = vh - rect.bottom - 12;
     const above = rect.top - 12;
+    // pilih buka ke bawah kalau muat, kalau mepet bawah buka ke atas
     const rawTop =
       below >= room || below >= above
         ? rect.bottom + 8
@@ -84,6 +91,7 @@ export function TemplateSelector({
     setPosition({ sheet: false, top, left, width });
   }, []);
 
+  // atur tombol Escape, jebakan fokus Tab di dalam menu, klik di luar, sama hitung ulang pas scroll/resize
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
@@ -135,6 +143,7 @@ export function TemplateSelector({
     };
   }, [open, place, close]);
 
+  // fokuskan otomatis ke opsi template yang lagi aktif begitu menu kebuka
   useEffect(() => {
     if (!open) {
       focusedRef.current = false;
@@ -157,6 +166,7 @@ export function TemplateSelector({
 
   return (
     <div className="layout-menu">
+      {/* tombol pemicu yang nampilin template terpilih sekarang */}
       <button
         ref={triggerRef}
         type="button"
@@ -183,6 +193,7 @@ export function TemplateSelector({
           <ChevronIcon />
         </span>
       </button>
+      {/* render daftar pilihan langsung ke document.body biar gak kepotong overflow panel */}
       {open &&
         position &&
         createPortal(

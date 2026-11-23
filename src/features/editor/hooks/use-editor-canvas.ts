@@ -1,5 +1,7 @@
 "use client";
 
+// hook penghubung antara React state di Editor dengan instance Canvas Fabric.js
+// ngatur inisialisasi canvas, resize sesuai layar/zoom, drag/scale/rotate stiker & teks, sampai fast-update pas geser slider
 import { useEffect, useRef, useState } from "react";
 import { Canvas } from "fabric";
 import type { FramePreset } from "@/shared-tools/catalog/frames";
@@ -17,11 +19,13 @@ import {
 } from "@/shared-tools/composition/render";
 import type { Composition } from "@/shared-tools/composition/types";
 
+// penanda objek mana yang lagi diseleksi di canvas
 export interface CanvasSelection {
   type: "sticker" | "text";
   id: string;
 }
 
+// ukur ruang bersih di dalam elemen pembungkus canvas (dikurangi padding)
 function measure(element: HTMLElement) {
   const style = getComputedStyle(element);
   const paddingX =
@@ -36,6 +40,7 @@ function measure(element: HTMLElement) {
   };
 }
 
+// cari objek Fabric di dalam canvas berdasarkan placementId dan jenisnya
 function findObject(canvas: Canvas, target: CanvasSelection) {
   return canvas.getObjects().find((item) => {
     const object = item as EditorObject;
@@ -61,6 +66,7 @@ export function useEditorCanvas(
   const renderedRef = useRef(false);
   const renderId = useRef(0);
   const resizeRef = useRef<() => void>(() => {});
+  // simpan props terbaru di ref biar event listener Fabric selalu baca data terkini
   const latest = useRef({
     composition,
     onCommit,
@@ -85,6 +91,7 @@ export function useEditorCanvas(
     };
   });
 
+  // buat instance Canvas Fabric sekali pas mount lalu pasang semua listener interaksi
   useEffect(() => {
     const container = containerRef.current;
     if (!elementRef.current || !container) return;
@@ -97,11 +104,13 @@ export function useEditorCanvas(
     });
     canvasRef.current = canvas;
 
+    // hitung ulang ukuran tampilan CSS canvas tiap kali layar, zoom, atau mode fit berubah
     const resize = () => {
       const { width, height } = measure(container);
       const geometry = templateGeometry(latest.current.composition.template);
       const tall = geometry.height > geometry.width * 1.5;
       const stacked = window.innerWidth <= 899;
+      // di HP buat strip panjang, penuhi lebar biar jelas, kecuali user aktifin tombol fitWhole
       const fit =
         stacked && latest.current.fitWhole
           ? fitCanvas(geometry, width, height)
@@ -121,6 +130,7 @@ export function useEditorCanvas(
     };
     resizeRef.current = resize;
 
+    // simpan posisi, ukuran, atau rotasi baru ke React state tiap selesai drag/resize di canvas
     const commitTransform = ({ target }: { target?: EditorObject }) => {
       if (!target?.placementId || renderingRef.current) return;
       const current = latest.current.composition;
@@ -165,6 +175,7 @@ export function useEditorCanvas(
       latest.current.onCommit({ ...current, stickers: next });
     };
 
+    // baca objek apa yang lagi dipilih di Fabric lalu kasih tau Editor
     const readSelection = () => {
       if (renderingRef.current) return;
       const active = canvas.getActiveObject() as EditorObject | undefined;
@@ -182,6 +193,7 @@ export function useEditorCanvas(
     canvas.on("selection:created", readSelection);
     canvas.on("selection:updated", readSelection);
     canvas.on("selection:cleared", readSelection);
+    // dukung geser scroll vertikal di HP kalau user narik area kosong canvas pakai jari
     let panId: number | null = null;
     let panY = 0;
     const movePan = (event: PointerEvent) => {
@@ -209,6 +221,7 @@ export function useEditorCanvas(
     const observer = new ResizeObserver(resize);
     observer.observe(container);
     resize();
+    // bersihin semua observer, listener, instance Fabric, dan cache pas keluar dari editor
     return () => {
       observer.disconnect();
       container.removeEventListener("scroll", scrolled);
@@ -223,12 +236,14 @@ export function useEditorCanvas(
     };
   }, []);
 
+  // sinkronin perubahan komposisi ke canvas; pakai jalur cepat kalau cuma properti stiker/teks yang berubah
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     if (renderedRef.current && !renderingRef.current) {
       const prev = latest.current.composition;
+      // cek apakah foto, template, bingkai, filter, dan daftar id objek masih sama persis
       const isBaseIdentical =
         prev.template.id === composition.template.id &&
         prev.frameId === composition.frameId &&
@@ -245,6 +260,7 @@ export function useEditorCanvas(
         prev.texts.length === composition.texts.length &&
         prev.texts.every((t, i) => t.id === composition.texts[i]?.id);
 
+      // kalau dasar strip gak berubah, cukup update koordinat/gaya objek yang sudah ada biar mulus tanpa kedip
       if (isBaseIdentical) {
         let updatedAny = false;
         let allObjectsExist = true;
@@ -314,6 +330,7 @@ export function useEditorCanvas(
       }
     }
 
+    // jalur render penuh kalau ada perubahan bingkai, filter, foto, atau tambah/hapus objek
     const controller = new AbortController();
     const id = renderId.current + 1;
     renderId.current = id;
@@ -346,10 +363,12 @@ export function useEditorCanvas(
     };
   }, [composition, frame, revision]);
 
+  // perbarui skala tampilan canvas tiap kali zoom atau mode fitWhole berubah
   useEffect(() => {
     resizeRef.current();
   }, [zoom, fitWhole]);
 
+  // samain seleksi aktif di Fabric tiap kali user milih layer dari sidebar
   useEffect(() => {
     if (status !== "ready" || !canvasRef.current) return;
     const canvas = canvasRef.current;

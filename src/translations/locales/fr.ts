@@ -1,6 +1,9 @@
+// kamus terjemahan bahasa Prancis (Français) buat UI PhotoPip
+// dipakai saat user milih Français di menu bahasa
 import type { Messages } from "../types";
 
 export const fr: Messages = {
+  // teks umum website dan status toast
   app: {
     studio: "Studio photo",
     language: "Langue",
@@ -12,6 +15,7 @@ export const fr: Messages = {
     downloadStarted: "Téléchargement lancé.",
     dismiss: "Fermer",
   },
+  // status kamera dan opsi timer/mirror/auto
   camera: {
     label: "Caméra",
     off: "Caméra éteinte",
@@ -25,6 +29,7 @@ export const fr: Messages = {
     noDelay: "Sans compte à rebours",
     auto: "Auto (5 s entre les photos)",
   },
+  // teks studio saat ambil foto, upload, atau reset
   capture: {
     layoutLabel: "Mise en page",
     chooseLayout: "Choisir une mise en page",
@@ -53,6 +58,7 @@ export const fr: Messages = {
     resetBody:
       "Toutes les photos de cette séance vont être effacées. Télécharge la bande avant si tu veux la garder.",
   },
+  // teks panel, tab, dan tombol aksi di editor
   editor: {
     title: "Modifie ta bande",
     subtitle: "Personnalise-la, puis télécharge-la prête à imprimer.",
@@ -121,10 +127,12 @@ export const fr: Messages = {
       fade: "Délavé",
     },
   },
+  // label format file dan tombol download
   export: {
     format: "Format du fichier",
     download: "Télécharger la bande",
   },
+  // pesan error kamera, upload, dan ekspor
   errors: {
     camera: {
       denied:
@@ -141,6 +149,7 @@ export const fr: Messages = {
     export:
       "La bande ne s’est pas téléchargée. Tes modifications sont toujours là. Réessaie.",
   },
+  // nama 5 template tata letak foto
   layoutNames: {
     "4x1": "Bande classique",
     "3x1": "Bande triple",

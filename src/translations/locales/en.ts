@@ -1,6 +1,9 @@
+// kamus teks bahasa Inggris buat seluruh UI PhotoPip
+// dipakai pas user milih English di dropdown bahasa header
 import type { Messages } from "../types";
 
 export const en: Messages = {
+  // label umum aplikasi dan notifikasi
   app: {
     studio: "Photo studio",
     language: "Language",
@@ -12,6 +15,7 @@ export const en: Messages = {
     downloadStarted: "Download started.",
     dismiss: "Dismiss",
   },
+  // status kamera dan kontrol timer, mirror, auto
   camera: {
     label: "Camera",
     off: "Camera off",
@@ -25,6 +29,7 @@ export const en: Messages = {
     noDelay: "No countdown",
     auto: "Auto (5s between photos)",
   },
+  // teks di studio fase 1 saat jepret atau upload foto
   capture: {
     layoutLabel: "Layout",
     chooseLayout: "Pick a layout",
@@ -53,6 +58,7 @@ export const en: Messages = {
     resetBody:
       "Every photo in this session gets cleared. Download the strip first if you want to keep it.",
   },
+  // label semua tab dan pengaturan di editor fase 2
   editor: {
     title: "Edit your strip",
     subtitle: "Make it yours, then download it ready to print.",
@@ -120,10 +126,12 @@ export const en: Messages = {
       fade: "Faded",
     },
   },
+  // teks bar ekspor file gambar
   export: {
     format: "File format",
     download: "Download strip",
   },
+  // pesan error kamera, unggah foto, dan ekspor
   errors: {
     camera: {
       denied:
@@ -140,6 +148,7 @@ export const en: Messages = {
     upload: "That photo didn't upload. Pick another image and try again.",
     export: "The strip didn't download. Your edits are still safe. Try again.",
   },
+  // nama 5 pilihan template tata letak
   layoutNames: {
     "4x1": "Classic strip",
     "3x1": "Triple strip",

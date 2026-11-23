@@ -1,5 +1,7 @@
 "use client";
 
+// panel tombol aksi di bagian bawah studio: timer, mirror, foto otomatis, shutter, upload, dan lanjut ke editor
+// isi tombolnya berubah otomatis tergantung status sesi (lengkap, lagi countdown, atau kamera siap)
 import type { RefObject } from "react";
 import { AutoIcon, MirrorIcon, ResetIcon, TimerIcon } from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";
@@ -49,6 +51,7 @@ export function CaptureControls({
   const { t } = useLanguage();
   return (
     <div className="panel-actions">
+      {/* kalau semua foto sudah lengkap, tampilkan tombol masuk editor + reset */}
       {complete ? (
         <div className="panel-finish">
           <button
@@ -69,11 +72,13 @@ export function CaptureControls({
           </button>
         </div>
       ) : busy ? (
+        // kalau lagi hitung mundur, ubah tombol shutter jadi tombol batal
         <button type="button" className="shutter-button" onClick={onCancel}>
           {t.camera.cancel}
         </button>
       ) : (
         <>
+          {/* baris opsi kamera dan tombol jepret cuma muncul pas kamera sudah ready */}
           {camera.status === "ready" && (
             <>
               <div
@@ -81,6 +86,7 @@ export function CaptureControls({
                 role="group"
                 aria-label={t.capture.optionsLabel}
               >
+                {/* dropdown pilih jeda timer: 0, 3, atau 5 detik */}
                 <label
                   className="icon-option timer-option"
                   title={t.camera.timer}
@@ -100,6 +106,7 @@ export function CaptureControls({
                     <option value={5}>5 s</option>
                   </select>
                 </label>
+                {/* toggle cermin kamera depan */}
                 <label
                   className="icon-option toggle-option"
                   title={t.camera.mirror}
@@ -114,6 +121,7 @@ export function CaptureControls({
                   </span>
                   <span className="sr-only">{t.camera.mirror}</span>
                 </label>
+                {/* tombol foto otomatis beruntun buat template lebih dari 1 foto */}
                 {photoCount > 1 && retakeIndex === null && (
                   <button
                     type="button"
@@ -147,6 +155,7 @@ export function CaptureControls({
               </button>
             </>
           )}
+          {/* tombol unggah foto dari galeri sebagai alternatif kamera */}
           <button
             type="button"
             className="quiet-button"
@@ -157,6 +166,7 @@ export function CaptureControls({
           </button>
         </>
       )}
+      {/* input file tersembunyi yang dipicu tombol unggah foto di atas */}
       <input
         ref={uploadInput}
         type="file"

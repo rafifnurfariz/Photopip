@@ -1,6 +1,9 @@
+// kamus teks bahasa Mandarin (中文) buat semua antarmuka PhotoPip
+// muncul saat user milih bahasa 中文 di dropdown header
 import type { Messages } from "../types";
 
 export const zh: Messages = {
+  // label umum aplikasi dan notifikasi singkat
   app: {
     studio: "照相馆",
     language: "语言",
@@ -12,6 +15,7 @@ export const zh: Messages = {
     downloadStarted: "开始下载。",
     dismiss: "关闭",
   },
+  // status kamera dan kontrol timer, mirror, otomatis
   camera: {
     label: "相机",
     off: "相机已关闭",
@@ -25,6 +29,7 @@ export const zh: Messages = {
     noDelay: "不倒数",
     auto: "自动连拍（间隔5秒）",
   },
+  // teks halaman studio dan konfirmasi mulai ulang
   capture: {
     layoutLabel: "版式",
     chooseLayout: "选一个版式",
@@ -48,6 +53,7 @@ export const zh: Messages = {
     resetTitle: "重新开始？",
     resetBody: "这次拍的照片都会被清空。想留着的话，先下载照片条。",
   },
+  // teks semua menu dan kontrol di editor fase 2
   editor: {
     title: "编辑照片条",
     subtitle: "按你的喜好调好，再下载成能打印的文件。",
@@ -114,10 +120,12 @@ export const zh: Messages = {
       fade: "褪色",
     },
   },
+  // teks pilihan format dan tombol download
   export: {
     format: "文件格式",
     download: "下载照片条",
   },
+  // pesan error kamera, upload, dan ekspor
   errors: {
     camera: {
       denied:
@@ -131,6 +139,7 @@ export const zh: Messages = {
     upload: "这张照片没传上去。换一张图片再试一次。",
     export: "照片条没下载成功。你的修改都还在，再试一次。",
   },
+  // nama 5 template tata letak foto
   layoutNames: {
     "4x1": "经典照片条",
     "3x1": "三张照片条",

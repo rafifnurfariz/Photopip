@@ -1,3 +1,5 @@
+// kumpulan helper kamera: mapping error browser, matiin stream, nunggu frame video, sama jepret ke JPEG
+// dipisah dari useCamera biar logika murninya gampang dites di Vitest
 export type CameraFailure =
   | "denied"
   | "missing"
@@ -6,6 +8,7 @@ export type CameraFailure =
   | "readiness"
   | "capture";
 
+// kelompokin error dari getUserMedia jadi kode CameraFailure biar pesannya jelas buat user
 export function cameraFailure(error: unknown): CameraFailure {
   if (error instanceof DOMException) {
     if (["NotAllowedError", "SecurityError"].includes(error.name))
@@ -17,14 +20,17 @@ export function cameraFailure(error: unknown): CameraFailure {
   return "unavailable";
 }
 
+// hentikan semua track video di MediaStream supaya lampu kamera mati beneran
 export function stopMediaStream(stream: MediaStream | null) {
   stream?.getTracks().forEach((track) => track.stop());
 }
 
+// cek elemen <video> sudah punya gambar dengan lebar dan tinggi valid
 export function hasUsableFrame(video: HTMLVideoElement) {
   return video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0;
 }
 
+// tunggu sampai kamera ngirim frame video pertama, dengan batas timeout dan dukungan batal
 export function waitForVideoFrame(
   video: HTMLVideoElement,
   signal: AbortSignal,
@@ -32,6 +38,7 @@ export function waitForVideoFrame(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     let frameId: number | undefined;
+    // copot semua listener dan timer pas selesai atau dibatalin
     const cleanup = () => {
       clearTimeout(timer);
       video.removeEventListener("loadeddata", check);
@@ -47,6 +54,7 @@ export function waitForVideoFrame(
       cleanup();
       reject(new DOMException("Cancelled", "AbortError"));
     };
+    // kalau video sudah siap, tunggu 1 frame beneran lewat requestVideoFrameCallback bila tersedia
     const check = () => {
       if (hasUsableFrame(video)) {
         if (video.requestVideoFrameCallback) {
@@ -67,6 +75,7 @@ export function waitForVideoFrame(
   });
 }
 
+// tangkap satu frame dari elemen <video> ke canvas lalu ubah jadi data URL JPEG
 export function capturePhotoFromVideo(
   video: HTMLVideoElement,
   flipHorizontal = true,
@@ -77,6 +86,7 @@ export function capturePhotoFromVideo(
   canvas.height = video.videoHeight;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas unavailable");
+  // balik gambar secara horizontal kalau mode mirror lagi nyala
   if (flipHorizontal) {
     context.translate(canvas.width, 0);
     context.scale(-1, 1);

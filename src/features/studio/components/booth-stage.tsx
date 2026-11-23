@@ -1,5 +1,7 @@
 "use client";
 
+// komponen layar panggung kamera di sebelah kiri studio
+// nampilin video live kamera, angka hitung mundur, kilatan flash, panduan awal, sama preview strip pas selesai
 import type { CSSProperties, RefObject } from "react";
 import { useLanguage } from "@/translations/use-language";
 import type { Template } from "@/shared-tools/catalog/templates";
@@ -30,12 +32,14 @@ export function BoothStage({
   onCameraToggle,
 }: BoothStageProps) {
   const { t } = useLanguage();
+  // ambil ukuran slot pertama buat nentuin rasio jendela kamera yang pas sama template
   const slot = templateGeometry(template).slots[0];
   return (
     <div
       className={`booth-stage ${flash ? "shutter-flash" : ""}`}
       style={{ "--shot-ratio": slot.width / slot.height } as CSSProperties}
     >
+      {/* wadah video live kamera dengan opsi dibalik horizontal pas mirror aktif */}
       <div className="booth-viewport">
         <div className="booth-frame">
           <video
@@ -52,10 +56,12 @@ export function BoothStage({
           <div className="booth-wash" aria-hidden="true" />
         </div>
       </div>
+      {/* kalau kamera belum siap, tampilkan preview strip lengkap atau ajakan nyalain kamera */}
       {camera.status !== "ready" && (
         <div className={`camera-empty${complete ? " is-complete" : ""}`}>
           {complete ? (
             <>
+              {/* pratinjau strip foto kalau semua slot sudah terisi */}
               <div className="completion-strip-wrap">
                 <div
                   className={`completion-strip ${template.layout}`}
@@ -76,6 +82,7 @@ export function BoothStage({
             </>
           ) : (
             <div className="camera-empty-content">
+              {/* layar awal kamera mati: logo, status/error, tombol nyalain kamera, dan 3 langkah */}
               <img
                 className="camera-mark"
                 src="/assets/brand/logo.png"
@@ -124,6 +131,7 @@ export function BoothStage({
           )}
         </div>
       )}
+      {/* overlay angka hitung mundur gede pas lagi jepret */}
       {remaining !== null && (
         <span className="countdown" role="timer" aria-live="polite">
           {remaining}

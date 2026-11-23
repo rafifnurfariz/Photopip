@@ -1,3 +1,5 @@
+// unit test buat validasi header PNG, ekstraksi warna tema bingkai, sama scanner direktori frame-packs
+// bikin folder sementara di tmp OS dan file PNG asli pakai sharp biar tesnya mirip kondisi nyata
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -15,6 +17,7 @@ import {
   templateArtworkSpecs,
 } from "@/shared-tools/catalog/frame-pack";
 
+// daftar folder sementara yang bakal otomatis dihapus habis tes selesai
 const temporaryDirectories: string[] = [];
 
 interface PackColor {
@@ -28,6 +31,7 @@ const WHITE: PackColor = { r: 255, g: 255, b: 255, alpha: 1 };
 const GREEN: PackColor = { r: 0, g: 255, b: 0, alpha: 1 };
 const DARK: PackColor = { r: 13, g: 6, b: 20, alpha: 1 };
 
+// susun 24 byte header PNG valid dengan lebar dan tinggi yang diminta
 function pngHeader(width: number, height: number): Buffer {
   const buffer = Buffer.alloc(PNG_HEADER_BYTES);
   Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(buffer, 0);
@@ -38,6 +42,7 @@ function pngHeader(width: number, height: number): Buffer {
   return buffer;
 }
 
+// tulis file PNG beneran pakai sharp dengan ukuran dan warna solid tertentu
 async function writePng(
   file: string,
   width: number,
@@ -49,6 +54,7 @@ async function writePng(
     .toFile(file);
 }
 
+// buat folder root sementara di temp OS buat simulasi public/assets/frame-packs
 async function makeRoot() {
   const root = await mkdtemp(path.join(tmpdir(), "photopip-frames-"));
   temporaryDirectories.push(root);
@@ -61,6 +67,7 @@ interface PackOptions {
   color?: PackColor;
 }
 
+// bikin satu folder paket bingkai lengkap 5 file PNG (bisa diatur buat sengaja hilang/salah ukuran)
 async function writePack(root: string, id: string, options: PackOptions = {}) {
   const directory = path.join(root, id);
   await mkdir(directory, { recursive: true });
@@ -76,6 +83,7 @@ async function writePack(root: string, id: string, options: PackOptions = {}) {
   }
 }
 
+// bersihin semua folder sementara tiap selesai satu kasus tes
 afterEach(async () => {
   await Promise.all(
     temporaryDirectories
@@ -85,6 +93,7 @@ afterEach(async () => {
 });
 
 describe("frame pack validation", () => {
+  // cek pembacaan lebar-tinggi PNG dan penolakan header yang rusak
   it("reads PNG dimensions from the IHDR chunk", () => {
     expect(readPngSize(pngHeader(600, 1800))).toEqual({
       width: 600,
@@ -97,6 +106,7 @@ describe("frame pack validation", () => {
     expect(readPngSize(pngHeader(0, 1800))).toBeNull();
   });
 
+  // cek pembersihan nama folder jadi slug id yang aman
   it("turns any folder name into a url-safe id", () => {
     expect(packIdFromFolder("neon-nights")).toBe("neon-nights");
     expect(packIdFromFolder("GTA 6")).toBe("gta-6");
@@ -118,6 +128,7 @@ describe("frame pack validation", () => {
     ).toBe("/assets/frame-packs/neon-nights/4x1.png?v=1001-24");
   });
 
+  // cek daftar 5 nama file wajib dan ukuran piksel targetnya
   it("derives one artwork file per template from print geometry", () => {
     expect(templateArtworkSpecs.map((spec) => spec.file)).toEqual([
       "4x1.png",
@@ -138,6 +149,7 @@ describe("frame pack validation", () => {
 });
 
 describe("frame theme derivation", () => {
+  // cek pengambilan warna dominan dan kontras warna teks (putih di gelap, gelap di terang)
   it("uses the dominant opaque color as background", async () => {
     const root = await makeRoot();
     const file = path.join(root, "single.png");
@@ -174,6 +186,7 @@ describe("frame theme derivation", () => {
     });
   });
 
+  // kalau gambar transparan penuh, balik ke warna tema default
   it("falls back to defaults when every pixel is transparent", async () => {
     const root = await makeRoot();
     const file = path.join(root, "single.png");
@@ -184,6 +197,7 @@ describe("frame theme derivation", () => {
 });
 
 describe("frame directory scanner", () => {
+  // cek paket bingkai lengkap lolos scan tanpa diagnostic error
   it("returns a valid pack with derived theme and cache-busted artwork", async () => {
     const root = await makeRoot();
     await writePack(root, "neon-nights");
@@ -224,6 +238,7 @@ describe("frame directory scanner", () => {
     expect(result.diagnostics).toEqual([]);
   });
 
+  // kalau single.png gak bisa dibaca warnanya oleh sharp, tetap diterima pakai warna default + warning
   it("falls back to defaults when artwork colors cannot be read", async () => {
     const root = await makeRoot();
     await writePack(root, "neon-nights");
@@ -245,6 +260,7 @@ describe("frame directory scanner", () => {
     );
   });
 
+  // cek pengurutan paket dari timestamp paling baru di peta dates
   it("sorts packs using dates index map", async () => {
     const root = await makeRoot();
     await writePack(root, "alpha");
@@ -269,6 +285,7 @@ describe("frame directory scanner", () => {
     );
   });
 
+  // cek penolakan folder yang kurang file PNG atau salah dimensi piksel
   it("rejects missing and incorrectly sized artwork", async () => {
     const root = await makeRoot();
     await writePack(root, "missing-art", { omit: ["4x1.png"] });
@@ -320,6 +337,7 @@ describe("frame directory scanner", () => {
     );
   });
 
+  // cek folder kedua yang slug id-nya tabrakan langsung ditolak pakai kode duplicate-pack-id
   it("rejects a second folder that maps to the same id", async () => {
     const root = await makeRoot();
     await writePack(root, "GTA 6");

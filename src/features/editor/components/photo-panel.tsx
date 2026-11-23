@@ -1,5 +1,7 @@
 "use client";
 
+// panel tab Foto di editor buat milih salah satu slot foto, pasang filter warna, atau ambil ulang foto itu
+// tiap foto di strip bisa dikasih filter warna yang berbeda-beda
 import { useState } from "react";
 import { useLanguage } from "@/translations/use-language";
 import { photoFilters as photoFilterCatalog } from "@/shared-tools/catalog/photo-filters";
@@ -20,10 +22,12 @@ export function PhotoPanel({
   onRetake,
 }: PhotoPanelProps) {
   const { t } = useLanguage();
+  // index foto yang lagi dipilih buat diganti filternya atau di-retake
   const [active, setActive] = useState(0);
   const index = Math.min(active, composition.photos.length - 1);
   const current = composition.photoFilters[index] ?? "none";
 
+  // ubah filter khusus buat foto di posisi index aja, sisanya tetap
   const applyFilter = (filter: PhotoFilterId) => {
     if (filter === current) return;
     const photoFilters = composition.photos.map((_, position) =>
@@ -37,6 +41,7 @@ export function PhotoPanel({
   return (
     <section className="tool-section" aria-labelledby="tool-photo">
       <h2 id="tool-photo">{t.editor.tabs.photo}</h2>
+      {/* pilihan thumbnail semua foto yang ada di strip */}
       <div className="photo-grid">
         {composition.photos.map((photo, position) => (
           <button
@@ -53,6 +58,7 @@ export function PhotoPanel({
         ))}
       </div>
       <p className="panel-label">{t.editor.filters}</p>
+      {/* daftar 6 chip filter warna lengkap sama preview foto aktif */}
       <div className="filter-strip">
         {photoFilterCatalog.map((filter) => (
           <button
@@ -81,6 +87,7 @@ export function PhotoPanel({
           </button>
         ))}
       </div>
+      {/* tombol balik ke kamera buat ganti foto yang lagi dipilih */}
       <button
         type="button"
         className="panel-primary"

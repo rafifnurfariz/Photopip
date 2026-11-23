@@ -1,6 +1,9 @@
+// terjemahan bahasa Spanyol (Español) buat seluruh teks antarmuka
+// aktif pas user ganti bahasa ke Español di header
 import type { Messages } from "../types";
 
 export const es: Messages = {
+  // label dasar aplikasi dan toast
   app: {
     studio: "Estudio de fotos",
     language: "Idioma",
@@ -12,6 +15,7 @@ export const es: Messages = {
     downloadStarted: "Descarga iniciada.",
     dismiss: "Cerrar",
   },
+  // status kamera dan kontrol pengambilan foto
   camera: {
     label: "Cámara",
     off: "Cámara apagada",
@@ -25,6 +29,7 @@ export const es: Messages = {
     noDelay: "Sin cuenta atrás",
     auto: "Automática (5 s entre fotos)",
   },
+  // teks halaman studio dan dialog mulai ulang
   capture: {
     layoutLabel: "Diseño",
     chooseLayout: "Elige un diseño",
@@ -49,6 +54,7 @@ export const es: Messages = {
     resetBody:
       "Se borrarán todas las fotos de esta sesión. Descarga la tira antes si la quieres guardar.",
   },
+  // label semua fitur di halaman editor
   editor: {
     title: "Edita tu tira",
     subtitle: "Dale tu toque y descárgala lista para imprimir.",
@@ -116,10 +122,12 @@ export const es: Messages = {
       fade: "Desvanecido",
     },
   },
+  // teks bar unduh hasil strip
   export: {
     format: "Formato de archivo",
     download: "Descargar tira",
   },
+  // daftar pesan error dalam bahasa Spanyol
   errors: {
     camera: {
       denied:
@@ -137,6 +145,7 @@ export const es: Messages = {
     export:
       "La tira no se descargó. Tus cambios siguen aquí. Vuelve a intentarlo.",
   },
+  // nama 5 template layout
   layoutNames: {
     "4x1": "Tira clásica",
     "3x1": "Tira triple",

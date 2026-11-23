@@ -1,5 +1,7 @@
 "use client";
 
+// inspektor pengaturan satu objek teks yang lagi dipilih di canvas
+// bisa ubah isi tulisan, font, warna, posisi, ukuran, rotasi, opacity, perataan, bold/italic, dan layer
 import { useLanguage } from "@/translations/use-language";
 import {
   AlignCenterIcon,
@@ -46,6 +48,7 @@ export function TextInspector({
         <h2 id="tool-property">{t.editor.textContent}</h2>
         <span className="property-kind">{t.editor.tabs.text}</span>
       </div>
+      {/* kotak edit isi tulisan, dibatasi maksimal MAX_TEXT_LENGTH karakter */}
       <label className="field">
         <span>{t.editor.textContent}</span>
         <textarea
@@ -58,6 +61,7 @@ export function TextInspector({
           onBlur={onEndGesture}
         />
       </label>
+      {/* pemilih font kustom dari API dan color picker buat warna huruf */}
       <div className="field-grid">
         <label className="field">
           <span>{t.editor.font}</span>
@@ -86,6 +90,7 @@ export function TextInspector({
           />
         </label>
       </div>
+      {/* slider posisi X/Y, ukuran font, rotasi, dan transparansi */}
       <p className="panel-label">{t.editor.position}</p>
       <div className="range-list">
         <NumberField
@@ -139,6 +144,7 @@ export function TextInspector({
           onEnd={onEndGesture}
         />
       </div>
+      {/* tombol rata kiri/tengah/kanan plus toggle tebal dan miring */}
       <p className="panel-label">{t.editor.align}</p>
       <div className="property-actions">
         {(
@@ -178,6 +184,7 @@ export function TextInspector({
           <em>I</em>
         </button>
       </div>
+      {/* tombol atur urutan tumpukan, gandain teks, dan hapus */}
       <p className="panel-label">{t.editor.layer}</p>
       <div className="property-actions">
         <button type="button" onClick={() => onLayer("front")}>

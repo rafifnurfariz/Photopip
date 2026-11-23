@@ -1,7 +1,10 @@
+// helper sisi server buat baca dimensi PNG dan ngambil warna tema paket bingkai
+// dipakai sama scanner /api/frames untuk validasi folder frame-packs
 import sharp from "sharp";
 import { templates, type TemplateId } from "@/shared-tools/catalog/templates";
 import { templateGeometry } from "@/shared-tools/composition/geometry";
 
+// data satu paket bingkai hasil scan yang dikirim ke browser
 export interface FramePackFrame {
   id: string;
   name: string;
@@ -13,6 +16,7 @@ export interface FramePackFrame {
 
 type FramePackDiagnosticLevel = "warning" | "error";
 
+// catatan warning atau error kalau ada paket bingkai yang kurang pas
 export interface FramePackDiagnostic {
   folder: string;
   level: FramePackDiagnosticLevel;
@@ -25,6 +29,7 @@ export interface FramePackResponse {
   diagnostics: FramePackDiagnostic[];
 }
 
+// warna teks, font, dan warna dasar yang diturunin dari artwork bingkai
 export interface FrameTheme {
   textColor: string;
   fontId: string;
@@ -43,10 +48,12 @@ export interface TemplateArtworkSpec {
   height: number;
 }
 
+// batas panjang id, jumlah byte header PNG, dan ambang peringatan ukuran file (8MB)
 const MAX_PACK_ID_LENGTH = 60;
 export const PNG_HEADER_BYTES = 24;
 export const LARGE_ARTWORK_BYTES = 8 * 1024 * 1024;
 
+// konstanta sampling warna pakai sharp buat nentuin teks terang atau gelap
 const THEME_SAMPLE_SIZE = 32;
 const OPAQUE_ALPHA = 128;
 const LIGHT_TEXT_LUMINANCE = 0.179;
@@ -55,14 +62,17 @@ const DEFAULT_TEXT_COLOR = "#20231f";
 const DEFAULT_BACKGROUND_COLOR = "#ffffff";
 const DEFAULT_FONT_ID = "app";
 
+// tema cadangan kalau warna bingkai gagal dibaca
 export const DEFAULT_THEME: FrameTheme = {
   textColor: DEFAULT_TEXT_COLOR,
   fontId: DEFAULT_FONT_ID,
   backgroundColor: DEFAULT_BACKGROUND_COLOR,
 };
 
+// 8 byte pertama wajib yang nandain file beneran berformat PNG
 const pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
+// daftar 5 file PNG wajib beserta dimensi piksel yang harus dipenuhi tiap paket bingkai
 export const templateArtworkSpecs: readonly TemplateArtworkSpec[] =
   templates.map((template) => {
     const geometry = templateGeometry(template);
@@ -74,6 +84,7 @@ export const templateArtworkSpecs: readonly TemplateArtworkSpec[] =
     };
   });
 
+// ubah nama folder jadi slug id huruf kecil yang bersih, balikin null kalau gak valid
 export function packIdFromFolder(name: string): string | null {
   const id = name
     .trim()
@@ -84,6 +95,7 @@ export function packIdFromFolder(name: string): string | null {
   return id;
 }
 
+// ubah slug id kayak "retro-night" jadi judul rapi "Retro Night"
 export function nameFromPackId(id: string): string {
   return id
     .split("-")
@@ -92,6 +104,7 @@ export function nameFromPackId(id: string): string {
     .join(" ");
 }
 
+// konversi nilai channel sRGB 0-255 ke linear buat hitung kecerahan warna
 function channelToLinear(channel: number): number {
   const value = channel / 255;
   return value <= 0.04045
@@ -99,6 +112,7 @@ function channelToLinear(channel: number): number {
     : Math.pow((value + 0.055) / 1.055, 2.4);
 }
 
+// hitung tingkat terang warna (luminance) buat milih warna teks kontras
 function relativeLuminance(r: number, g: number, b: number): number {
   return (
     0.2126 * channelToLinear(r) +
@@ -107,12 +121,14 @@ function relativeLuminance(r: number, g: number, b: number): number {
   );
 }
 
+// ubah angka RGB jadi string kode hex kayak #ffffff
 function toHex(r: number, g: number, b: number): string {
   return `#${[r, g, b]
     .map((value) => Math.round(value).toString(16).padStart(2, "0"))
     .join("")}`;
 }
 
+// perkecil PNG bingkai jadi 32x32 lalu cari warna dominan buat tema background dan teks
 export async function deriveFrameTheme(file: string): Promise<FrameTheme> {
   const { data } = await sharp(file)
     .resize(THEME_SAMPLE_SIZE, THEME_SAMPLE_SIZE, { fit: "inside" })
@@ -127,6 +143,7 @@ export async function deriveFrameTheme(file: string): Promise<FrameTheme> {
     { count: number; r: number; g: number; b: number }
   >();
   for (let index = 0; index < data.length; index += 4) {
+    // abaikan piksel transparan (area lubang foto)
     if (data[index + 3] < OPAQUE_ALPHA) continue;
     const r = data[index];
     const g = data[index + 1];
@@ -143,12 +160,14 @@ export async function deriveFrameTheme(file: string): Promise<FrameTheme> {
     }
   }
 
+  // pilih kelompok warna yang paling banyak muncul
   let best: { count: number; r: number; g: number; b: number } | null = null;
   for (const bucket of buckets.values()) {
     if (!best || bucket.count > best.count) best = bucket;
   }
   if (!best) return DEFAULT_THEME;
 
+  // rata-ratain nilai RGB dari kelompok dominan lalu tentuin warna teks gelap/putih
   const r = best.r / best.count;
   const g = best.g / best.count;
   const b = best.b / best.count;
@@ -162,11 +181,14 @@ export async function deriveFrameTheme(file: string): Promise<FrameTheme> {
   };
 }
 
+// baca lebar dan tinggi gambar langsung dari 24 byte header IHDR file PNG
 export function readPngSize(bytes: Uint8Array): PngSize | null {
   if (bytes.length < PNG_HEADER_BYTES) return null;
+  // cocokin 8 byte signature PNG dulu
   for (let index = 0; index < pngSignature.length; index += 1) {
     if (bytes[index] !== pngSignature[index]) return null;
   }
+  // pastiin chunk pertama adalah "IHDR"
   if (
     bytes[12] !== 0x49 ||
     bytes[13] !== 0x48 ||
@@ -182,6 +204,7 @@ export function readPngSize(bytes: Uint8Array): PngSize | null {
   return { width, height };
 }
 
+// susun URL gambar bingkai dengan query versi biar cache browser selalu segar
 export function packFileUrl(
   id: string,
   file: string,
@@ -190,6 +213,7 @@ export function packFileUrl(
   return `/assets/frame-packs/${id}/${file}?v=${Math.round(stats.mtimeMs)}-${stats.size}`;
 }
 
+// gabungin id, tema warna, dan peta artwork jadi objek FramePackFrame utuh
 export function createFramePackFrame(input: {
   id: string;
   theme: FrameTheme;

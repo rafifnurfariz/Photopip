@@ -1,8 +1,11 @@
+// batas dan normalisasi properti teks sebelum digambar ke canvas
+// jaga biar panjang huruf, posisi, ukuran, sudut putar, dan opacity gak keluar dari batas
 import type { TextPlacement } from "./types";
 
 export const MIN_TEXT_SIZE = 18;
 export const MAX_TEXT_LENGTH = 120;
 
+// potong teks kepanjangan dan jepit koordinat, ukuran, rotasi, serta opacity biar aman dirender
 export function normalizeText(
   text: TextPlacement,
   width: number,
