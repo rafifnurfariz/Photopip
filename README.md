@@ -10,6 +10,12 @@
     <img src="https://img.shields.io/badge/Fabric.js-7.4.0-FF6B6B?style=for-the-badge" alt="Fabric.js" />
     <img src="https://img.shields.io/badge/Sharp-0.35.5-99CC00?style=for-the-badge" alt="Sharp" />
   </p>
+
+  <p>
+    <a href="https://photopip.vercel.app/"><strong>🌐 Buka Website</strong></a>
+    &nbsp;•&nbsp;
+    <a href="https://github.com/rafifnurfariz/Photopip"><strong>💻 Repositori GitHub</strong></a>
+  </p>
 </div>
 
 ---
