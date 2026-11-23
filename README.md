@@ -2,7 +2,7 @@
   <img src="public/assets/brand/logo.png" alt="Logo PhotoPip" width="112" />
   <h1>PhotoPip</h1>
   <p>
-    Web photo booth di browser buat ambil foto, susun jadi strip, hias pakai bingkai, stiker, dan teks, lalu unduh siap cetak.
+    Aplikasi web photobooth dan editor foto interaktif berbasis Next.js dan Fabric.js dengan dukungan beragam frame custom, stiker custom, font kustom, serta 7 pilihan bahasa
   </p>
 
   <p>
