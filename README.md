@@ -1,66 +1,101 @@
 <div align="center">
-  <img src="public/assets/brand/logo.png" alt="Logo Photopip" width="120" />
-  <h1>Photopip</h1>
-  <p>Aplikasi web photobooth dan editor foto interaktif berbasis Next.js dan Fabric.js dengan dukungan beragam frame custom, stiker custom, font kustom, serta 7 pilihan bahasa</p>
-
+  <img src="public/assets/brand/logo.png" alt="Logo PhotoPip" width="112" />
+  <h1>PhotoPip</h1>
   <p>
-    <img src="https://img.shields.io/badge/Next.js-16.4.5-black?logo=next.js" alt="Next.js" />
-    <img src="https://img.shields.io/badge/React-19.3.0-20232A?logo=react" alt="React" />
-    <img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
-    <img src="https://img.shields.io/badge/Fabric.js-7.4.0-FF6B6B" alt="Fabric.js" />
-    <img src="https://img.shields.io/badge/Sharp-0.35.5-99CC00" alt="Sharp" />
+    Web photo booth di browser buat ambil foto, susun jadi strip, hias pakai bingkai, stiker, dan teks, lalu unduh siap cetak.
   </p>
 
   <p>
-    <a href="https://photopip.vercel.app/">Buka Website</a>
-    &nbsp;|&nbsp;
-    <a href="https://github.com/rafifnurfariz/Photopip">Repositori GitHub</a>
+    <img src="https://img.shields.io/badge/Next.js-16.4.5-0a0a0a?style=flat-square&logo=next.js&logoColor=white" alt="Next.js" />
+    <img src="https://img.shields.io/badge/React-19.3.0-20232A?style=flat-square&logo=react&logoColor=61DAFB" alt="React" />
+    <img src="https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Fabric.js-7.4.0-FF6B6B?style=flat-square" alt="Fabric.js" />
+    <img src="https://img.shields.io/badge/Sharp-0.35.5-99CC00?style=flat-square" alt="Sharp" />
+    <img src="https://img.shields.io/badge/Node.js-%3E%3D22.0.0-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js" />
+  </p>
+
+  <p>
+    <a href="https://photopip.vercel.app/"><b>Buka Website</b></a>
+    &nbsp;&middot;&nbsp;
+    <a href="https://github.com/rafifnurfariz/Photopip"><b>Repositori GitHub</b></a>
+    &nbsp;&middot;&nbsp;
+    <a href="#cara-pakai--tambah-aset-sendiri"><b>Cara Pakai</b></a>
+    &nbsp;&middot;&nbsp;
+    <a href="#cara-install-dan-menjalankan"><b>Cara Jalankan</b></a>
   </p>
 </div>
 
 ---
 
-## 📌 Fitur
+## Fitur Utama
 
-| Fitur                | Keterangan                                                                                                                                                              |
-| :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Photobooth           | Foto diambil langsung dari kamera browser (`use-camera`, `booth-stage`). Ada hitung mundur dan pratinjau film strip. Bisa juga upload foto dari galeri.                 |
-| Layout dan frame     | Ada 5 layout: `single`, `2x2`, `2x3`, `3x1`, dan `4x1`. Frame pack yang tersedia: `default`, `cyber-glow`, `gta-6`, `matcha-latte`, `minecraft`, `monochrome-noir`, `pastel-party`, `retro-night`, dan `sunset-vibes`. |
-| Editor foto          | Canvas pakai Fabric.js. Ada undo/redo, daftar layer (`layer-list`), filter foto (`photo-filters`), stiker (`cute`, `emoji`, `food`, `nature`, `y2k`), serta teks dan font sendiri. |
-| Scan asset otomatis  | `/api/frames`, `/api/stickers`, dan `/api/fonts` membaca isi folder `public/assets/` sendiri.                                                                           |
-| 7 bahasa             | Indonesia (`id`), Inggris (`en`), Jerman (`de`), Spanyol (`es`), Prancis (`fr`), Jepang (`ja`), dan Mandarin (`zh`).                                                    |
-| PWA dan ekspor       | Ada `manifest.json` dan ikon, jadi bisa dipasang seperti aplikasi. Hasil foto bisa diekspor ke perangkat.                                                               |
-
----
-
-## ⚙️ Teknologi yang Dipakai
-
-- **Next.js (`^16.4.5`) dan React (`^19.3.0`):** Dipakai untuk halaman (`src/app/`), tampilan, dan API route (`/api/frames`, `/api/stickers`, `/api/fonts`).
-- **Fabric.js (`7.4.0`):** Dipakai di editor untuk mengatur posisi, ukuran, rotasi, dan layer stiker atau teks di canvas.
-- **Sharp (`0.35.5`):** Memproses gambar di sisi server. File `src/shared-tools/catalog/frame-pack.ts` memakainya untuk membaca PNG frame, lalu mengambil warna tema (warna latar strip dan warna teks footer).
-- **TypeScript (`5.9.3`) dan CSS (`src/app/globals.css` + `next-themes`):** TypeScript untuk tipe data, CSS untuk tampilan dan tema.
-- **Vitest (`4.1.11`), React Testing Library (`16.3.0`), ESLint, Prettier, dan Knip:** Untuk testing, cek lint dan format, serta cari kode yang tidak terpakai.
+| Fitur                | Penjelasan Singkat                                                                                                                                                                                                                                                      |
+| :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Photo booth**      | Ambil foto langsung lewat kamera browser, ada hitung mundur (`0`, `3`, atau `5` detik), mode cermin, foto beruntun otomatis, sama pratinjau kotak foto. Bisa juga unggah foto dari galeri.                                                                              |
+| **Tata letak**       | Ada 5 pilihan susunan foto: foto tunggal (`1x1`), grid `2x2`, grid `2x3`, strip `3x1`, dan strip `4x1`.                                                                                                                                                                 |
+| **Bingkai bawaan**   | Sudah tersedia 9 paket bingkai: `default`, `cyber-glow`, `gta-6`, `matcha-latte`, `minecraft`, `monochrome-noir`, `pastel-party`, `retro-night`, dan `sunset-vibes`.                                                                                                    |
+| **Editor canvas**    | Pakai Fabric.js jadi stiker dan teks bisa digeser, diputar, diubah ukurannya langsung di atas strip. Ada undo/redo, daftar layer, 6 filter foto, stiker per kategori (`cute`, `emoji`, `food`, `nature`, `y2k`), unggah stiker sendiri, plus pilih font dan warna teks. |
+| **Scan otomatis**    | Cukup taruh file bingkai, stiker, atau font ke folder `public/assets/`, nanti endpoint `/api/frames`, `/api/stickers`, dan `/api/fonts` langsung ngebaca otomatis tanpa perlu ubah kode.                                                                                |
+| **7 bahasa & tema**  | Mendukung bahasa Indonesia (`id`), Inggris (`en`), Jerman (`de`), Spanyol (`es`), Prancis (`fr`), Jepang (`ja`), dan Mandarin (`zh`), plus mode terang dan gelap.                                                                                                       |
+| **Siap unduh & PWA** | Sudah ada `manifest.json` dan ikon aplikasi, dan hasil akhirnya bisa langsung diunduh dalam format `PNG` atau `JPEG`.                                                                                                                                                   |
 
 ---
 
-## 📝 Yang Perlu Disiapkan
+## Teknologi yang Dipakai
 
-- **Node.js versi `>= 22.0.0`.**
+### Aplikasi Utama
+
+| Teknologi                   | Versi                 | Peran di Proyek                                                                                                                                                        |
+| :-------------------------- | :-------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Next.js & React**         | `^16.4.5` / `^19.3.0` | Kerangka utama website, routing halaman (`src/app/`), dan 3 API pembaca aset (`/api/frames`, `/api/stickers`, `/api/fonts`).                                           |
+| **TypeScript**              | `5.9.3`               | Bahasa utama biar tipe data antar file jelas dan rapi.                                                                                                                 |
+| **Fabric.js**               | `7.4.0`               | Library canvas di halaman editor buat narik, muter, ngecilin/nggedein stiker sama teks, dan nge-render hasil akhir ke PNG/JPEG.                                        |
+| **Sharp**                   | `0.35.5`              | Dipakai di sisi server (`src/shared-tools/catalog/frame-pack.ts`) buat baca file PNG bingkai dan ngambil warna dominan buat latar strip dan warna teks bawaan bingkai. |
+| **next-themes & CSS Murni** | `0.4.6`               | Ngatur ganti tema terang/gelap dan seluruh tampilan website lewat satu file `src/app/globals.css` (tanpa Tailwind).                                                    |
+| **API Bawaan Browser**      | —                     | `MediaDevices.getUserMedia` buat akses kamera, Canvas 2D API buat jepret dan resize foto upload, serta `FontFace` API buat muat file font `.ttf` secara dinamis.       |
+
+### Pengujian & Cek Kualitas Kode
+
+| Alat                               | Versi                          | Kegunaan                                                                                                                                       |
+| :--------------------------------- | :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Vitest, Testing Library, jsdom** | `4.1.11` / `16.3.0` / `27.0.1` | Buat jalanin unit test dan simulasi komponen/DOM tanpa buka browser.                                                                           |
+| **ESLint**                         | `9.39.5`                       | Ngecek aturan kode pakai `typescript-eslint` (`8.71.2`), `eslint-plugin-react-hooks` (`7.1.1`), dan `eslint-plugin-unused-imports` (`^4.4.1`). |
+| **Prettier**                       | `3.6.2`                        | Merapikan format penulisan kode secara otomatis.                                                                                               |
+| **Knip**                           | `^6.45.0`                      | Mencari file, dependensi, atau export yang tidak kepakai lagi.                                                                                 |
+
+---
+
+## Privasi & Keamanan
+
+> ![Privasi](https://img.shields.io/badge/PRIVASI-100%25_DI_BROWSER-2563eb?style=flat-square)
+>
+> Semua urusan olah foto kejadiannya **100% di browser kamu sendiri**, mulai dari kamera, filter, stiker, sampai unduh `PNG`/`JPEG`. Foto gak pernah dikirim ke server.
+
+Server cuma baca daftar file bingkai, stiker, dan font yang ada di `public/assets/`. Di `next.config.mjs` juga sudah dipasang aturan keamanan CSP (`default-src 'self'`, `img-src 'self' data: blob:`, `font-src 'self'`, `script-src 'self' 'unsafe-inline'`, `connect-src 'self'`) dan `Permissions-Policy` yang cuma ngebolehin kamera (`camera=(self)`), tanpa script pelacak dari luar.
+
+---
+
+## Yang Perlu Disiapkan
+
+- **Node.js** versi `>= 22.0.0`
 - **Browser modern** yang mendukung kamera (`MediaDevices.getUserMedia`)
-- **Secure context untuk kamera.** Browser cuma mengizinkan kamera di `localhost` atau HTTPS. Kalau buka `http://192.168.x.x:3000` dari HP lewat jaringan lokal, kamera akan ditolak. Untuk tes dari perangkat lain, pakai tunnel HTTPS.
+
+> ![Penting](https://img.shields.io/badge/PENTING-SYARAT_KAMERA-d97706?style=flat-square)
+>
+> Browser cuma ngizinin kamera di `localhost` atau lewat `HTTPS`. Kalau buka dari HP lewat IP lokal (`http://192.168.x.x:3000`), izin kamera bakal ditolak browser. Kalau mau tes di HP, pakai tunnel HTTPS.
 
 ---
 
-## 🛠️ Cara Install dan Menjalankan
+## Cara Install dan Menjalankan
 
-1. **Clone repositori:**
+1. **Download atau clone repositori:**
 
    ```bash
    git clone https://github.com/rafifnurfariz/Photopip.git
    cd Photopip
    ```
 
-2. **Install dependensi:**
+2. **Install semua paket yang dibutuhkan:**
 
    ```bash
    npm install
@@ -72,137 +107,147 @@
    npm run dev
    ```
 
-4. **Buka di browser:**
-   Buka **`http://localhost:3000`**.
+4. **Buka di browser:** masuk ke **`http://localhost:3000`**.
 
-5. **Jalankan test dan build produksi:**
+5. **Kalau mau tes dan bikin build produksi:**
 
    ```bash
-   # Menjalankan unit test dan component test dengan Vitest
+   # Jalanin semua tes Vitest
    npm test
 
-   # Membuat build produksi
+   # Bikin build produksi lalu jalankan server-nya
    npm run build
    npm start
    ```
 
 ---
 
-## 💻 Perintah npm
+## Daftar Perintah npm
 
-| Perintah                              | Fungsi                                                                              |
-| :------------------------------------ | :---------------------------------------------------------------------------------- |
-| `npm run dev`                         | Menjalankan dev server. Sebelumnya `frame-dates.json` disinkronkan dulu.            |
-| `npm run build`                       | Build produksi, lalu menyalin `public/` dan `.next/static` ke output standalone.    |
-| `npm start`                           | Menjalankan hasil build dari `.next/standalone/server.js`.                          |
-| `npm test`                            | Menjalankan semua test Vitest.                                                      |
-| `npx vitest run tests/<file>.test.ts` | Menjalankan satu file test saja.                                                    |
-| `npx vitest`                          | Mode watch.                                                                         |
-| `npm run lint`                        | ESLint. Akan gagal kalau ada warning.                                               |
-| `npm run type-check`                  | `tsc --noEmit`.                                                                     |
-| `npm run format` / `format:check`     | Prettier. `format` menulis ulang file, `format:check` hanya memeriksa.              |
-| `npm run deadcode`                    | Knip, untuk mencari file dan ekspor yang tidak dipakai.                             |
-| `npm run audit:production`            | `npm audit --omit=dev` untuk dependensi produksi.                                   |
-| `npm run verify`                      | Menjalankan format check, type check, lint, test, deadcode, audit, lalu build.      |
+| Perintah                              | Kegunaan                                                                               |
+| :------------------------------------ | :------------------------------------------------------------------------------------- |
+| `npm run dev`                         | Nyalain server lokal buat ngoding. Sebelum jalan, `frame-dates.json` disinkronin dulu. |
+| `npm run build`                       | Bikin build produksi, lalu nyalin folder `public/` dan `.next/static` ke standalone.   |
+| `npm start`                           | Jalanin hasil build produksi dari `.next/standalone/server.js`.                        |
+| `npm test`                            | Jalanin semua tes Vitest sekali jalan.                                                 |
+| `npx vitest run tests/<file>.test.ts` | Jalanin satu file tes aja.                                                             |
+| `npx vitest`                          | Jalanin tes dalam mode watch (otomatis tes ulang kalau file disimpan).                 |
+| `npm run lint`                        | Cek error/warning ESLint (gagal kalau ada 1 warning pun).                              |
+| `npm run type-check`                  | Cek error tipe TypeScript pakai `tsc --noEmit`.                                        |
+| `npm run format` / `format:check`     | Rapihin kode pakai Prettier (`format`), atau cuma ngecek aja (`format:check`).         |
+| `npm run deadcode`                    | Cek kode/file nganggur pakai Knip.                                                     |
+| `npm run audit:production`            | Cek celah keamanan paket produksi pakai `npm audit --omit=dev`.                        |
+| `npm run verify`                      | Jalanin semua cek sekaligus: format, tipe, lint, test, deadcode, audit, sampai build.  |
 
-Jalankan `npm run verify` sebelum commit atau bikin pull request.
-
----
-
-## 🔒 Privasi
-
-Semua proses foto dilakukan di browser, mulai dari kamera, filter, komposisi, sampai ekspor PNG/JPEG. Foto tidak pernah dikirim ke server. Server hanya membaca nama file asset di `public/assets/`. `next.config.mjs` memasang CSP `default-src 'self'`, `script-src 'self'`, `font-src 'self'`, dan `connect-src 'self'`. `Permissions-Policy` juga hanya mengizinkan kamera. Jadi tidak ada script, font, atau analytics dari domain luar.
+> ![Tips](https://img.shields.io/badge/TIPS-SEBELUM_COMMIT-16a34a?style=flat-square)
+>
+> Biasakan jalanin `npm run verify` sebelum commit biar kode tetap aman.
 
 ---
 
-## 📁 Struktur Project
+## Struktur Folder
+
+<details>
+<summary><b>Lihat susunan lengkap folder dan file proyek</b></summary>
 
 ```text
 Photopip/
 ├── public/
 │   ├── assets/
-│   │   ├── app-icons/       # Favicon & ikon PWA (16x16 hingga 512x512)
-│   │   ├── brand/           # Logo resmi aplikasi (logo.png)
-│   │   ├── fonts/           # Font .ttf pilihan pengguna (dipindai /api/fonts)
-│   │   ├── frame-packs/     # Satu folder per bingkai; _starter/ adalah template
-│   │   └── stickers/        # Stiker per kategori (cute, emoji, food, nature, y2k)
-│   └── manifest.json        # Konfigurasi Web App Manifest
-├── scripts/                 # sync-frame-dates, package-standalone, audit-production
+│   │   ├── app-icons/       # Favicon & ikon aplikasi (16x16 sampai 512x512)
+│   │   ├── brand/           # Logo resmi PhotoPip (logo.png)
+│   │   ├── fonts/           # Font .ttf tambahan yang dibaca /api/fonts
+│   │   ├── frame-packs/     # Satu folder per bingkai; _starter/ itu contoh kosongan
+│   │   └── stickers/        # Gambar stiker per folder kategori
+│   └── manifest.json        # Pengaturan Web App Manifest
+├── scripts/                 # Skrip bantu build & cek (sync-frame-dates, package-standalone, audit-production)
 ├── src/
 │   ├── app/
-│   │   ├── api/             # Route pemindai aset (frames, stickers, fonts)
-│   │   ├── globals.css      # Satu-satunya file styling (CSS murni)
-│   │   ├── layout.tsx       # Root layout, font lokal, metadata
-│   │   └── page.tsx         # Halaman utama
-│   ├── assets/fonts/        # Font UI bawaan (Segoe UI) via next/font/local
-│   ├── components/          # Komponen lintas fitur (header, icons, theme-provider)
+│   │   ├── api/             # Endpoint API pemindai aset (frames, stickers, fonts)
+│   │   ├── globals.css      # Satu-satunya file CSS buat seluruh tampilan
+│   │   ├── layout.tsx       # Kerangka HTML utama, font bawaan, metadata
+│   │   └── page.tsx         # Halaman utama website
+│   ├── assets/fonts/        # Font UI bawaan (Segoe UI) lewat next/font/local
+│   ├── components/          # Komponen global (header, icons, theme-provider)
 │   ├── features/
-│   │   ├── editor/          # Kanvas Fabric.js, panel stiker/teks/bingkai, layer, history
-│   │   └── studio/          # Kamera, sesi capture, film strip, pemilihan template
+│   │   ├── editor/          # Fase 2: canvas Fabric.js, panel bingkai/foto/stiker/teks/properti, history
+│   │   └── studio/          # Fase 1: kamera, sesi ambil foto, film strip, pilih tata letak
 │   ├── shared-tools/
-│   │   ├── catalog/         # Template, filter foto, font, frame pack, frame-dates.json
-│   │   ├── composition/     # Geometri, renderer, ekspor, background
-│   │   └── *.ts             # session, image-upload, async, id
-│   └── translations/        # Provider i18n + locales/ (7 bahasa)
-├── tests/                   # Suite Vitest (satu file per domain) + fixtures
-├── eslint.config.mjs        # ESLint 9 flat config
-├── next.config.mjs          # Konfigurasi Next.js, CSP, header keamanan
-├── package.json             # Dependensi & skrip npm
-├── tsconfig.json            # Konfigurasi TypeScript
-└── vitest.config.mts        # Konfigurasi Vitest (jsdom)
+│   │   ├── catalog/         # Data template, filter foto, font, frame pack, frame-dates.json
+│   │   ├── composition/     # Rumus ukuran, renderer Fabric.js, ekspor PNG/JPEG
+│   │   └── *.ts             # Helper umum (session, image-upload, async, id)
+│   └── translations/        # Pengaturan bahasa + file kamus 7 bahasa
+├── tests/                   # Kumpulan tes Vitest (satu file per fitur)
+├── eslint.config.mjs        # Aturan ESLint 9
+├── next.config.mjs          # Pengaturan Next.js & header keamanan
+├── package.json             # Daftar library & perintah npm
+├── tsconfig.json            # Pengaturan TypeScript
+└── vitest.config.mts        # Pengaturan Vitest (jsdom)
 ```
+
+</details>
 
 ---
 
-## 🚀 Contoh Penggunaan
+## Cara Pakai & Tambah Aset Sendiri
 
-### 1. Sesi Photobooth dan Edit Dasar
+### 1. Cara Pakai Photo Booth dan Editor
 
-1. Buka `http://localhost:3000`, lalu izinkan akses kamera di browser (atau upload foto dari perangkat).
-2. Pilih **Layout Template** (misalnya `4x1` atau `2x2`) dan **Frame Pack** (misalnya `cyber-glow` atau `matcha-latte`).
-3. Klik tombol **Capture** untuk memotret sesuai jumlah slot di template.
-4. Masuk ke mode **Editor**. Di sini kamu bisa kasih filter, tambah stiker atau teks, dan atur urutan layer.
-5. Klik **Export** untuk mengunduh hasil akhirnya.
+1. Buka `http://localhost:3000`.
+2. Di sebelah kanan, pilih **Tata letak** yang kamu mau (misalnya `Strip klasik` atau `Grid persegi`).
+3. Klik **Nyalakan kamera** lalu izinkan akses kamera di browser (kalau gak ada kamera, klik **Unggah foto** buat pilih gambar dari perangkat).
+4. Atur hitung mundur atau cermin kalau perlu, lalu klik **Ambil foto** sampai semua kotak foto terisi. Kamu bisa klik ikon putar di foto kalau mau ambil ulang slot tertentu.
+5. Kalau sudah penuh, klik **Edit strip foto** buat masuk ke halaman Editor.
+6. Di Editor, pilih **Bingkai**, kasih **Filter foto**, tempel **Stiker**, atau tambah **Teks** sesuai selera.
+7. Terakhir, pilih format file (**PNG** atau **JPEG**) di bar bawah lalu klik **Unduh strip**.
 
-### 2. Cara Menambah Frame Pack Baru
+### 2. Cara Nambah Bingkai (Frame Pack) Baru
 
-Scanner memakai aturan tetap (`src/app/api/frames/scan.ts`):
+Scanner di `src/app/api/frames/scan.ts` punya aturan ukuran yang wajib persis:
 
-1. Salin folder `public/assets/frame-packs/_starter/` (jangan `default/`) jadi folder baru, contohnya:
+1. Duplikat folder `public/assets/frame-packs/_starter/` (jangan duplikat `default/`) lalu kasih nama baru, misalnya:
    ```text
    public/assets/frame-packs/vintage-film/
    ```
-   Nama folder jadi nama bingkainya. Folder yang namanya diawali `_`, termasuk `_starter`, akan dilewati scanner.
-2. Ganti kelima file PNG di dalamnya. Ukuran pikselnya harus **persis** sama dengan tabel di bawah. Kalau beda, pack ditolak dan dilewati.
+   Nama folder bakal jadi nama bingkainya. Folder yang depannya pakai tanda `_` (kayak `_starter`) otomatis dilewati scanner.
+2. Ganti 5 file PNG di dalamnya. Ukuran pikselnya harus **sama persis** kayak tabel ini, kalau meleset sedikit aja paket bingkainya bakal ditolak:
 
-   | File         | Ukuran      |
-   | :----------- | :---------- |
-   | `single.png` | 1200 × 1800 |
-   | `2x2.png`    | 1200 × 1200 |
-   | `2x3.png`    | 1200 × 1800 |
-   | `3x1.png`    | 600 × 1350  |
-   | `4x1.png`    | 600 × 1800  |
+   | Nama File    | Ukuran Piksel |
+   | :----------- | :------------ |
+   | `single.png` | `1200 × 1800` |
+   | `2x2.png`    | `1200 × 1200` |
+   | `2x3.png`    | `1200 × 1800` |
+   | `3x1.png`    | `600 × 1350`  |
+   | `4x1.png`    | `600 × 1800`  |
 
-3. Area slot foto harus dibiarkan transparan. Artwork digambar di atas foto, jadi piksel yang tidak transparan akan menutupi foto. Selain itu, 12% bagian bawah canvas disiapkan untuk logo PhotoPip.
-4. Tidak perlu `frame.json`. Warna latar strip diambil dari warna opaque yang paling banyak di `single.png`. Warna teks footer dipilih otomatis (gelap atau putih) supaya tetap kebaca.
-5. Refresh halaman, lalu `/api/frames` akan memindai folder dan menampilkan pack baru. Kalau ada pack yang rusak, pack itu dilewati dan alasannya muncul di `diagnostics` saat `npm run dev`.
+3. Pastikan area kotak fotonya transparan karena gambar bingkai ditumpuk di atas foto. Bagian paling bawah (`12%` tinggi canvas) juga disiapin buat logo PhotoPip.
+4. Gak perlu bikin file `frame.json`. Warna latar strip diambil otomatis dari warna paling dominan di `single.png`, dan warna default buat teks yang ditambahin user juga otomatis dipilih gelap atau putih biar tetap kebaca.
+5. Refresh halaman website, nanti bingkai barunya langsung muncul di tab **Bingkai**. Kalau ada yang salah ukuran atau kurang file, alasannya bisa dilihat di log terminal pas `npm run dev`.
 
-Aturan di atas adalah yang dibaca scanner. Untuk hitungan posisi dan ukuran slot, lihat `src/shared-tools/composition/geometry.ts`.
+> ![Info](https://img.shields.io/badge/INFO-RUMUS_POSISI_SLOT-2563eb?style=flat-square)
+>
+> Kalau mau lihat rumus posisi kotak fotonya, cek `src/shared-tools/composition/geometry.ts`.
 
-### 3. Cara Menambah Stiker Baru
+### 3. Cara Nambah Stiker Baru
 
-1. Pilih folder kategori yang sudah ada di `public/assets/stickers/` (`cute/`, `emoji/`, `food/`, `nature/`, atau `y2k/`), atau bikin folder kategori baru di situ:
+1. Buka `public/assets/stickers/`, lalu pilih salah satu kategori yang sudah ada (`cute/`, `emoji/`, `food/`, `nature/`, atau `y2k/`), atau bikin folder kategori baru di situ:
    ```text
    public/assets/stickers/cute/
    ```
-2. Taruh file gambar stikernya. Sebaiknya PNG dengan background transparan, misalnya `star_sparkle.png`. Ekstensi yang dibaca: `.png`, `.webp`, `.jpg`, `.jpeg`.
-3. Refresh aplikasi, stiker baru akan muncul di panel stiker editor. Nama yang tampil diambil dari nama file (`star_sparkle` jadi "Star Sparkle"). File yang ditaruh langsung di `public/assets/stickers/` masuk ke kategori `all`.
+2. Taruh gambar stikernya (paling bagus pakai PNG transparan, misal `star_sparkle.png`). Format yang didukung: `.png`, `.webp`, `.jpg`, dan `.jpeg`.
+3. Refresh halaman, stiker barunya langsung muncul di tab **Stiker**. Nama stikernya diambil otomatis dari nama file (`star_sparkle` jadi "Star Sparkle"). Kalau file ditaruh langsung di luar folder kategori (`public/assets/stickers/`), stikernya masuk ke tab **Semua**.
 
-### 4. Cara Menambah Font Baru
+### 4. Cara Nambah Font Baru
 
-1. Taruh file font `.ttf` di folder berikut. Hanya `.ttf` yang dibaca, dan hanya yang ada di level paling atas folder.
+1. Taruh file font berformat `.ttf` langsung di dalam folder ini (jangan di dalam subfolder):
    ```text
    public/assets/fonts/
    ```
    _(Contoh: `public/assets/fonts/Poppins-Bold.ttf`)_
-2. Refresh aplikasi, font langsung bisa dipilih di panel teks editor. Font UI bawaan (Segoe UI) ada di `src/assets/fonts/` dan dimuat lewat `next/font/local`, bukan dari folder ini.
+2. Refresh halaman, font barunya langsung muncul di pilihan **Font** pas kamu ngedit teks. Font bawaan website (`Segoe UI`) disimpannya di `src/assets/fonts/` lewat `next/font/local`, jadi gak perlu ditaruh di sini.
+
+---
+
+<div align="center">
+  <sub>Dibuat untuk PhotoPip &middot; <a href="#photopip">Kembali ke atas</a></sub>
+</div>
