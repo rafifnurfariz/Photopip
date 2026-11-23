@@ -175,8 +175,6 @@ describe("composition and capture state", () => {
     expect(new Set(framePresets.map((frame) => frame.id)).size).toBe(
       framePresets.length,
     );
-    // No built-in frames to validate since we removed them
-    // Users can add frames via folders in public/assets/frame-packs/
   });
   it("only marks a preset active while frame and caption style match", () => {
     const frame: FramePreset = {

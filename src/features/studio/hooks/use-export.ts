@@ -18,7 +18,6 @@ export function useExport(onMessage: (message: StudioMessage | null) => void) {
       setExporting(true);
       onMessage(null);
       try {
-        // Fabric is only needed for the export itself; keep it out of first load.
         const { downloadImage, exportComposition } = await import(
           "@/shared-tools/composition/export"
         );

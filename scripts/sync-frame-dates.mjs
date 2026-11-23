@@ -2,8 +2,6 @@ import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-// On Vercel / CI environments, git clones are shallow and lack commit history.
-// We preserve the committed frame-dates.json as the single source of truth.
 if (process.env.VERCEL || process.env.CI) {
   process.exit(0);
 }
@@ -37,7 +35,6 @@ try {
 const updated = {};
 
 for (const folder of folders) {
-  // If the folder already has a recorded timestamp, keep it intact.
   if (existing[folder] && typeof existing[folder] === "number") {
     updated[folder] = existing[folder];
     continue;

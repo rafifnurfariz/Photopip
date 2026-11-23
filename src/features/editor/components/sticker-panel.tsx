@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * PANEL DAFTAR STIKER
- * Menampilkan galeri stiker yang dimuat dari folder server,
- * fitur pencarian stiker, tab kategori dinamis, dan tombol hapus semua stiker.
- */
-
 import { useMemo, useRef, useState } from "react";
 import { useLanguage } from "@/translations/use-language";
 import type { Sticker } from "@/shared-tools/catalog/stickers";

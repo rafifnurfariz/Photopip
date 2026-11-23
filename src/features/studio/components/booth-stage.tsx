@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * PANGGUNG KAMERA & HITUNGAN MUNDUR
- * Menampilkan jendela bidik kamera, angka mundur 3-2-1 saat memotret,
- * kedipan flash putih, serta panduan langkah awal saat kamera masih mati.
- */
-
 import type { CSSProperties, RefObject } from "react";
 import { useLanguage } from "@/translations/use-language";
 import type { Template } from "@/shared-tools/catalog/templates";
@@ -42,7 +36,6 @@ export function BoothStage({
       className={`booth-stage ${flash ? "shutter-flash" : ""}`}
       style={{ "--shot-ratio": slot.width / slot.height } as CSSProperties}
     >
-      {/* Window shaped like the print slot: the renderer crops photos the same way. */}
       <div className="booth-viewport">
         <div className="booth-frame">
           <video

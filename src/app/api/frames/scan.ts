@@ -1,9 +1,3 @@
-/**
- * PEMINDAI FOLDER PAKET BINGKAI
- * Memindai public/assets/frame-packs/: menurunkan tema dari artwork,
- * mengecek dimensi artwork PNG per template, dan menyusun katalog bingkai siap pakai.
- */
-
 import { open, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import defaultFrameDates from "@/shared-tools/catalog/frame-dates.json";
@@ -164,10 +158,6 @@ async function scanFrameFolder(
   };
 }
 
-/**
- * Scans a frames directory and returns valid packs sorted by addition time (newest first),
- * plus diagnostic messages for any broken or non-conforming folders.
- */
 export async function scanFrameDirectory(
   root: string,
   dates: Record<string, number> = defaultFrameDates,

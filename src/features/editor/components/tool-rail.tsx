@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * BILAH TAB ALAT (TOOL RAIL)
- * Tombol navigasi tab di sisi samping editor: Bingkai, Foto, Stiker,
- * Teks, dan Properti, lengkap dengan kontrol keyboard (panah/tab).
- */
-
 import { useRef } from "react";
 import type { ComponentType, KeyboardEvent } from "react";
 import {

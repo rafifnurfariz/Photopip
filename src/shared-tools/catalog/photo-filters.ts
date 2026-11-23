@@ -1,6 +1,5 @@
 import type { PhotoFilterId } from "@/shared-tools/composition/types";
 
-/** CSS approximation of the Fabric chain in render.ts, for the panel preview. */
 interface PhotoFilterPreview {
   filter?: string;
   tint?: string;

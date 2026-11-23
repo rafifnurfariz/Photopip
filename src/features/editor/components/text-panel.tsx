@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * PANEL DAFTAR TEKS
- * Menampilkan daftar tulisan/caption yang ada di kanvas,
- * tombol "+ Tambah Teks", dan tombol hapus teks per baris.
- */
-
 import { useLanguage } from "@/translations/use-language";
 import { CloseIcon } from "@/components/icons";
 import type { Composition } from "@/shared-tools/composition/types";

@@ -1,8 +1,3 @@
-/**
- * PEMINDAI FOLDER FONT TTF
- * Membaca otomatis file .ttf di public/assets/fonts/ dan menyusun katalog font dinamis.
- */
-
 import { readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import type { TextFont } from "@/shared-tools/catalog/fonts";

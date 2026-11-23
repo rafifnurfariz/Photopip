@@ -5,11 +5,6 @@ import { framePresets, type FramePreset } from "@/shared-tools/catalog/frames";
 import type { FramePackResponse } from "@/shared-tools/catalog/frame-pack";
 import { mergeFramePacks } from "@/shared-tools/catalog/frame-packs";
 
-/**
- * Starts with the built-in presets so the editor never waits, then adds image
- * packs discovered by `/api/frames`. A missing or broken route leaves the
- * built-ins untouched.
- */
 export function useFrameCatalog(): readonly FramePreset[] {
   const [frames, setFrames] = useState<readonly FramePreset[]>(framePresets);
 
@@ -27,7 +22,6 @@ export function useFrameCatalog(): readonly FramePreset[] {
         setFrames(mergeFramePacks(framePresets, data.frames));
       } catch {
         if (controller.signal.aborted) return;
-        // The scan route is optional; built-in presets remain available.
       }
     })();
     return () => controller.abort();

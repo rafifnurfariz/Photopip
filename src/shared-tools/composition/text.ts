@@ -3,7 +3,6 @@ import type { TextPlacement } from "./types";
 export const MIN_TEXT_SIZE = 18;
 export const MAX_TEXT_LENGTH = 120;
 
-/** Keeps a text placement inside the canvas and within sane limits. */
 export function normalizeText(
   text: TextPlacement,
   width: number,

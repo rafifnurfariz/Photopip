@@ -1,8 +1,3 @@
-/**
- * MESIN PENGGAMBAR KANVAS (RENDERER)
- * Menggambar susunan strip foto utuh secara bertingkat: warna latar belakang,
- * foto di setiap slot, filter warna, artwork bingkai di depan, teks, dan stiker.
- */
 import {
   Canvas,
   FabricImage,
@@ -23,7 +18,6 @@ export type EditorObject = FabricObject & {
   objectType?: "sticker" | "text";
 };
 
-// Shared Fabric options: the same anchors and handles on every object.
 const TOP_LEFT = { originX: "left", originY: "top" } as const;
 const CENTER = { originX: "center", originY: "center" } as const;
 const STATIC_OBJECT = { selectable: false, evented: false } as const;
@@ -39,11 +33,6 @@ const EDIT_HANDLES = {
 const IMAGE_CACHE_LIMIT = 24;
 const imageCache = new Map<string, HTMLImageElement>();
 
-/**
- * Dropping the references lets the browser free the bitmaps once no canvas
- * object holds them. Called when the editor closes; images still on a live
- * canvas share these elements, so they must never be cleared mid-session.
- */
 export function clearImageCache() {
   imageCache.clear();
 }
@@ -56,10 +45,6 @@ function cacheImage(src: string, image: HTMLImageElement) {
   imageCache.set(src, image);
 }
 
-/**
- * Decorative layers must never block the strip. A missing pack PNG is skipped
- * with a warning; only cancellation still stops the render.
- */
 function optionalImage(
   src: string,
   signal?: AbortSignal,
@@ -84,12 +69,10 @@ function loadImage(
   }
   const cached = imageCache.get(src);
   if (cached) {
-    // Refresh recency so the oldest entry is evicted first.
     imageCache.delete(src);
     imageCache.set(src, cached);
     return Promise.resolve(cached);
   }
-  // AbortSignal.any combines user cancellation + 10 s deadline without a manual setTimeout.
   const combined = signal
     ? AbortSignal.any([signal, AbortSignal.timeout(10000)])
     : AbortSignal.timeout(10000);
@@ -175,7 +158,6 @@ export async function renderComposition(
   ]);
   if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
   if (typeof document !== "undefined" && document.fonts) {
-    // If dynamic custom fonts are used in texts, ensure they are loaded
     const fontPromises = (composition.texts ?? [])
       .map((text) => getTextFont(text.fontId))
       .filter((font): font is NonNullable<typeof font> => Boolean(font))
@@ -215,8 +197,6 @@ export async function renderComposition(
     applyPhotoFilter(photo, composition.photoFilters?.[index] ?? "none");
     canvas.add(photo);
   });
-  // Pack artwork is the front layer: transparent pixels reveal the photo below,
-  // while opaque pixels define the photo shape or add decoration above it.
   if (artworkImage) {
     const artwork = new FabricImage(artworkImage, {
       ...TOP_LEFT,

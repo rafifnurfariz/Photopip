@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * TAMPILAN UTAMA EDITOR
- * Ruang kerja dekorasi foto strip: kanvas interaktif (Fabric.js),
- * bilah alat (tool rail), riwayat undo/redo, serta manajemen stiker dan teks.
- */
-
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   BackIcon,
@@ -92,7 +86,6 @@ export default function Editor({
 
   const commit = useCallback(
     (next: Composition) => {
-      // A discrete edit supersedes any slider/textarea gesture in flight.
       gesture.current = null;
       setHistory((state) => pushHistory(state, composition));
       onChange(next);
@@ -112,8 +105,6 @@ export default function Editor({
   const endGesture = useCallback(() => {
     const snapshot = gesture.current;
     gesture.current = null;
-    // Focus/blur without an edit, or a pointer that never moved, must not
-    // create an undo step that changes nothing.
     if (snapshot && snapshot !== composition) {
       setHistory((state) => pushHistory(state, snapshot));
     }

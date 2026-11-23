@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * HOOK KANVAS EDITOR (FABRIC.JS)
- * Menghubungkan elemen HTML canvas dengan Fabric.js: responsif ukuran layar,
- * drag-and-drop objek, zooming, panning sentuh mobile, dan sinkronisasi perubahan.
- */
-
 import { useEffect, useRef, useState } from "react";
 import { Canvas } from "fabric";
 import type { FramePreset } from "@/shared-tools/catalog/frames";
@@ -42,7 +36,6 @@ function measure(element: HTMLElement) {
   };
 }
 
-/** The Fabric object that currently represents a panel selection. */
 function findObject(canvas: Canvas, target: CanvasSelection) {
   return canvas.getObjects().find((item) => {
     const object = item as EditorObject;
@@ -107,11 +100,8 @@ export function useEditorCanvas(
     const resize = () => {
       const { width, height } = measure(container);
       const geometry = templateGeometry(latest.current.composition.template);
-      // A 1:3 strip fitted to height on a phone is too narrow to edit, so the
-      // stacked (mobile/tablet) editor fits the width and scrolls vertically.
       const tall = geometry.height > geometry.width * 1.5;
       const stacked = window.innerWidth <= 899;
-      // "Fit whole strip" is a mobile review mode: both axes, no scrolling.
       const fit =
         stacked && latest.current.fitWhole
           ? fitCanvas(geometry, width, height)
@@ -192,10 +182,6 @@ export function useEditorCanvas(
     canvas.on("selection:created", readSelection);
     canvas.on("selection:updated", readSelection);
     canvas.on("selection:cleared", readSelection);
-    // Touch screens: the stacked editor shows a strip taller than the stage.
-    // The canvas owns the gesture (touch-action: none), so panning is manual:
-    // a drag that starts on empty canvas scrolls the wrap, a drag that starts
-    // on an object stays a Fabric object drag.
     let panId: number | null = null;
     let panY = 0;
     const movePan = (event: PointerEvent) => {
@@ -233,7 +219,6 @@ export function useEditorCanvas(
       canvas.off();
       canvasRef.current = null;
       void canvas.dispose();
-      // The editor is closing, so no live object needs these bitmaps anymore.
       clearImageCache();
     };
   }, []);
@@ -242,8 +227,6 @@ export function useEditorCanvas(
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Fast path: if only a sticker or text's transform/styling changed on an already-rendered
-    // canvas without altering structure, update Fabric object in-place rather than tearing down.
     if (renderedRef.current && !renderingRef.current) {
       const prev = latest.current.composition;
       const isBaseIdentical =
@@ -324,8 +307,6 @@ export function useEditorCanvas(
           }
         }
 
-        // Fast path only valid when every placement already has a canvas object.
-        // A newly added sticker/text lacks one, so fall through to full render.
         if (updatedAny && allObjectsExist) {
           canvas.requestRenderAll();
           return;

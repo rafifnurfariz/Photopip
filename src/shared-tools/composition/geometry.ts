@@ -1,9 +1,3 @@
-/**
- * PERHITUNGAN GEOMETRI & TATA LETAK CETAK
- * Menghitung koordinat pixel cetak: margin tepi, jarak antar foto (gap),
- * area footer bawah, posisi slot foto, dan pembatasan geser stiker.
- */
-
 import type { Slot } from "./types";
 
 const VERTICAL_WIDTH = 600;
@@ -36,11 +30,6 @@ export function templateGeometry(template: {
   return { width, height, margin, footer, slots };
 }
 
-/**
- * Fits the print canvas inside a measured content box. Both axes are honoured
- * so the strip never overflows a short stage, and the result never upscales
- * beyond the print pixels.
- */
 export function fitCanvas(
   geometry: { width: number; height: number },
   availableWidth: number,

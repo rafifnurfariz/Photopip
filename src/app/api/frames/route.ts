@@ -17,7 +17,6 @@ export async function GET() {
   return Response.json(
     {
       frames: result.frames,
-      // Absolute paths and raw filesystem errors stay on the server.
       diagnostics:
         process.env.NODE_ENV === "development" ? result.diagnostics : [],
     },

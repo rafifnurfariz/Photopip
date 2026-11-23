@@ -1,9 +1,3 @@
-/**
- * PANEL PILIHAN BINGKAI
- * Menampilkan kartu pratinjau bingkai foto strip yang tersedia,
- * tombol "Acak bingkai" (surprise me), dan menerapkan bingkai ke kanvas.
- */
-
 import { useLanguage } from "@/translations/use-language";
 import {
   activeFrame,

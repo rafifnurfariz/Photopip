@@ -16,12 +16,8 @@ export interface FramePreset {
   fontId: string;
 }
 
-// Built-in presets stay first in the catalog; image packs from /api/frames follow.
-// Currently empty — all frames come from frame-pack folders under public/assets/frame-packs/.
 export const framePresets: FramePreset[] = [];
 
-// Stable identity: the editor re-renders on `frame` identity, so a fresh
-// fallback object on every call would retry a failed render forever.
 const plainFrame: FramePreset = {
   id: "plain",
   name: "Plain",

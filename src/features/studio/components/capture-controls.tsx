@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * TOMBOL KONTROL PEMOTRETAN
- * Tombol jepret (shutter), timer hitungan detik, tombol cermin (mirror),
- * mode otomatis jepret semua slot, tombol reset, dan upload dari galeri.
- */
-
 import type { RefObject } from "react";
 import { AutoIcon, MirrorIcon, ResetIcon, TimerIcon } from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";

@@ -1,9 +1,3 @@
-/**
- * PEMINDAI FOLDER STIKER
- * Membaca otomatis folder public/assets/stickers/: nama folder jadi kategori,
- * nama file gambar PNG/WebP jadi stiker, lengkap dengan versi cache-busting.
- */
-
 import { readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import type { Sticker } from "@/shared-tools/catalog/stickers";
@@ -33,7 +27,6 @@ function sanitizeId(str: string): string {
   );
 }
 
-/** Two file names can sanitize to the same id; a suffix keeps React keys unique. */
 function uniqueId(base: string, used: Set<string>): string {
   let id = base;
   let suffix = 2;
@@ -133,7 +126,6 @@ export async function scanStickersDirectory(
     }
   }
 
-  // Sort stickers alphabetically by name
   stickers.sort((a, b) => a.name.localeCompare(b.name));
 
   return {

@@ -14,7 +14,6 @@ export async function GET() {
     });
   } catch (error) {
     console.warn("[stickers] scan failed", error);
-    // A broken folder must not surface as an HTML 500 to the sticker panel.
     return Response.json(
       { stickers: [], categories: [] },
       { headers: { "Cache-Control": "no-store, max-age=0" } },

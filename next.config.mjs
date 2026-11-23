@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const isDev = process.env.NODE_ENV === "development";
 
-// Inline script and style stay allowed: Next hydrates through an inline script
-// and Fabric writes inline styles. Everything from another origin is blocked.
 const contentSecurityPolicy = [
   "default-src 'self'",
   "img-src 'self' data: blob:",

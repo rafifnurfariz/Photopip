@@ -2,14 +2,12 @@ import sharp from "sharp";
 import { templates, type TemplateId } from "@/shared-tools/catalog/templates";
 import { templateGeometry } from "@/shared-tools/composition/geometry";
 
-/** A frame pack discovered under `public/assets/frame-packs/<id>/`. */
 export interface FramePackFrame {
   id: string;
   name: string;
   textColor: string;
   fontId: string;
   backgroundColor: string;
-  /** Cache-busted front-layer artwork URL for every print template. */
   artwork: Record<TemplateId, string>;
 }
 
@@ -51,7 +49,6 @@ export const LARGE_ARTWORK_BYTES = 8 * 1024 * 1024;
 
 const THEME_SAMPLE_SIZE = 32;
 const OPAQUE_ALPHA = 128;
-// WCAG relative luminance above which dark text stays readable.
 const LIGHT_TEXT_LUMINANCE = 0.179;
 
 const DEFAULT_TEXT_COLOR = "#20231f";
@@ -66,12 +63,6 @@ export const DEFAULT_THEME: FrameTheme = {
 
 const pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
-/**
- * Print-pixel artwork required for each template. Derived from geometry so a
- * layout change automatically updates the scanner contract. The single layout
- * uses `single.png`: `1x1.png` is a tracking-pixel name that browser filters
- * can block.
- */
 export const templateArtworkSpecs: readonly TemplateArtworkSpec[] =
   templates.map((template) => {
     const geometry = templateGeometry(template);
@@ -83,10 +74,6 @@ export const templateArtworkSpecs: readonly TemplateArtworkSpec[] =
     };
   });
 
-/**
- * Turns any folder name into a URL-safe pack id. Returns null when nothing
- * usable remains or the result would be longer than `MAX_PACK_ID_LENGTH`.
- */
 export function packIdFromFolder(name: string): string | null {
   const id = name
     .trim()
@@ -97,7 +84,6 @@ export function packIdFromFolder(name: string): string | null {
   return id;
 }
 
-/** Humanizes a pack id into a display name. */
 export function nameFromPackId(id: string): string {
   return id
     .split("-")
@@ -127,11 +113,6 @@ function toHex(r: number, g: number, b: number): string {
     .join("")}`;
 }
 
-/**
- * Derives a pack theme from its artwork: the most common opaque color becomes
- * the strip background, and footer text flips between dark and white to stay
- * readable. Packs ship no manifest, so this replaces the old `frame.json`.
- */
 export async function deriveFrameTheme(file: string): Promise<FrameTheme> {
   const { data } = await sharp(file)
     .resize(THEME_SAMPLE_SIZE, THEME_SAMPLE_SIZE, { fit: "inside" })
@@ -181,7 +162,6 @@ export async function deriveFrameTheme(file: string): Promise<FrameTheme> {
   };
 }
 
-/** Reads width and height from a PNG IHDR chunk without decoding pixels. */
 export function readPngSize(bytes: Uint8Array): PngSize | null {
   if (bytes.length < PNG_HEADER_BYTES) return null;
   for (let index = 0; index < pngSignature.length; index += 1) {
@@ -202,7 +182,6 @@ export function readPngSize(bytes: Uint8Array): PngSize | null {
   return { width, height };
 }
 
-/** Appends file metadata so replacing artwork busts the browser image cache. */
 export function packFileUrl(
   id: string,
   file: string,

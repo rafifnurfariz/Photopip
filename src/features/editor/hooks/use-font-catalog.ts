@@ -11,9 +11,6 @@ let cachedCatalog: FontCatalogData | null = null;
 let activeRequest: Promise<FontCatalogData | null> | null = null;
 const loadedFontFamilies = new Set<string>();
 
-/**
- * Ensures a font face is registered with the browser's Document FontFaceSet.
- */
 async function ensureFontLoaded(font: TextFont): Promise<void> {
   if (typeof document === "undefined" || !("fonts" in document)) return;
   if (loadedFontFamilies.has(font.family)) return;
@@ -44,7 +41,6 @@ async function fetchFontCatalog(): Promise<FontCatalogData | null> {
       };
       registerTextFonts(data.fonts);
       cachedCatalog = data;
-      // Preload discovered fonts into document
       for (const font of data.fonts) {
         void ensureFontLoaded(font);
       }

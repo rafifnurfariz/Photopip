@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * TAMPILAN UTAMA STUDIO (FASE PENGAMBILAN FOTO)
- * Mengatur alur pemotretan: kamera aktif, upload file, ganti template strip,
- * hingga tombol lanjut ke mode editor setelah foto lengkap.
- */
-
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/translations/use-language";
@@ -75,19 +69,16 @@ export default function Studio() {
   } = useExport(setMessage);
   const frames = useFrameCatalog();
 
-  // Prefetch sticker catalog in background so opening the sticker tab is instant.
   useEffect(() => {
     void fetchStickerCatalog();
   }, []);
 
-  // The download toast is an acknowledgement, not state: clear it after 3s.
   useEffect(() => {
     if (message !== "downloaded") return;
     const id = setTimeout(() => setMessage(null), 3000);
     return () => clearTimeout(id);
   }, [message]);
 
-  // A phone back gesture must return to the camera, not drop the session.
   useEffect(() => {
     const onPopState = () => {
       if (!historyEntry.current) return;
@@ -109,7 +100,6 @@ export default function Studio() {
       cancelExport();
       setStage({ mode: "capture", draft: null });
       setMessage(null);
-      // Consume the editor history entry so Back does not reopen a dead draft.
       if (historyEntry.current) {
         historyEntry.current = false;
         window.history.back();
@@ -118,7 +108,6 @@ export default function Studio() {
     [cancelExport, resetSession],
   );
 
-  // Changing layout or starting over discards finished photos; confirm first.
   const requestReset = useCallback(
     (templateId?: TemplateId) => {
       if (session.photos.length === 0) {

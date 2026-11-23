@@ -1,7 +1,5 @@
 import type { SVGProps } from "react";
 
-/* One hand-drawn set, square caps and 2px strokes, so icons match the
-   print-poster chrome instead of borrowing a rounded icon library. */
 function Icon({ children, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -155,7 +153,6 @@ export function TimerIcon() {
 export function MirrorIcon() {
   return (
     <Icon>
-      {/* 2 on, 6 off renders as three even dashes once square caps are added. */}
       <path d="M12 3v18" strokeDasharray="2 6" />
       <path d="M9 7l-5 5 5 5M15 7l5 5-5 5" />
     </Icon>

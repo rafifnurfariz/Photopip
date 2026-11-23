@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * HOOK PENGENDALI KAMERA BROWSER
- * Mengelola izin webcam/kamera HP via getUserMedia, streaming video,
- * pengecekan frame siap pakai, penanganan error, dan pengambilan screenshot foto.
- */
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   cameraFailure,
@@ -86,7 +80,6 @@ export function useCamera() {
           setStatus("error");
         };
       });
-      // Readiness and play run together so a stalled play promise is also bounded.
       await Promise.all([
         video.play(),
         waitForVideoFrame(video, controller.signal),

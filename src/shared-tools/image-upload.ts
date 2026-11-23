@@ -1,9 +1,3 @@
-/**
- * PENGOLAHAN FOTO UPLOAD
- * Memeriksa validitas file foto (tipe gambar, batas ukuran maksimal 25 MB),
- * lalu mengecilkan ukuran dimensi jika terlalu besar sebelum dipasang ke strip.
- */
-
 const MAX_EDGE = 2000;
 const MAX_STICKER_EDGE = 1200;
 const MAX_FILE_BYTES = 25 * 1024 * 1024;
@@ -14,7 +8,6 @@ function isImageFile(file: File) {
   return file.type.startsWith("image/") || IMAGE_EXTENSION.test(file.name);
 }
 
-/** Cheap checks that run before the browser decodes the file into memory. */
 export function isSupportedPhotoFile(file: File) {
   return isImageFile(file) && file.size <= MAX_FILE_BYTES;
 }
@@ -29,10 +22,6 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   return promise;
 }
 
-/**
- * Reads a photo chosen from the device and returns a print-ready data URL.
- * Large camera files are scaled down so the strip stays responsive.
- */
 export async function readPhotoFile(file: File): Promise<string> {
   if (!isImageFile(file)) throw new Error("Unsupported image file");
   if (file.size > MAX_FILE_BYTES) throw new Error("Image file is too large");
@@ -42,7 +31,6 @@ export async function readPhotoFile(file: File): Promise<string> {
     const width = image.naturalWidth;
     const height = image.naturalHeight;
     if (!width || !height) throw new Error("Image has no dimensions");
-    // Checked before drawImage so a decompression bomb never allocates.
     if (width * height > MAX_SOURCE_PIXELS)
       throw new Error("Image dimensions are too large");
     const scale = Math.min(1, MAX_EDGE / Math.max(width, height));
@@ -60,10 +48,6 @@ export async function readPhotoFile(file: File): Promise<string> {
   }
 }
 
-/**
- * Reads a user-uploaded sticker and returns a transparent PNG data URL.
- * Preserves alpha transparency and scales down large dimensions.
- */
 export async function readStickerFile(file: File): Promise<string> {
   if (!isImageFile(file)) throw new Error("Unsupported image file");
   if (file.size > MAX_FILE_BYTES) throw new Error("Image file is too large");

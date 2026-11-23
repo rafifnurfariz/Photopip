@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * PEMILIH FORMAT TATA LETAK (TEMPLATE)
- * Menu popover / bottom sheet untuk memilih bentuk strip cetak:
- * strip vertikal (4x1, 3x1), kotak grid (2x2, 2x3), atau foto tunggal (1x1).
- */
-
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CheckIcon, ChevronIcon } from "@/components/icons";
@@ -66,8 +60,6 @@ export function TemplateSelector({
   const place = useCallback(() => {
     const trigger = triggerRef.current;
     if (!trigger) return;
-    // Phones portrait: a bottom sheet keeps the list in the thumb zone.
-    // Landscape is excluded (min-height: 480px) — use positioned popover instead.
     if (
       window.matchMedia("(max-width: 640px) and (min-height: 480px)").matches
     ) {
@@ -84,7 +76,6 @@ export function TemplateSelector({
       below >= room || below >= above
         ? rect.bottom + 8
         : Math.max(12, rect.top - 8 - room);
-    // Clamp so the popover never overflows the bottom of the viewport.
     const top = Math.min(rawTop, vh - room - 8);
     const left = Math.max(
       8,
@@ -111,7 +102,6 @@ export function TemplateSelector({
       const first = items[0];
       const last = items[items.length - 1];
       const active = document.activeElement;
-      // The sheet is portaled to <body>, so Tab has to loop inside it.
       if (event.shiftKey && (active === first || !popover.contains(active))) {
         event.preventDefault();
         last.focus();

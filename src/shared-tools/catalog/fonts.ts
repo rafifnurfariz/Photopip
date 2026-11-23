@@ -7,9 +7,6 @@ export interface TextFont {
 
 const FALLBACK_FONT_FAMILY = "sans-serif";
 
-/**
- * Registry of dynamic fonts discovered or loaded.
- */
 const registeredFonts = new Map<string, TextFont>();
 
 export function registerTextFonts(fonts: TextFont[]) {
@@ -22,7 +19,6 @@ export function getTextFont(id: string): TextFont | undefined {
   return registeredFonts.get(id);
 }
 
-/** Resolves the CSS font-family name for a given font ID. */
 export function resolveTextFont(id: string): string {
   const font = registeredFonts.get(id);
   if (font?.family) {

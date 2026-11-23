@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * HOOK SESI PEMOTRETAN
- * Mengatur urutan slot foto: hitungan mundur tiap jepretan, penampungan foto,
- * alur upload banyak file sekaligus, dan pencegahan tabrakan jepret vs upload.
- */
-
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { delay } from "@/shared-tools/async";
 import {
@@ -163,7 +157,6 @@ export function useCaptureSession({
           : template.photoCount - session.photos.length;
       if (slots <= 0) return;
       const selected = files.slice(0, slots);
-      // All-or-nothing: one rejected file must not leave a half-filled strip.
       if (!selected.every(isSupportedPhotoFile)) {
         onMessage("upload");
         return;

@@ -1,4 +1,3 @@
-/** Index a tablist should move to for a key, or null when the key is not ours. */
 export function nextTabIndex(
   count: number,
   current: number,

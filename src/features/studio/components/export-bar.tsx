@@ -1,11 +1,5 @@
 "use client";
 
-/**
- * BILAH EKSPOR & UNDUH
- * Pilihan format file hasil akhir (PNG atau JPEG) dan tombol unduh
- * yang merender strip kanvas menjadi file gambar siap simpan.
- */
-
 import type { ExportFormat } from "@/shared-tools/composition/export";
 import { FileIcon } from "@/components/icons";
 import { useLanguage } from "@/translations/use-language";
