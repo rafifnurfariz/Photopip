@@ -64,6 +64,9 @@ export function useEditorCanvas(
   const canvasRef = useRef<Canvas | null>(null);
   const renderingRef = useRef(false);
   const renderedRef = useRef(false);
+  // simpan komposisi dan bingkai yang terakhir benar-benar selesai dirender di canvas
+  const renderedCompositionRef = useRef<Composition | null>(null);
+  const renderedFrameRef = useRef<FramePreset | null>(null);
   const renderId = useRef(0);
   const resizeRef = useRef<() => void>(() => {});
   // simpan props terbaru di ref biar event listener Fabric selalu baca data terkini
@@ -242,9 +245,11 @@ export function useEditorCanvas(
     if (!canvas) return;
 
     if (renderedRef.current && !renderingRef.current) {
-      const prev = latest.current.composition;
+      const prev = renderedCompositionRef.current;
       // cek apakah foto, template, bingkai, filter, dan daftar id objek masih sama persis
       const isBaseIdentical =
+        prev !== null &&
+        renderedFrameRef.current === frame &&
         prev.template.id === composition.template.id &&
         prev.frameId === composition.frameId &&
         prev.photos.length === composition.photos.length &&
@@ -308,6 +313,9 @@ export function useEditorCanvas(
               left: text.x,
               top: text.y,
               fontSize: text.size,
+              // reset skala ke 1 karena ukuran baru sudah disimpan langsung ke fontSize
+              scaleX: 1,
+              scaleY: 1,
               fontFamily: resolveTextFont(text.fontId),
               fill: text.color,
               textAlign: text.align,
@@ -324,6 +332,8 @@ export function useEditorCanvas(
         }
 
         if (updatedAny && allObjectsExist) {
+          renderedCompositionRef.current = composition;
+          renderedFrameRef.current = frame;
           canvas.requestRenderAll();
           return;
         }
@@ -347,6 +357,8 @@ export function useEditorCanvas(
         else canvas.discardActiveObject();
         renderingRef.current = false;
         renderedRef.current = true;
+        renderedCompositionRef.current = composition;
+        renderedFrameRef.current = frame;
         canvas.requestRenderAll();
         setStatus("ready");
       })

@@ -204,13 +204,13 @@ export function readPngSize(bytes: Uint8Array): PngSize | null {
   return { width, height };
 }
 
-// susun URL gambar bingkai dengan query versi biar cache browser selalu segar
+// susun URL gambar bingkai memakai nama folder asli yang di-encode biar gak 404 kalau ada spasi/huruf besar
 export function packFileUrl(
-  id: string,
+  folder: string,
   file: string,
   stats: { mtimeMs: number; size: number },
 ): string {
-  return `/assets/frame-packs/${id}/${file}?v=${Math.round(stats.mtimeMs)}-${stats.size}`;
+  return `/assets/frame-packs/${encodeURIComponent(folder)}/${file}?v=${Math.round(stats.mtimeMs)}-${stats.size}`;
 }
 
 // gabungin id, tema warna, dan peta artwork jadi objek FramePackFrame utuh

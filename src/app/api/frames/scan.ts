@@ -135,7 +135,8 @@ async function scanFrameFolder(
         message: `${spec.file} is larger than ${LARGE_ARTWORK_BYTES} bytes`,
       });
     }
-    artworkEntries.push([spec.id, packFileUrl(id, spec.file, fileStat)]);
+    // pakai nama folder asli di disk supaya URL gambar gak 404 kalau folder punya spasi/huruf besar
+    artworkEntries.push([spec.id, packFileUrl(folder, spec.file, fileStat)]);
   }
 
   const artwork = Object.fromEntries(artworkEntries) as Record<

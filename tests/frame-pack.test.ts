@@ -320,7 +320,7 @@ describe("frame directory scanner", () => {
       name: "Neon Nights",
     });
     expect(result.frames[0].artwork["4x1"]).toMatch(
-      /^\/assets\/frame-packs\/neon-nights\/4x1\.png\?v=\d+-\d+$/,
+      /^\/assets\/frame-packs\/Neon%20Nights\/4x1\.png\?v=\d+-\d+$/,
     );
   });
 

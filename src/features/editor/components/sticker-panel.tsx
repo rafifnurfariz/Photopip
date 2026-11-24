@@ -12,12 +12,14 @@ interface StickerPanelProps {
   stickerCount: number;
   onAdd: (sticker: Sticker) => void;
   onClear: () => void;
+  onError?: () => void;
 }
 
 export function StickerPanel({
   stickerCount,
   onAdd,
   onClear,
+  onError,
 }: StickerPanelProps) {
   const { t } = useLanguage();
   const { stickers, categories } = useStickerCatalog();
@@ -57,7 +59,8 @@ export function StickerPanel({
         tags: ["custom"],
       });
     } catch {
-      // Ignore invalid files
+      // kasih tau user lewat toast kalau file stiker gagal dibaca atau terlalu besar
+      onError?.();
     } finally {
       setUploading(false);
     }

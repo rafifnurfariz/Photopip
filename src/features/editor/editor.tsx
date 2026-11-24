@@ -55,6 +55,7 @@ interface EditorProps {
   onBack: () => void;
   onReset: () => void;
   onRetakePhoto: (index: number) => void;
+  onStickerError?: () => void;
 }
 
 // batas zoom paling kecil (50%) dan paling gede (400%)
@@ -73,6 +74,7 @@ export default function Editor({
   onBack,
   onReset,
   onRetakePhoto,
+  onStickerError,
 }: EditorProps) {
   const { t } = useLanguage();
   // state tab aktif, objek terpilih di canvas, tingkat zoom, mode fit HP, dan stack undo/redo
@@ -217,7 +219,8 @@ export default function Editor({
   // tambahin teks baru di tengah strip pakai warna dan font bawaan bingkai aktif
   const addText = () => {
     const id = newId();
-    const defaultFontId = fonts[0]?.id ?? frame.fontId ?? "default";
+    // samain sama fontId bingkai biar status bingkai aktif tetap cocok dan dropdown font sinkron
+    const defaultFontId = frame.fontId ?? fonts[0]?.id ?? "app";
     const placement: TextPlacement = {
       id,
       text: t.editor.defaultCaption,
@@ -514,6 +517,7 @@ export default function Editor({
                   commit({ ...composition, stickers: [] });
                   setSelection(null);
                 }}
+                onError={onStickerError}
               />
             )}
             {tab === "text" && (

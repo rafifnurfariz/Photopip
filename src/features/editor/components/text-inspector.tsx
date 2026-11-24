@@ -69,15 +69,13 @@ export function TextInspector({
             value={text.fontId}
             onChange={(event) => onChange({ fontId: event.target.value }, true)}
           >
-            {fonts.length === 0 ? (
-              <option value={text.fontId || "system"}>Default</option>
-            ) : (
-              fonts.map((font) => (
-                <option key={font.id} value={font.id}>
-                  {font.name}
-                </option>
-              ))
-            )}
+            {/* selalu sediaan opsi Default ("app") biar sinkron sama font bawaan bingkai */}
+            <option value="app">Default</option>
+            {fonts.map((font) => (
+              <option key={font.id} value={font.id}>
+                {font.name}
+              </option>
+            ))}
           </select>
         </label>
         <label className="field">

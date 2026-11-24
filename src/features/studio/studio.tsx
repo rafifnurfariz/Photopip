@@ -343,6 +343,7 @@ export default function Studio() {
             onBack={leaveEdit}
             onReset={() => requestReset()}
             onRetakePhoto={retakePhoto}
+            onStickerError={() => setMessage("upload")}
           />
           <ExportBar
             format={format}
