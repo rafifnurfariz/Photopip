@@ -145,8 +145,8 @@ describe("composition and capture state", () => {
     const redone = undone ? redoHistory(undone.state, second) : null;
     expect(redone?.next.frameId).toBe("candy");
   });
-  // cek applyFrame nyamain id bingkai, warna, dan font semua teks yang ada
-  it("applies a frame to the strip and existing captions", () => {
+  // cek applyFrame ganti id bingkai tanpa mereset warna, font, ukuran, atau posisi teks yang udah ada
+  it("applies a frame without overwriting existing text colors or fonts", () => {
     const frame: FramePreset = {
       id: "classic",
       name: "Classic",
@@ -159,26 +159,44 @@ describe("composition and capture state", () => {
         ...emptyComposition,
         texts: [
           {
-            id: "caption",
+            id: "caption-1",
             text: "Hello",
             x: 300,
             y: 900,
             size: 32,
             rotation: 0,
-            color: "#000000",
+            color: "#123456",
             fontId: "app",
             align: "center",
             bold: false,
             italic: false,
             opacity: 1,
           },
+          {
+            id: "caption-2",
+            text: "World",
+            x: 240,
+            y: 620,
+            size: 40,
+            rotation: 12,
+            color: "#ff0055",
+            fontId: "handwriting",
+            align: "left",
+            bold: true,
+            italic: false,
+            opacity: 0.85,
+          },
         ],
       },
       frame,
     );
     expect(result.frameId).toBe(frame.id);
-    expect(result.texts[0].color).toBe(frame.textColor);
-    expect(result.texts[0].fontId).toBe(frame.fontId);
+    expect(result.texts[0].color).toBe("#123456");
+    expect(result.texts[0].fontId).toBe("app");
+    expect(result.texts[1].color).toBe("#ff0055");
+    expect(result.texts[1].fontId).toBe("handwriting");
+    expect(result.texts[1].size).toBe(40);
+    expect(result.texts[1].rotation).toBe(12);
   });
   it("keeps frame ids unique and every background well formed", () => {
     expect(framePresets).toHaveLength(0);
@@ -186,8 +204,8 @@ describe("composition and capture state", () => {
       framePresets.length,
     );
   });
-  // cek activeFrame cuma cocok selama warna/font teks belum diubah manual
-  it("only marks a preset active while frame and caption style match", () => {
+  // cek activeFrame tetap cocok berdasarkan frameId walau warna/font teks diubah user
+  it("keeps a preset active by frameId even when captions use custom colors or fonts", () => {
     const frame: FramePreset = {
       id: "plain",
       name: "Plain",
@@ -208,8 +226,8 @@ describe("composition and capture state", () => {
           y: 900,
           size: 32,
           rotation: 0,
-          color: frame.textColor,
-          fontId: frame.fontId,
+          color: "#123456",
+          fontId: "handwriting",
           align: "center" as const,
           bold: false,
           italic: false,
@@ -218,15 +236,6 @@ describe("composition and capture state", () => {
       ],
     };
     expect(activeFrame(captioned, [frame])?.id).toBe(frame.id);
-    expect(
-      activeFrame(
-        {
-          ...captioned,
-          texts: [{ ...captioned.texts[0], color: "#123456" }],
-        },
-        [frame],
-      ),
-    ).toBeNull();
   });
   // cek sessionReducer gak nambah foto melebihi slot dan cuma nimpa slot yang di-retake
   it("prevents more photos than slots and replaces exactly the retaken photo", () => {

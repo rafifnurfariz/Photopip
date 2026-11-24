@@ -42,24 +42,15 @@ export function frameById(
   return plainFrame;
 }
 
-// cek semua teks di komposisi masih pakai warna dan font bawaan bingkai atau sudah diubah user
-function frameMatches(composition: Composition, frame: FramePreset): boolean {
-  return composition.texts.every(
-    (text) => text.color === frame.textColor && text.fontId === frame.fontId,
-  );
-}
-
-// ambil bingkai yang lagi aktif dipakai di komposisi (kalau masih sesuai bawaannya)
+// ambil bingkai yang lagi aktif dipakai di komposisi berdasarkan frameId
 export function activeFrame(
   composition: Composition,
   frames: readonly FramePreset[] = framePresets,
 ): FramePreset | null {
-  const frame = frames.find((item) => item.id === composition.frameId);
-  if (!frame || !frameMatches(composition, frame)) return null;
-  return frame;
+  return frames.find((item) => item.id === composition.frameId) ?? null;
 }
 
-// pasang bingkai baru ke komposisi sekaligus samain warna dan font teksnya
+// pasang bingkai baru ke komposisi tanpa mereset warna atau font teks yang sudah ada
 export function applyFrame(
   composition: Composition,
   frame: FramePreset,
@@ -67,10 +58,5 @@ export function applyFrame(
   return {
     ...composition,
     frameId: frame.id,
-    texts: composition.texts.map((text) => ({
-      ...text,
-      color: frame.textColor,
-      fontId: frame.fontId,
-    })),
   };
 }

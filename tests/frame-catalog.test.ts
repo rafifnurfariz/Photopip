@@ -82,8 +82,8 @@ describe("frame pack catalog", () => {
     });
   });
 
-  // cek activeFrame langsung batal kalau warna teks udah diedit beda dari tema bingkai
-  it("marks a pack active only while captions still match", () => {
+  // cek activeFrame tetap aktif berdasarkan frameId walau warna atau font teks udah diedit user
+  it("keeps a pack active by frameId even when captions are customized", () => {
     const merged = mergeFramePacks(framePresets, [pack]);
     const applied = applyFrame(composition, merged[merged.length - 1]);
     expect(activeFrame(applied, merged)?.id).toBe("neon-nights");
@@ -109,12 +109,12 @@ describe("frame pack catalog", () => {
           ],
         },
         merged,
-      ),
-    ).toBeNull();
+      )?.id,
+    ).toBe("neon-nights");
   });
 
-  // cek applyFrame nerapin warna dan font bingkai ke teks di komposisi
-  it("applies a pack id, text color and font to the composition", () => {
+  // cek applyFrame cuma ganti frameId tanpa mereset warna dan font teks yang sudah ada
+  it("applies a pack id while preserving existing text color and font", () => {
     const result = applyFrame(
       {
         ...composition,
@@ -126,7 +126,7 @@ describe("frame pack catalog", () => {
             y: 900,
             size: 32,
             rotation: 0,
-            color: "#000000",
+            color: "#123456",
             fontId: "app",
             align: "center",
             bold: false,
@@ -138,7 +138,7 @@ describe("frame pack catalog", () => {
       packToFramePreset(pack),
     );
     expect(result.frameId).toBe("neon-nights");
-    expect(result.texts[0].color).toBe("#f8fafc");
-    expect(result.texts[0].fontId).toBe("display");
+    expect(result.texts[0].color).toBe("#123456");
+    expect(result.texts[0].fontId).toBe("app");
   });
 });
