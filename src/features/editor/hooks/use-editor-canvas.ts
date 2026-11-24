@@ -11,7 +11,12 @@ import {
   templateGeometry,
 } from "@/shared-tools/composition/geometry";
 import { normalizeText } from "@/shared-tools/composition/text";
-import { resolveTextFont } from "@/shared-tools/catalog/fonts";
+import {
+  ensureTextFontLoaded,
+  getTextFont,
+  isTextFontLoaded,
+  resolveTextFont,
+} from "@/shared-tools/catalog/fonts";
 import {
   clearImageCache,
   renderComposition,
@@ -263,7 +268,12 @@ export function useEditorCanvas(
             s.src === composition.stickers[i]?.src,
         ) &&
         prev.texts.length === composition.texts.length &&
-        prev.texts.every((t, i) => t.id === composition.texts[i]?.id);
+        prev.texts.every(
+          (t, i) =>
+            t.id === composition.texts[i]?.id &&
+            Boolean(t.text.trim()) ===
+              Boolean(composition.texts[i]?.text.trim()),
+        );
 
       // kalau dasar strip gak berubah, cukup update koordinat/gaya objek yang sudah ada biar mulus tanpa kedip
       if (isBaseIdentical) {
@@ -301,6 +311,8 @@ export function useEditorCanvas(
         }
 
         for (const placement of composition.texts) {
+          // teks kosong atau spasi saja tidak dirender di canvas
+          if (!placement.text.trim()) continue;
           const target = findObject(canvas, { type: "text", id: placement.id });
           if (target) {
             const text = normalizeText(
@@ -325,13 +337,32 @@ export function useEditorCanvas(
               angle: text.rotation,
             });
             target.setCoords();
+            // kalau font kustom baru dipilih dan belum selesai preload, render ulang begitu selesai dimuat
+            const font = getTextFont(text.fontId);
+            if (font && !isTextFontLoaded(font.family)) {
+              void ensureTextFontLoaded(font).then(() => {
+                if (canvasRef.current !== canvas) return;
+                if (
+                  "initDimensions" in target &&
+                  typeof target.initDimensions === "function"
+                ) {
+                  target.initDimensions();
+                }
+                target.set("dirty", true);
+                target.setCoords();
+                canvas.requestRenderAll();
+              });
+            }
             updatedAny = true;
           } else {
             allObjectsExist = false;
           }
         }
 
-        if (updatedAny && allObjectsExist) {
+        if (
+          allObjectsExist &&
+          (updatedAny || composition.texts.every((t) => !t.text.trim()))
+        ) {
           renderedCompositionRef.current = composition;
           renderedFrameRef.current = frame;
           canvas.requestRenderAll();

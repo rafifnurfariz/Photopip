@@ -8,7 +8,11 @@ import {
   filters,
   type FabricObject,
 } from "fabric";
-import { getTextFont, resolveTextFont } from "@/shared-tools/catalog/fonts";
+import {
+  ensureTextFontLoaded,
+  getTextFont,
+  resolveTextFont,
+} from "@/shared-tools/catalog/fonts";
 import type { FramePreset } from "@/shared-tools/catalog/frames";
 import { backgroundFill } from "./background-fill";
 import { coverCrop, normalizeSticker, templateGeometry } from "./geometry";
@@ -176,16 +180,7 @@ export async function renderComposition(
     const fontPromises = (composition.texts ?? [])
       .map((text) => getTextFont(text.fontId))
       .filter((font): font is NonNullable<typeof font> => Boolean(font))
-      .map((font) => {
-        try {
-          const fontFace = new FontFace(font.family, `url(${font.src})`);
-          return fontFace.load().then((loaded) => {
-            document.fonts.add(loaded);
-          });
-        } catch {
-          return Promise.resolve();
-        }
-      });
+      .map((font) => ensureTextFontLoaded(font));
     await Promise.allSettled(fontPromises);
     await document.fonts.ready;
     if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
@@ -262,6 +257,14 @@ export async function renderComposition(
     }) as EditorObject;
     object.placementId = placement.id;
     object.objectType = "sticker";
+    if (interactive) {
+      object.setControlsVisibility({
+        ml: false,
+        mr: false,
+        mt: false,
+        mb: false,
+      });
+    }
     canvas.add(object);
   });
   // lapisan 5: gambar semua teks keterangan di lapisan paling atas
@@ -286,6 +289,14 @@ export async function renderComposition(
     }) as EditorObject;
     object.placementId = placement.id;
     object.objectType = "text";
+    if (interactive) {
+      object.setControlsVisibility({
+        ml: false,
+        mr: false,
+        mt: false,
+        mb: false,
+      });
+    }
     canvas.add(object);
   });
   canvas.renderAll();

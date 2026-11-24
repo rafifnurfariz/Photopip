@@ -3,31 +3,19 @@
 // hook buat ambil daftar font kustom dari /api/fonts sekaligus preload ke document.fonts
 // hasil fetch di-cache di level modul biar gak request berulang kali pas pindah tab
 import { useEffect, useState } from "react";
-import { registerTextFonts, type TextFont } from "@/shared-tools/catalog/fonts";
+import {
+  ensureTextFontLoaded,
+  registerTextFonts,
+  type TextFont,
+} from "@/shared-tools/catalog/fonts";
 
 export interface FontCatalogData {
   fonts: TextFont[];
 }
 
-// cache global hasil fetch, request yang sedang berjalan, dan daftar font yang sudah dimuat
+// cache global hasil fetch dan request yang sedang berjalan
 let cachedCatalog: FontCatalogData | null = null;
 let activeRequest: Promise<FontCatalogData | null> | null = null;
-const loadedFontFamilies = new Set<string>();
-
-// muat satu file font ke FontFaceSet browser supaya bisa dipakai FabricText di canvas
-async function ensureFontLoaded(font: TextFont): Promise<void> {
-  if (typeof document === "undefined" || !("fonts" in document)) return;
-  if (loadedFontFamilies.has(font.family)) return;
-
-  try {
-    const fontFace = new FontFace(font.family, `url(${font.src})`);
-    const loaded = await fontFace.load();
-    document.fonts.add(loaded);
-    loadedFontFamilies.add(font.family);
-  } catch (error) {
-    console.warn(`[fonts] Failed to load font face ${font.name}:`, error);
-  }
-}
 
 // fetch katalog font sekali saja; kalau ada request lain berbarengan, tunggu promise yang sama
 async function fetchFontCatalog(): Promise<FontCatalogData | null> {
@@ -48,7 +36,7 @@ async function fetchFontCatalog(): Promise<FontCatalogData | null> {
       registerTextFonts(data.fonts);
       cachedCatalog = data;
       for (const font of data.fonts) {
-        void ensureFontLoaded(font);
+        void ensureTextFontLoaded(font);
       }
       return data;
     } catch {

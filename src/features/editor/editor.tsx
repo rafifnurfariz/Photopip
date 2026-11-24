@@ -83,28 +83,39 @@ export default function Editor({
   const [zoom, setZoom] = useState(1);
   const [fitWhole, setFitWhole] = useState(false);
   const [history, setHistory] = useState<HistoryState>(initialHistory);
+  const [hasPendingGesture, setHasPendingGesture] = useState(false);
   const { fonts } = useFontCatalog();
-  // nyimpen snapshot sebelum geser slider biar satu tarikan slider cuma jadi 1 langkah undo
+  // nyimpen snapshot sebelum geser slider dan ref history biar onBlur + klik undo gak balapan
   const gesture = useRef<Composition | null>(null);
+  const historyRef = useRef<HistoryState>(initialHistory);
   const geometry = useMemo(
     () => templateGeometry(composition.template),
     [composition.template],
   );
   const frame = frameById(composition.frameId, frames);
 
+  const updateHistory = useCallback((next: HistoryState) => {
+    historyRef.current = next;
+    setHistory(next);
+  }, []);
+
   // simpan perubahan ke riwayat undo lalu perbarui state komposisi
   const commit = useCallback(
     (next: Composition) => {
       gesture.current = null;
-      setHistory((state) => pushHistory(state, composition));
+      setHasPendingGesture(false);
+      updateHistory(pushHistory(historyRef.current, composition));
       onChange(next);
     },
-    [composition, onChange],
+    [composition, onChange, updateHistory],
   );
 
   // ubah pratinjau langsung tanpa nambah history (dipakai waktu lagi geser slider)
   const preview = useCallback(
-    (next: Composition) => onChange(next),
+    (next: Composition) => {
+      if (gesture.current) setHasPendingGesture(true);
+      onChange(next);
+    },
     [onChange],
   );
 
@@ -117,10 +128,11 @@ export default function Editor({
   const endGesture = useCallback(() => {
     const snapshot = gesture.current;
     gesture.current = null;
+    setHasPendingGesture(false);
     if (snapshot && snapshot !== composition) {
-      setHistory((state) => pushHistory(state, snapshot));
+      updateHistory(pushHistory(historyRef.current, snapshot));
     }
-  }, [composition]);
+  }, [composition, updateHistory]);
 
   // tiap kali user ngeklik stiker atau teks di canvas, otomatis pindah ke tab properti
   const handleSelect = useCallback((next: CanvasSelection | null) => {
@@ -140,19 +152,33 @@ export default function Editor({
 
   // balik ke perubahan sebelumnya dari stack history
   const undo = () => {
-    const result = undoHistory(history, composition);
-    if (!result) return;
+    const pending = gesture.current;
     gesture.current = null;
-    setHistory(result.state);
+    setHasPendingGesture(false);
+    if (pending && pending !== composition) {
+      const nextHistory = undoHistory(
+        pushHistory(historyRef.current, pending),
+        composition,
+      );
+      if (nextHistory) {
+        updateHistory(nextHistory.state);
+        onChange(nextHistory.next);
+      }
+      return;
+    }
+    const result = undoHistory(historyRef.current, composition);
+    if (!result) return;
+    updateHistory(result.state);
     onChange(result.next);
   };
 
   // ulangin perubahan yang baru aja di-undo
   const redo = () => {
-    const result = redoHistory(history, composition);
+    const result = redoHistory(historyRef.current, composition);
     if (!result) return;
     gesture.current = null;
-    setHistory(result.state);
+    setHasPendingGesture(false);
+    updateHistory(result.state);
     onChange(result.next);
   };
 
@@ -374,7 +400,7 @@ export default function Editor({
               className="icon-button"
               aria-label={t.editor.undo}
               title={t.editor.undo}
-              disabled={history.past.length === 0}
+              disabled={history.past.length === 0 && !hasPendingGesture}
               onClick={undo}
             >
               <span aria-hidden="true">
